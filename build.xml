@@ -362,12 +362,14 @@ os.name="WINNT" -> windows system
 						<available file="${projectroot}/composer.lock"/>
 					</not>
 					<then>
-						<composer command="--no-dev install" composer="${composer.exec}">
+						<composer command="install" composer="${composer.exec}">
+							<arg value="--no-dev" />
 							<arg value="--working-dir=${projectroot}" />
 						</composer>
 					</then>
 					<else>
-						<composer command="--no-dev update" composer="${composer.exec}">
+						<composer command="update" composer="${composer.exec}">
+							<arg value="--no-dev" />
 							<arg value="--working-dir=${projectroot}" />
 						</composer>
 					</else>
