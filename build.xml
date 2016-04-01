@@ -1,0 +1,408 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+# 1. get .htaccess / web.config
+# 2. create asset and runtime folder
+# 3. make copies of the config template files
+# 4. make copy of the _index.php and _yiic.php files
+# 5. set the log path (and create it)
+# 6. set the debug and logging options for dev/stage/prodcution
+# 7. compile a composer.json file with the correct dependencies based on the environment
+# 8. run composer
+os.name="WINNT" -> windows system
+# Order of property file inclusion
+# production (Azure):
+#  1. default.properties
+#  2. production.properties
+#  (maybe: 3. prod-azure.properties, this could also be a step before 2. and be named: platform-azure.properties)
+#  (maybe also always finish like this: x. final.properties)
+#
+# development:
+#  1. default.properties
+#  2. development.properties
+#  (maybe: 3. dev-linux.properties, same reasoning as above at production)
+#
+# development for developer:
+#  1. default.properties
+#  2. development.properties
+#  3. dev-sascha.properties
+-->
+<!--
+# Phing evidemo deployment script
+# In the property files:
+#   Set composer.skip = 1 to skip running composer
+-->
+<!-- Call: phing.phar <target> -Dbuild.env=<environment> to build for a specific environment -->
+
+<project name="omura" default="install">
+    <!-- ============================================  -->
+    <!-- Some minimal required settings                -->
+    <!-- ============================================  -->
+	<property name="buildsource" value="build" override="true" />
+	<property name="env.environment_name" value="[empty]" override="true" />
+
+	<!-- This value will be used inside a path name, so make sure it contains valid characters! -->
+	<property name="deployment_name" value="mobgen-omura" override="true" />
+
+	<!-- Check which ones of these we realy need and remove the rest -->
+	<property name="package" value="${phing.project.name}" override="true" />
+	<property name="projectroot" value="${project.basedir}" override="true" />
+
+	<property name="buildsource" value="${projectroot}/build" override="true" />
+
+
+    <!-- ============================================  -->
+    <!-- Target: init                                  -->
+    <!-- ============================================  -->
+<!--<target name="init">
+		<echo msg="this is the init target." />
+		<phingcall target="compile_env_properties" />
+	</target> -->
+
+    <!-- ============================================  -->
+    <!-- Target: append_property_file                  -->
+    <!-- ============================================  -->
+	<target name="append_property_file">
+		<echo msg="Appending environment properties from file ${include_file}.properties" />
+		<append destFile="${buildsource}/compiled.properties">
+			<filelist dir="${buildsource}/" files="${include_file}.properties"/>
+		</append>
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: compile_env_properties                -->
+    <!-- ============================================  -->
+	<target name="compile_env_properties">
+		<copy file="${buildsource}/default.properties" tofile="${buildsource}/compiled.properties" overwrite="true" />
+
+		<exec command="php build/detectenv.php ${os.name} ${host.name} ${project.basedir}" escape="false" outputProperty="env.envtargetlist" />
+		<echo msg="Detecting target deployment environment: [${env.envtargetlist}]" />
+
+		<foreach list="${env.envtargetlist}" param="include_file" target="append_property_file" />
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: detectenv                             -->
+    <!-- ============================================  -->
+	<target name="detectenv">
+		<exec command="php build/detectenv.php ${os.name} ${host.name} ${project.basedir}" escape="false" outputProperty="env.envtargetlist" />
+		<echo msg="environment: [${env.envtargetlist}]" />
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: sysinfo - echo some debug info        -->
+    <!-- ============================================  -->
+	<target name="sysinfo">
+		<!--<echo msg="param1 ${param1}" />-->
+		<!--<echo msg="param2 ${param2}" />-->
+
+		<echo msg="phing.project.name ${phing.project.name}" />
+		<echo msg="php.version ${php.version}" />
+		<echo msg="php.classpath ${php.classpath}" />
+		<echo msg="package ${package}" />
+
+		<echo msg="project.basedir ${project.basedir}" />
+
+		<echo msg="application.startdir ${application.startdir}" />
+		<echo msg="env.MGServerInfo ${env.MGServerInfo}" />
+
+		<echo msg="user.home ${user.home}" />
+		<echo msg="host.name ${host.name}" />
+		<echo msg="host.arch ${host.arch}" />
+		<echo msg="host.domain ${host.domain}" />
+		<echo msg="host.fstype ${host.fstype}" />
+
+		<echo msg="os.name ${os.name}" />
+		<echo msg="host.os ${host.os}" />
+		<echo msg="host.os.release ${host.os.release}" />
+		<echo msg="host.os.version ${host.os.version}" />
+		
+		<echo msg="projectroot ${projectroot}" />
+		<!--<echo msg="configpath ${configpath}" />-->
+		<!--<echo msg="docroot ${docroot}" />-->
+		<echo msg="repospath ${repospath}" />
+		<echo msg="build.env ${build.env}" />
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: propertyinfo - echo some debug info   -->
+    <!-- ============================================  -->
+	<target name="propertyinfo">
+        <echo msg="db.user ${db.user}" />
+        <echo msg="db.password ${db.password}" />
+        <echo msg="yii.debug ${yii.debug}" />
+        <echo msg="yii.tracelevel ${yii.tracelevel}" />
+        <echo msg="yii.display_error ${yii.display_error}" />
+        <echo msg="yii.logpath ${yii.logpath}" />
+        <echo msg="test_property1 ${test_property1}" />
+
+		<echo msg="apache.display_errors ${apache.display_errors}" />
+		<echo msg="apache.php_error_reporting ${apache.php_error_reporting}" />
+		
+		<echo msg="env.subdomain ${env.subdomain}" />
+		<echo msg="env.domain ${env.domain}" />
+		<echo msg="env.fulldomain ${env.fulldomain}" />
+		
+		<echo msg="env.project_folder ${env.project_folder}" />
+		<echo msg="env.projects_folder ${env.projects_folder}" />
+		<echo msg="env.log_folder ${env.log_folder}" />
+		<echo msg="env.type ${env.type}" />
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: setupbrowser                          -->
+    <!-- ============================================  -->
+	<target name="setupbrowser">
+		<echo msg="Setup browser" />
+		<if>
+			<equals arg1="${os.name}" arg2="WINNT" />
+			<then>
+				<phingcall target="setupiis">
+					<property name="property1" value="aaaaa" />
+					<property name="foo" value="baz" />
+				</phingcall>
+			</then>
+			<else>
+				<phingcall target="setupapache">
+					<property name="property1" value="bbbb" />
+					<property name="foo" value="bax" />
+				</phingcall>
+			</else>
+		</if>
+	</target>
+
+
+    <!-- ============================================  -->
+    <!-- Target: setupiis                              -->
+    <!-- ============================================  -->
+	<target name="setupiis">
+		<copy file="${buildsource}/_web.config" tofile="${projectroot}/html/web.config" overwrite="true">
+			<filterchain>
+				<expandproperties />
+			</filterchain>
+		</copy>
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: setupapache                           -->
+    <!-- ============================================  -->
+	<target name="setupapache">
+		<copy file="${buildsource}/_.htaccess" tofile="${projectroot}/html/.htaccess" overwrite="true">
+			<filterchain>
+				<expandproperties />
+			</filterchain>
+		</copy>
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: reposinfo                             -->
+    <!-- ============================================  -->
+	<target name="reposinfo_dummy">
+		<exec command="hg summary --repository ${repospath}" passthru="true" /> 
+		<exec command="hg branch --repository ${repospath}" passthru="true" />
+		<exec command="hg identify --repository ${repospath}" passthru="true" />
+	</target>
+	<target name="reposinfo">
+		<exec command="hg id -i --repository ${repospath}" outputProperty="mercurial.changeset" />
+		<exec command="hg id -n --repository ${repospath}" outputProperty="mercurial.revision" />
+		<exec command="hg id -b --repository ${repospath}" outputProperty="mercurial.branch" />
+	</target>
+
+	<!-- ============================================  -->
+	<!-- Target: prepdirs                              -->
+	<!-- ============================================  -->
+	<target name="prepdirs" description="Create required folders">
+		<mkdir dir="./data/builds" />
+		<mkdir dir="./console/runtime" />
+		<mkdir dir="./api/runtime" />
+		<mkdir dir="./api/web/assets" />
+		<mkdir dir="./frontend/runtime" />
+		<mkdir dir="./frontend/web/assets" />
+		<mkdir dir="./backend/runtime" />
+		<mkdir dir="./backend/web/assets" />
+		<mkdir dir="./backend/web/files/mobgenners" />
+		<mkdir dir="./backend/web/files/projects" />
+		<mkdir dir="./backend/web/files/types" />
+		<mkdir dir="./backend/web/uploads" />
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: apachecopyvhost                       -->
+    <!-- ============================================  -->
+	<target name="apachecopyvhost" description="Generates apache configuration">
+		<copy file="${buildsource}/${apache.vhost_file}" todir="${apache.vhost_path}" overwrite="true">
+			<filterchain>
+				<expandproperties/>
+			</filterchain>
+		</copy>
+		<echo message="Apache virtual host configuration copied, reload apache to activate it"/>
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: yiicopyconfig                         -->
+	<!--  Copy and parse the config files              -->
+    <!-- ============================================  -->
+	<target name="yiicopyconfig" depends="propertyinfo">
+		<echo msg="Executing step 2 - Parsing config files..." />
+
+		<!-- Install and parse the config files from the common folder -->
+		<property name="parse_files_source" value="${projectroot}/build/common" override="true" />
+		<property name="parse_files_destination" value="${projectroot}/common/config" override="true" />
+		<foreach list="_main-local.php,_params-local.php" param="file_src_name" target="parse_file_once_only" />
+		<foreach list="_bootstrap.php,_main.php,_params.php" param="file_src_name" target="parse_file">
+			<property name="overwrite_files" value="true" />
+		</foreach>
+
+		<!-- Install and parse the config files from the console folder -->
+		<property name="parse_files_source" value="${projectroot}/build/console" override="true" />
+		<property name="parse_files_destination" value="${projectroot}/console/config" override="true" />
+		<foreach list="_main-local.php,_params-local.php" param="file_src_name" target="parse_file_once_only" />
+		<foreach list="_bootstrap.php,_main.php,_params.php" param="file_src_name" target="parse_file">
+			<property name="overwrite_files" value="true" />
+		</foreach>
+
+		<!-- Install and parse the config files from the api folder -->
+		<property name="parse_files_source" value="${projectroot}/build/api" override="true" />
+		<property name="parse_files_destination" value="${projectroot}/api/config" override="true" />
+		<foreach list="_main-local.php,_params-local.php" param="file_src_name" target="parse_file_once_only" />
+		<foreach list="_main.php,_params.php" param="file_src_name" target="parse_file">
+			<property name="overwrite_files" value="true" />
+		</foreach>
+		<property name="parse_files_destination" value="${projectroot}/api/web" override="true" />
+		<foreach list="_.htaccess,_index.php,_robots.txt" param="file_src_name" target="parse_file">
+			<property name="overwrite_files" value="true" />
+		</foreach>
+
+		<!-- Install and parse the config files from the backend folder -->
+		<property name="parse_files_source" value="${projectroot}/build/backend" override="true" />
+		<property name="parse_files_destination" value="${projectroot}/backend/config" override="true" />
+		<foreach list="_main-local.php,_params-local.php" param="file_src_name" target="parse_file_once_only" />
+		<foreach list="_bootstrap.php,_main.php,_params.php" param="file_src_name" target="parse_file">
+			<property name="overwrite_files" value="true" />
+		</foreach>
+		<property name="parse_files_destination" value="${projectroot}/backend/web" override="true" />
+		<foreach list="_.htaccess,_index.php,_robots.txt" param="file_src_name" target="parse_file">
+			<property name="overwrite_files" value="true" />
+		</foreach>
+
+		<!-- Install and parse the config files from the frontend folder -->
+		<property name="parse_files_source" value="${projectroot}/build/frontend" override="true" />
+		<property name="parse_files_destination" value="${projectroot}/frontend/config" override="true" />
+		<foreach list="_main-local.php,_params-local.php" param="file_src_name" target="parse_file_once_only" />
+		<foreach list="_bootstrap.php,_main.php,_params.php" param="file_src_name" target="parse_file">
+			<property name="overwrite_files" value="true" />
+		</foreach>
+		<property name="parse_files_destination" value="${projectroot}/frontend/web" override="true" />
+		<foreach list="_.htaccess,_index.php,_robots.txt" param="file_src_name" target="parse_file">
+			<property name="overwrite_files" value="true" />
+		</foreach>
+
+		<echo msg="Finished step 2..." />
+	</target>
+
+	<target name="parse_file_once_only">
+		<php expression="(substr('${file_src_name}',0,1)=='_' ? substr('${file_src_name}',1) : '${file_src_name}')" returnProperty="file_dest_name"/>
+		<if>
+			<available file='${parse_files_destination}/${file_dest_name}' type='file' />
+			<then>
+				<echo>File already exists, no need to parse: ${parse_files_destination}/${file_dest_name}</echo>
+			</then>
+			<else>
+				<echo msg="parse file [no overwrite]: ${parse_files_source}/${file_src_name} -> ${parse_files_destination}/${file_dest_name} - overwrite: ${overwrite_files}" />
+				<!--<exec command="touch &#45;&#45;no-create ${parse_files_destination}/${file_dest_name}"/>-->
+				<copy file="${parse_files_source}/${file_src_name}" tofile="${parse_files_destination}/${file_dest_name}" overwrite="false">
+					<filterchain>
+						<expandproperties />
+					</filterchain>
+				</copy>
+			</else>
+		</if>
+	</target>
+
+	<target name="parse_file">
+		<php expression="(substr('${file_src_name}',0,1)=='_' ? substr('${file_src_name}',1) : '${file_src_name}')" returnProperty="file_dest_name"/>
+		<echo msg="parse file [no overwrite]: ${parse_files_source}/${file_src_name} -> ${parse_files_destination}/${file_dest_name} - overwrite: ${overwrite_files}" />
+		<copy file="${parse_files_source}/${file_src_name}" tofile="${parse_files_destination}/${file_dest_name}" overwrite="${overwrite_files}">
+			<filterchain>
+				<expandproperties />
+			</filterchain>
+		</copy>
+	</target>
+
+
+    <!-- ============================================  -->
+    <!-- Target: composercopyconfig                    -->
+    <!-- ============================================  -->
+	<target name="composercopyconfig" depends="propertyinfo">
+		<copy file="${buildsource}/_composer.json" tofile="${projectroot}/composer.json" overwrite="true">
+			<filterchain>
+				<expandproperties />
+			</filterchain>
+		</copy>
+<!--	<delete file="${projectroot}/composer.lock" /> -->
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: copyallconfig                         -->
+    <!-- ============================================  -->
+	<!--target name="copyallconfig" depends="composercopyconfig,yiicopyconfig,yiiframeworksetup"-->
+	<target name="copyallconfig" depends="composercopyconfig,yiicopyconfig">
+		<echo msg="Copied all config files." />
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: runcomposer                           -->
+    <!-- ============================================  -->
+	<target name="runcomposer">
+		<echo msg="composer.skip: ${composer.skip}" />
+		<if>
+			<equals arg1="${composer.skip}" arg2="0" />
+			<then>
+				<if>
+					<not>
+						<available file="${projectroot}/composer.lock"/>
+					</not>
+					<then>
+						<composer command="--no-dev install" composer="${composer.exec}">
+							<arg value="--working-dir=${projectroot}" />
+						</composer>
+					</then>
+					<else>
+						<composer command="--no-dev update" composer="${composer.exec}">
+							<arg value="--working-dir=${projectroot}" />
+						</composer>
+					</else>
+				</if>
+			</then>
+		</if>
+	</target>
+
+    <!-- ============================================  -->
+    <!-- Target: install                               -->
+    <!-- ============================================  -->
+	<target name="install">
+		<phingcall target="compile_env_properties" />
+	
+		<property file="build/compiled.properties" override="true" />
+
+		<exec command="hg id -i --repository ${repospath}" outputProperty="mercurial.changeset" />
+		<exec command="hg id -n --repository ${repospath}" outputProperty="mercurial.revision" />
+		<exec command="hg id -b --repository ${repospath}" outputProperty="mercurial.branch" />
+		<echo msg="reposinfo: ${mercurial.branch} - ${mercurial.changeset} - ${mercurial.revision}" />
+
+		<phingcall target="install_step_2" />
+
+		<phingcall target="install_step_3" />
+
+		<echo msg="Finished installing..." />
+	</target>
+
+	<target name="install_step_2" depends="sysinfo,propertyinfo,prepdirs,copyallconfig">
+		<echo msg="Executing install step 2..." />
+	</target>
+
+	<!--<target name="install_step_3" depends="setupbrowser,runcomposer">-->
+	<target name="install_step_3" depends="runcomposer">
+		<echo msg="Executing install step 3..." />
+	</target>
+
+</project>

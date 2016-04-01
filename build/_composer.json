@@ -1,0 +1,50 @@
+{
+    "name": "omura",
+    "description": "Mobgen Omura",
+    "keywords": ["yii2", "omura", "tool", "otashare"],
+    "homepage": "http://www.yiiframework.com/",
+    "type": "project",
+    "license": "Commercial",
+    "support": {
+        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
+        "forum": "http://www.yiiframework.com/forum/",
+        "wiki": "http://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "source": "https://github.com/yiisoft/yii2"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "*",
+        "yiisoft/yii2-bootstrap": "*",
+        "yiisoft/yii2-swiftmailer": "*",
+        "yiisoft/yii2-authclient": "*",
+        "2amigos/yii2-date-picker-widget": "*",
+        "kartik-v/yii2-widget-select2": "@dev",
+        "wbraganca/yii2-dynamicform": "*",
+        "kartik-v/yii2-grid": "*",
+        "kartik-v/yii2-krajee-base": "dev-master",
+        "philippfrenzel/yii2fullcalendar": "*",
+        "kartik-v/yii2-tree-manager": "@dev",
+        "kartik-v/yii2-widget-switchinput": "*",
+        "kartik-v/yii2-widget-fileinput": "@dev",
+        "nodge/yii2-eauth": "~2.0",
+        "bower-asset/bootstrap": "@stable"
+    },
+    "require-dev": {
+        "yiisoft/yii2-codeception": "*",
+        "yiisoft/yii2-debug": "*",
+        "yiisoft/yii2-gii": "*",
+        "yiisoft/yii2-faker": "*"
+    },
+    "config": {
+        "discard-changes": true,
+        "process-timeout": 1800
+    },
+    "extra": {
+        "asset-installer-paths": {
+            "npm-asset-library": "vendor/npm",
+            "bower-asset-library": "vendor/bower"
+        }
+    }
+}

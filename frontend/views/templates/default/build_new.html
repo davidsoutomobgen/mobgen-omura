@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>MobGen OTAShare - {{$builddata.buiName}}</title>
+    <link type="text/css" rel="stylesheet" href="/web/templates/default/css/style.css" />
+    <meta name = "viewport" content = "width=device-width,initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
+    <script>
+    setTimeout(function () {
+          window.scrollTo(0, 1);
+        }, 1000);
+    </script>
+    <link rel="stylesheet" href="/web/templates/default/css/framework.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/web/templates/default/css/icons.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/web/templates/default/css/new_style.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/web/templates/default/css/font-awesome.css" type="text/css" media="all">
+    <link type="text/css" rel="stylesheet" href="/web/templates/default/css/style.css" />
+
+    <script type="text/javascript" src="/web/templates/default/js/jquery.min.js"></script>
+    <script type="text/javascript">try{jQuery.noConflict();}catch(e){};</script>
+</head>
+<body id="build">
+    <div id="outer-wrap">
+        <div id="inner-wrap">
+
+            <div id="pageslide">
+                <a id="close-pageslide" href="#top"><i class="icon-remove-sign"></i></a>
+            </div>
+            <!-- Sidebar in Mobile View -->
+
+            <header id="masthead" role="banner" class="clearfix">
+
+                <div class="top-strip">
+                    <div class="wrapper clearfix">
+                        <a id="open-pageslide" href="#pageslide"><i class="icon-menu"></i></a>
+                        <nav class="secondary-menu">
+                            <ul id="secondary-nav" class="menu">
+                                <li class="menu-item">
+                                    <a href="/?mod=admin&action=projects" >Projects</a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="{{$projectUrl}}">Builds</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div><!-- .wrapper -->
+                </div><!-- .top-strip -->
+
+                <div class="wrapper">
+                    <div id="branding">
+                        <!-- Logo -->
+                        <h1 class="project_name">
+                            <img src="/web/templates/default/img/otashare_mobgen_logo@2x.png" width="240" />
+                            <img id="dots" src="/web/templates/default/img/otashare_mobgen_dots@2x.png" width="240" />
+                        </h1>
+                        <!-- End Logo -->
+                    </div>
+                </div><!-- .wrapper -->
+            </header><!-- #masthead -->
+
+            <div id="content">
+                <h1>MobGen OTA Install</h1>
+                <div>
+                    <div class="lbl">Name:</div> <span class="bltxt">{{$builddata.buiName}}</span>
+                </div>
+                <div style="margin-top:10px;">
+                    <div class="lbl">Version:</div> <span class="bltxt">{{$builddata.buiVersion}}{{if $builddata.buiBuildType}} - {{$builddata.buiBuildType}}{{/if}}</span>
+                </div>
+                <p style="text-align: center;">
+                    {{if $builddata.buiDeviceOS == 1 }}
+                        <i class="fa fa-android fa-4x" style="color:#A4C639"></i>
+                    {{else}}
+                        <i class="fa fa-apple fa-4x" style="color:#ACB8BE"></i>
+                    {{/if}}
+                </p>
+                <div id="installBox">
+                    <div id="install">
+                        <a href="{{$url}}">Install</a>
+                    </div>
+                </div>
+                <div id="changelog">
+                    <p>Changelog:</p>
+                </div>
+                <div>
+                    <p>
+                        {{$builddata.buiChangeLog}}
+                    </p>
+                </div>
+            </div>
+            <footer id="footer" role="contentinfo" class="animated">
+                <div class="footer-sidebar">
+                    <div id="supplementary" class="wrapper clearfix columns col-3">
+                        <div id="first" class="widget-area" role="complementary">
+                            <div id="ti-about-site-2" class="widget widget_ti-about-site">
+                                <h3>Otashare</h3>
+                            </div>
+                        </div><!-- #first .widget-area -->
+                        <div id="second" class="widget-area" role="complementary">
+                            <div class="widget">
+                                <h3>&copy;2015 Mobgen</h3>
+                            </div>
+                        </div><!-- #second .widget-area -->
+                    </div><!-- #supplementary -->
+                </div>
+                <div class="copyright">
+                    <div class="wrapper">
+                        <div class="grids">
+                            <div class="grid-10">
+                            </div>
+                            <div class="grid-2">
+                                <a href="#" class="back-top">Top of page<i class="icon-chevron-up"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer><!-- #footer -->
+        </div><!-- #inner-wrap -->
+    </div><!-- #outer-wrap -->
+
+    <script type="text/javascript" src="/web/templates/default/js/jquery.assets.js"></script>
+    <script type="text/javascript" src="/web/templates/default/js/jquery.custom.js"></script>
+
+        <!-- <div id="footer">
+
+        </div> -->
+    </div>
+</body>
+</html>

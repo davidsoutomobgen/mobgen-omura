@@ -1,0 +1,12 @@
+syntax: glob
+.idea/
+vendor/
+composer.lock
+build\compiled.properties
+api/runtime/
+api/web/assets/
+backend\web\assets\.gitignore
+frontend/web/assets/
+backend/runtime/
+console/runtime/
+frontend/runtime/

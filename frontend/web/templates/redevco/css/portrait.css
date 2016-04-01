@@ -1,0 +1,30 @@
+#background {
+	background: url(/templates/redevco/img/head_background_photo.jpg);
+	background-size: 130% 100%;
+	background-position: -150px 0px;
+	width: 100%;
+	height: 80%;
+}
+#ipad {
+	position: absolute;
+	bottom: 5%;
+	left: 2.2%;
+	width: 33%;
+}
+#installBox h1{
+	font-weight: normal;
+	margin: 0;
+	margin-right: 3%;
+	margin-top: 3%;
+	padding: 0;
+	padding-bottom:35px;
+}
+a {
+	text-decoration: none;	
+	background-color: #004990;
+	color: #FFF;
+	font-size: 25px;
+	padding: 10px;
+	margin-right: 16%;
+	margin-top: 10%;
+}
