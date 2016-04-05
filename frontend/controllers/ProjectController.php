@@ -5,9 +5,8 @@ use Yii;
 use backend\models\OtaProjects;
 use backend\models\Builds;
 use backend\models\BuildsDownloaded;
-
+use backend\models\OtaProjectsBuildtypes;
 /*
- * use backend\models\OtaProjectsBuildtypes;
 use backend\models\Templates;
 use backend\models\Utils;
 */
@@ -40,35 +39,61 @@ class ProjectController extends Controller
      * @return mixed
      */
     public function actionIndex($hash, $safename)
-    {
-        $model = OtaProjects::find()->where("proHash = '$hash' AND safename = '$safename' ")->one();
-        //echo 'dddddd<pre>'; print_r($model); echo '</pre>'; die;
+    {        
+        
+        $model = OtaProjects::find()->with('otaProjectsBuildtypes')->where("proHash = '$hash' AND safename = '$safename' ")->one();
+
         if (!empty($model)) {
             //$path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
-            $builds = Builds::find()->where("buiProIdFK = '$model->id' AND buiVisibleClient = 1")->all();
 
-            $project = '/data/www/mobgen-moby/frontend/web/templates/default/project_new.php';
+            $condition = '';
+            $post = Yii::$app->request->post();
+            /*        
+            if (!empty($post)) {            
+                if ($post['proBuildType'] != 'all') 
+                    $condition = ' AND buiBuildType = '.$post['proBuildType'] ;                
+            }   
+            */
+        
+            $builds = Builds::find()->where("buiProIdFK = '$model->id' AND buiVisibleClient = 1 ".$condition)->orderBy('buiFav desc, updated_at desc')->all();
+            $project = Yii::$app->params["TEMPLATES"] . 'default/project_new.php';
 
-
-            //if ($model->buiVisibleClient == 1 && file_exists($path_file)) {
-            if (1) {
-                return $this->renderFile($project, [
-                    'project' => $model,
-                    'builds' => $builds,
-                    //'url' => $path_file,
-                ]);
+            //CHANGE THIS WHEN TEMPLATES WILL BE ADMiNISTRABLES FROM BACKEND
+            /*
+            switch ($model->id_ota_template) {
+                case 0:
+                    $project = Yii::$app->params["TEMPLATES"] . 'default/project_new.php';
+                    break;
+                case 1:
+                    $project =  Yii::$app->params["TEMPLATES"] . 'abnamro/project.php';
+                    break;
+                case 2:
+                    $project = Yii::$app->params["TEMPLATES"] . 'shell-innovation/project.php';
+                    break;
+                case 3:
+                    $project =  Yii::$app->params["TEMPLATES"] . 'redevco/project.php';
+                    break;
+                case 4:
+                    $project = Yii::$app->params["TEMPLATES"] . 'whoiswho_ron/project.php';
+                    break;
+                case 5:
+                    $project = Yii::$app->params["TEMPLATES"] . 'nationalexpress/project.php';
+                    break;
             }
-            else {
-                //echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';
-                if ($model->buiVisibleClient == 0) {
-                    echo "This build is not available for public users.";
-                    //return $this->render('error');
-                } else {
-                    echo "Sorry but this build doesn't exist (anymore.) If you think this is an error, please contact us.";
-                    //return $this->render('error');
-                }
-                die;
+            */
+
+            $data = array();
+            $otaBuildTypes = OtaProjectsBuildtypes::find()->with('idOtaBuildtypes')->where('id_ota_project = :id_ota_project',  [':id_ota_project' => $model->id])->all();
+            foreach ($otaBuildTypes as $buildtypes) {
+                $data[$buildtypes->id] =  $buildtypes->idOtaBuildtypes->name;
             }
+
+            return $this->renderFile($project, [
+                'project' => $model,
+                'builds' => $builds,
+                'buildtypes' => $data
+                //'url' => $path_file,
+            ]);
         }
         else {
             echo 'Error 404. Are you trying aleatory links?!';
@@ -80,85 +105,6 @@ class ProjectController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
-        die;
-        /////////
-
-
-        if ($buidata = $csql->FetchArray($tmpres)) {
-            if ($buidata['buiVisibleClient'] == 1 && file_exists($buidata['buiFile'])) {
-                include_once('mod_admin.php');
-
-                $projectUrl = '/project/'.$buidata['proHash'].'/'.$buidata['proSafeName'];
-                $cfc->page_set_vars["projectUrl"] = $projectUrl;
-
-                $extension = $buidata['buiDeviceOS'] == 0 ? "ipa" : "apk";
-                if (count($parts) >= 3 && $parts[2] == "download") {
-                    if (file_exists($buidata['buiFile'])) {
-                        // Set response headers
-                        $filesize = filesize($buidata['buiFile']);
-                        if ($extension == "apk") {
-                            header('Accept-Ranges: bytes');
-                            header('Content-Type: application/octet-stream');
-                            header("Content-Disposition: attachment; filename=\"".$buidata['buiSafename'].".".$extension."\"");
-//							header("Content-Disposition: attachment; filename=\"app-test.".$extension."\"");
-//							header("Content-Transfer-Encoding: binary");
-                            header('Content-Length: '. $filesize);
-                        } else {
-                            header('Accept-Ranges: bytes');
-                            header('Content-Type: application/octet-stream');
-                            header("Content-Disposition:attachment;filename=".$buidata['buiSafename'].".".$extension);
-                            header("Content-Transfer-Encoding: binary");
-                            header('Content-Length: '. $filesize);
-                        }
-                        if ($handle = fopen($buidata['buiFile'], "r")) {
-                            // output buffered, so we can handle large files
-                            while (!feof($handle)) {
-                                echo fread($handle, 8192);
-                            }
-                            fclose($handle);
-                        } else {
-                            echo "failed to open content!<br />\n";
-                        }
-                    } else {
-                        echo "Sorry but this build doesn't exist (anymore.)";
-                        return false;
-                    }
-
-                } elseif (count($parts) == 3 && $parts[2] == "plist") {
-                    header('Content-Type: text/xml');
-                    $cfc->page_set_vars["url"] = ModAdminClass::_GetCurrentDomain()."/build/". $buidata['buiHash'] ."/". $buidata['buiSafename'] ."/download";
-                    $cfc->page_set_vars["build"] = array(
-                        "buiBundleIdentifier"	=> $buidata['buiBundleIdentifier'],
-                        "buiSafename"			=> $buidata['buiSafename'],
-                    );
-                    $cfc->ChainModAction("default", "page", "plist.html");
-                    return true;
-
-                } else {
-                    if ($buidata['buiDeviceOS'] == 0) {
-                        $cfc->page_set_vars["url"] = "itms-services://?action=download-manifest&url=". ModAdminClass::_GetCurrentDomain() ."/build/". $buidata['buiHash'] ."/". $buidata['buiSafename'] ."/plist";
-                    } else {
-                        // @SAS: testing for downloading bug
-//						$cfc->page_set_vars["url"] = "/build/". $buidata['buiHash'] ."/". $buidata['buiSafename'] ."/download";
-                        $cfc->page_set_vars["url"] = "/build/". $buidata['buiHash'] ."/". $buidata['buiSafename'] ."/download/{$buidata['buiSafename']}.$extension";
-                    }
-
-                    $cfc->page_set_vars["builddata"] = $buidata;
-
-                    // Set template
-                    if (file_exists("web/templates/".$cfc->cconfig->env_actsetup['TEMPLATES_DIRS'][$buidata['buiTemplate']]."/build.html")) {
-                        $cfc->ChainModAction("default", "page", "templates/".$cfc->cconfig->env_actsetup['TEMPLATES_DIRS'][$buidata['buiTemplate']]."/build.html");
-                    } else {
-                        $cfc->ChainModAction("default", "page", "templates/default/build.html");
-                    }
-                    return true;
-                }
-            } else {
-                echo "Sorry but this build doesn't exist (anymore.) If you think this is an error, please contact us.";
-                return false;
-            }
-        }
-        return false;
 
     }
 

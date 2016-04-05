@@ -44,13 +44,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'buttons' => [
                     'permission' => function ($url, $model) {
                         if ($model->state == 1) {
-                            return Html::a('<span class="glyphicon glyphicon-ok"></span>', $url, [
+                            return Html::a('<i class="fa fa-check-square-o"></i>', $url, [
                                 'title' => Yii::t('app', 'Setup Permissions'),
                                 'data-pjax'=>'w0',
                             ]);
                         }
                         else{
-                            return Html::a('<span class="glyphicon glyphicon-remove"></i>', $url, [
+                            return Html::a('<i class="fa fa-square-o"></i>', $url, [
                                 'title' => Yii::t('app', 'Setup Permissions'),
                                 //'data-pjax'=>'w0',
                             ]);

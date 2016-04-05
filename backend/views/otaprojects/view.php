@@ -25,6 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?= Html::a( Yii::t('app', 'Back'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);?>
     </p>
 
     <h2><?= Yii::t('app', 'API Keys') ?></h2>
@@ -64,7 +65,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
-
     <div class="builds_list" >
         <h2><?= Yii::t('app', 'Builds') ?></h2>
 
@@ -81,6 +81,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchBuilds,
+            'pager' => [
+                'maxButtonCount'=>3,    // Set maximum number of page buttons that can be displayed
+            ],
             'columns' => [
                 //['class' => 'yii\grid\SerialColumn'],
                 ['class' => 'yii\grid\CheckboxColumn'],
@@ -99,7 +102,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'label'=>'Name',
                     'format' => 'raw',
                     'value'=>function ($data) {
-                        return (Html::a($data->buiName, ['/builds/update/'.$data->buiId]).'<p><small>'.$data->buiBundleIdentifier.'</small></p>');
+                        return (Html::a($data->buiName, ['/builds/update/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>');
 
                     },
                 ],
@@ -112,8 +115,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         $frontend = Yii::$app->params['FRONTEND'];
 
                         $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $data->buiFile;
-                        //$path_file = '/data/www/mobgen-moby/data/builds/13189.ipa';
-                        //$path_file = '/data/www/mobgen-moby/data/builds/13189.ipa';
                         //echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';die;
                         if (file_exists($path_file))
                             return ("<a href='$frontend/build/$data->buiHash/$data->buiSafename' target='_blank' title='$data->buiName' alt='$data->buiName' >$data->buiHash</a>");

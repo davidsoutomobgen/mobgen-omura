@@ -471,12 +471,31 @@ section.content div p {
     margin-top: -40px;
 }
 
+section.content div p.alignleft{
+    float: none;
+    margin-top: 0;
+    text-align: left;
+}
+
+
+section.content div p.identifier {
+    float: none;
+    margin-top: 0;
+    text-align: left;
+}
+
 section.content div.hint-block p
 {
     text-align: left;
     margin-bottom: 12px;
     margin-top: 0px;
     color:#333;
+}
+
+.builds_list {
+    border-top: 1px solid #333;
+    padding-top: 20px;
+    margin-top: 60px;
 }
 
 .bootstrap-switch-id-builds-buitype span.bootstrap-switch-handle-on {

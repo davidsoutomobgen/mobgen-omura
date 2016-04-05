@@ -45,9 +45,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Public URL',
                 'format' => 'raw',
                 'value'=>function ($data) {
-                    //return Html::a('/project/'.$data->proHash.'/'.$data->safename);
-                    return Html::a($data->proHash, ['/project/'.$data->proHash.'/'.$data->safename]);
-
+                    $frontend = Yii::$app->params['FRONTEND'];
+                    return ("<a href='$frontend/project/$data->proHash/$data->safename' target='_blank' title='$data->name' alt='$data->name' >$data->proHash</a>");
                 },
             ],
             'proAPIKey',
@@ -69,6 +68,9 @@ $this->params['breadcrumbs'][] = $this->title;
             //'created_at:date',
             'updated_at:date',
             ['class' => 'yii\grid\ActionColumn'],
+        ],
+        'pager' => [
+            'maxButtonCount'=>3,    // Set maximum number of page buttons that can be displayed
         ],
     ]); ?>
 
