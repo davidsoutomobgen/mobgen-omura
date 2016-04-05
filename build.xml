@@ -211,18 +211,18 @@ os.name="WINNT" -> windows system
 	<!-- Target: prepdirs                              -->
 	<!-- ============================================  -->
 	<target name="prepdirs" description="Create required folders">
-		<mkdir dir="./data/builds" />
-		<mkdir dir="./console/runtime" />
-		<mkdir dir="./api/runtime" />
-		<mkdir dir="./api/web/assets" />
-		<mkdir dir="./frontend/runtime" />
-		<mkdir dir="./frontend/web/assets" />
-		<mkdir dir="./backend/runtime" />
-		<mkdir dir="./backend/web/assets" />
-		<mkdir dir="./backend/web/files/mobgenners" />
-		<mkdir dir="./backend/web/files/projects" />
-		<mkdir dir="./backend/web/files/types" />
-		<mkdir dir="./backend/web/uploads" />
+		<mkdir dir="./data/builds" mode="0775" />
+		<mkdir dir="./console/runtime" mode="0775" />
+		<mkdir dir="./api/runtime" mode="0775" />
+		<mkdir dir="./api/web/assets" mode="0775" />
+		<mkdir dir="./frontend/runtime" mode="0775" />
+		<mkdir dir="./frontend/web/assets" mode="0775" />
+		<mkdir dir="./backend/runtime" mode="0775" />
+		<mkdir dir="./backend/web/assets" mode="0775" />
+		<mkdir dir="./backend/web/files/mobgenners" mode="0775" />
+		<mkdir dir="./backend/web/files/projects" mode="0775" />
+		<mkdir dir="./backend/web/files/types" mode="0775" />
+		<mkdir dir="./backend/web/uploads" mode="0775" />
 	</target>
 
     <!-- ============================================  -->
