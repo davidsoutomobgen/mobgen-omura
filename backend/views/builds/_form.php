@@ -41,20 +41,11 @@ use backend\models\Utils;
             echo '<label for="buiFile">File (<a href="/builds/download/'.$model->buiId.'">download</a>)</label>';
         }
         else {
-           // echo 'else';
-            echo $form->field($model, 'buiFile')->hiddenInput(['value' => ''])->label(true);
+            //echo 'else';die;
+            echo $form->field($model, 'buiFile')->hiddenInput(['value' => ''])->label(false);
+            echo '<label for="buiFile">File</label>';
+            echo '<p class="alignleft"><small>'. Yii::t('app', 'Error: Filed deteled from the server.') .'</small></p>';
         }
-        /*
-        echo $file2;
-        if (file_exists($file2)) {
-            echo 'aki';
-            Yii::$app->response->sendFile($file2);
-        }
-        else {
-            echo 'else';
-            die;
-        }
-        */
     }
     ?>
 
@@ -240,6 +231,7 @@ use backend\models\Utils;
 
     <div id="submit_form" class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::a( Yii::t('app', 'Back'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);?>
     </div>
 
     <?php ActiveForm::end(); ?>

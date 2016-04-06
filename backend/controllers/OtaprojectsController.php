@@ -34,15 +34,6 @@ class OtaprojectsController extends Controller
 
     public function beforeAction($action)
     {
-        //var_dump(Yii::$app->user);die;
-/*
-$session = Yii::$app->session;
-if ($session->has('user_id')) {
-    echo 'con sesion';
-}
-else echo 'sin sesion';
-die;
-*/
 
         if (isset(Yii::$app->user->identity->id)) {
             
@@ -51,13 +42,8 @@ die;
             //echo $permission.'<br>';die;
             if ($hasPermission == 0) {
                 throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
-            }
-            
-            
+            }                    
         } 
-        /*else {
-            redirect('site/login');
-        }*/
         return true;
     }
 
@@ -117,11 +103,30 @@ die;
         $selected = array();
         $value = array();
 
-        //if ($model->load(Yii::$app->request->post()) && $model->save()) {
         if ($model->load(Yii::$app->request->post())) {
-            //echo '<pre>'; print_r(Yii::$app->request->post()); echo '</pre>';
+
+            $model->proHash = $this->_GenerateHash();
+            $model->proAPIKey = $this->_GenerateHash();
+            $model->proAPIBuildKey = $this->_GenerateSecureApiHash($model->name);
 
             if ($model->save()) {
+                $post = Yii::$app->request->post();
+                if (isset($post['proBuildType'])) {
+                    foreach ($post['proBuildType'] as $tt){
+                        if (empty(intval($tt))) {
+                            $buildtypes = new OtaBuildTypes;
+                            $buildtypes->name = $tt;
+                            $buildtypes->save();
+
+                            $tt = $buildtypes->id;
+                        }
+
+                        $aux = new OtaProjectsBuildtypes();
+                        $aux->id_ota_project = $model->id;
+                        $aux->id_ota_buildtypes = $tt;
+                        $aux->save();
+                    }
+                }
                 return $this->redirect(['view', 'id' => $model->id]);
 
             } else {
@@ -132,6 +137,7 @@ die;
                     'ota_buildtypes' => $data,
                 ]);
             }
+            
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -255,9 +261,32 @@ die;
         $string = "";
 
         for ($p = 0; $p < $length; $p++) {
-            $string .= $characters[mt_rand(0,strlen($characters))];
+            $string .= $characters[mt_rand(0,strlen($characters) - 1)];
         }
 
         return $string;
     }
+
+    public static function _GenerateSecureApiHash($projectName, $length=30)
+    {
+        $characters = "0123456789abcdefghijklmnopqrstuvwxyz";
+        $string = "";
+
+        for ($p = 0; $p < $length; $p++) {
+            $string .= $characters[mt_rand(0,strlen($characters) - 1)];
+        }
+
+        $hash = "";
+
+        $hash = crypt($projectName . $string, $string.$string);
+
+        for ($p = $length; $p > 0 ; $p--) {
+            $string .= $characters[mt_rand(0,strlen($characters))];
+        }
+
+        $hash .= $string;
+
+        return substr($hash, 0, $length);
+    }
+
 }

@@ -230,7 +230,6 @@ class BuildsController extends ActiveController
 
                                         } elseif ($extension == "apk") {
                                                 $identifier = Builds::_getPackage($path_file);
-                                                $cfc->page_set_vars["package_name"] = $identifier;
                                                 $build->buiId = $id;
                                         }
 

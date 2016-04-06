@@ -202,6 +202,7 @@ class BuildsController extends Controller
 
         //Build Types
         $otaBuildTypes = OtaProjectsBuildtypes::find()->with('idOtaBuildtypes')->where('id_ota_project = :id_ota_project',  [':id_ota_project' => $model->buiProIdFK])->all();
+        $data = array();        
         foreach ($otaBuildTypes as $buildtypes) {
             $data[$buildtypes->id] =  $buildtypes->idOtaBuildtypes->name;
         }
@@ -212,7 +213,6 @@ class BuildsController extends Controller
         $modelNotification = new BuildsNotification();
         //echo '<pre>';print_r($otaProject); echo '</pre>';die;
         $modelNotification->email = $otaProject->default_notify_email;
-
 
         //Template
         $templates = Templates::getTemplatesTemporaly();
