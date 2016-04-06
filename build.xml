@@ -212,6 +212,7 @@ os.name="WINNT" -> windows system
 	<!-- ============================================  -->
 	<target name="prepdirs" description="Create required folders">
 		<mkdir dir="./data/builds" mode="0775" />
+		<mkdir dir="./data/builds/temp" mode="0775" />
 		<mkdir dir="./console/runtime" mode="0775" />
 		<mkdir dir="./api/runtime" mode="0775" />
 		<mkdir dir="./api/web/assets" mode="0775" />
