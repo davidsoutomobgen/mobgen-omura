@@ -372,7 +372,7 @@ class BuildsController extends Controller
 
         //echo '<pre>'; print_r(Yii::$app->request->post('selection'));echo '</pre>';//die;
         //echo '<pre>'; print_r($_POST);echo '</pre>';die;
-
+        $buiProIdFK = Yii::$app->request->post('buildId');
         $submit = Yii::$app->request->post('submit');
         if ($submit == 1)
             $action=Yii::$app->request->post('action1');
@@ -402,7 +402,7 @@ class BuildsController extends Controller
             }
         }
 
-        return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
+        return $this->redirect(['/otaprojects/' . $buiProIdFK]);
     }
 
     public function actionLike($id){
@@ -492,7 +492,7 @@ class BuildsController extends Controller
                         $error = "File extension not recognized as valid extension.";
                     }
                 } else {
-                    $error = "Error with uploading file: " . $_FILES['buiFile']['error'];
+                    $error = "Error with uploading file.";// . $_FILES['buiFile']['error'];
                 }
             }
             else {

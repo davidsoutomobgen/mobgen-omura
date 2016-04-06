@@ -72,6 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?=Html::beginForm(['builds/bulk'],'post');?>
             <?=Html::dropDownList('action1','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
             <?=Html::submitButton('Apply', ['value' => '1', 'name'=>'submit','class' => 'btn btn-warning',]);?>
+            <?=Html::hiddenInput('buildId', $model->id);?>
         </div>
         <div class="addbuild right">
             <?= Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']) ?>
