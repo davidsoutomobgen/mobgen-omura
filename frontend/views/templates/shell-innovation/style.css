@@ -1,0 +1,56 @@
+@CHARSET "ISO-8859-1";
+body {
+	background-color: #2F2F2F;
+	padding: 0px;
+	margin: 0px;
+	font-family: Verdana;
+}
+
+#content {
+	color: #FFF;
+	background-color: #000;
+	width: 320px;
+	margin: 0px;
+}
+
+#content > div {
+	width: 100%;
+	border-bottom: 1px dotted white;
+}
+
+#content > div > h2 {
+	font-size: large;
+	margin: 0px;
+}
+
+#content > div > h1 {
+	font-size: x-large;
+	margin: 0px;
+}
+
+#install {
+	width: 100px;
+	background-color: #00B22C;
+	border: 1px white;
+	margin: 10px;
+	padding: 5px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+a {
+	font-weight: bold;
+	color: #FFF;
+	text-decoration: none;
+}
+
+#header {
+	background: url(/web/templates/shell-innovation/mobgen_logo.png) no-repeat;
+	height: 156px;
+	text-align: right;
+}
+
+#udids {
+	font-size: x-small;
+}
