@@ -79,9 +79,9 @@ else {
             <!-- Logo -->
             <a href="index2.html" class="logo">
                 <!-- mini logo for sidebar mini 50x50 pixels -->
-                <span class="logo-mini"><b><?= Yii::$app->params['projectNameShort'];?></b>T</span>
+                <span class="logo-mini"><b><?= Yii::$app->params['projectNameShort'];?></b>s</span>
                 <!-- logo for regular state and mobile devices -->
-                <span class="logo-lg"><b><?= Yii::$app->params['projectName'];?></b>Tool</span>
+                <span class="logo-lg"><b><?= Yii::$app->params['projectName'];?></b>Share</span>
             </a>
             <!-- Header Navbar: style can be found in header.less -->
             <nav class="navbar navbar-static-top" role="navigation">
@@ -103,7 +103,7 @@ else {
                                 <li class="user-header">
                                     <img src="/files/user2-128x128.png" class="img-circle" alt="User Image">
                                     <p>
-                                        <?php echo Yii::$app->user->identity->first_name.' '.Yii::$app->user->identity->last_name ; ?> - Backend Developer
+                                        <?php echo Yii::$app->user->identity->first_name.' '.Yii::$app->user->identity->last_name ; ?> <!-- - Backend Developer -->
                                         <!-- <small>Member since Nov. 2012</small> -->
                                     </p>
                                 </li>
@@ -218,7 +218,7 @@ else {
                                 <li><a href="/useroptions"><i class="fa fa-paint-brush"></i> Visual Options</a></li>
                                 <li><a href="/options"><i class="fa fa-plus-square-o"></i>Parameters Visual Options</a></li>
                                 <li><a href="/permissions"><i class="fa fa-shield"></i>Permissions</a></li>
-                                <li><a href="/user"><i class="fa fa-users"></i> Users</a></li>
+                                <li><a href="/user"><i class="fa fa-users"></i>Users</a></li>
                             </ul>
                         </li>
                     <?php } ?>
