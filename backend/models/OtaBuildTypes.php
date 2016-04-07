@@ -31,6 +31,7 @@ class OtaBuildTypes extends \common\models\CActiveRecord
     {
         return [
             [['name'], 'required'],
+            [['name'], 'unique'],
             [['created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 255],
         ];

@@ -71,8 +71,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="dropdown-list left">
             <?=Html::beginForm(['builds/bulk'],'post');?>
             <?=Html::dropDownList('action1','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
-            <?=Html::submitButton('Apply', ['value' => '1', 'name'=>'submit','class' => 'btn btn-warning',]);?>
             <?=Html::hiddenInput('buildId', $model->id);?>
+            <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>           
         </div>
         <div class="addbuild right">
             <?= Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']) ?>
@@ -143,12 +143,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'format'=>'raw',
                     'value' => function($data){
                         if ($data->buiFav == 1) {
-                            $fav = '<span><i class="fa fa-heart fa-x" style="color:#3c8dbc"></i></span>';
+                            $fav = '<span><i class="fa fa-star fa-x" style="color:#3c8dbc"></i></span>';
                             $url = '/builds/dislike/'.$data->buiId;
                             $text = Yii::t('app', 'Remove to Favorites');
                         }
                         else {
-                            $fav = '<span><i class="fa fa-heart-o fa-x" style="color:#3c8dbc"></i></span>';
+                            $fav = '<span><i class="fa fa-star-o fa-x" style="color:#3c8dbc"></i></span>';
                             $url = '/builds/like/'.$data->buiId;
                             $text = Yii::t('app', 'Add to Favorites');
                         }
@@ -215,10 +215,50 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="dropdown-list">
             <?=Html::beginForm(['builds/bulk'],'post');?>
             <?=Html::dropDownList('action2','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
-            <?=Html::submitButton('Apply', ['value' => '2', 'name'=>'submit', 'class' => 'btn btn-warning',]);?>
+            <?=Html::submitButton('Apply', ['value' => '2', 'id' => 'submit2', 'name' => 'submit', 'class' => 'btn btn-warning']);?>
         </div>
 
         <?= Html::endForm();?>
     </div>
     <div class="clear"></div>
 </div>
+
+<?php
+$this->registerJs('
+    $(document).ready(function(){
+
+        $(\'#submit1\').on(\'click\', function(e){
+            
+            if ($(\'[name=action1]\').val() == 0) {
+                alert (\'Select the action to apply\');
+                return false;
+            } else if ($(\'[name=action1]\').val() == 3) { 
+               if (confirm (\'Are you sure you want to delete this item?\'))
+                    return true;
+                else
+                    return false;
+            }            
+        });
+
+        $(\'#submit2\').on(\'click\', function(e){
+            
+            if ($(\'[name=action2]\').val() == 0) {
+                alert (\'Select the action to apply\');
+                return false;
+            } else if ($(\'[name=action2]\').val() == 3) { 
+               if (confirm (\'Are you sure you want to delete this item?\'))
+                    return true;
+                else
+                    return false;
+            }
+            
+        });
+
+    });', \yii\web\View::POS_READY);
+?>
+
+
+
+
+
+

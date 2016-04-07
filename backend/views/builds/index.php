@@ -16,20 +16,23 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create Builds'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?php //=Html::a(Yii::t('app', 'Create Builds'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'pager' => [
+            'maxButtonCount'=>3,    // Set maximum number of page buttons that can be displayed
+        ],
         'columns' => [
             //['class' => 'yii\grid\SerialColumn'],
             ['class' => 'yii\grid\CheckboxColumn'],
             'buiId',
             'buiName',
             'buiSafename',
-            'created_at',
-            'updated_at',
+            'created_at:date',
+            'updated_at:date',
             // 'buiTemplate',
             // 'buiFile',
             // 'buiVersion',
@@ -55,9 +58,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format'=>'raw',
                 'value' => function($data){
                     if ($data->buiFav == 1)
-                        $fav = '<span><i class="fa fa-heart fa-x" style="color:#3c8dbc"></i></span>';
+                        $fav = '<span><i class="fa fa-star fa-x" style="color:#3c8dbc"></i></span>';
                     else
-                        $fav = '<span><i class="fa fa-heart-o fa-x" style="color:#3c8dbc"></i></span>';
+                        $fav = '<span><i class="fa fa-star-o fa-x" style="color:#3c8dbc"></i></span>';
 
                     return $fav;
                 }
