@@ -96,7 +96,7 @@ class Builds extends \common\models\CActiveRecord
             'buiType' => Yii::t('app', 'Bui Type'),
             'buiBuildType' => Yii::t('app', 'Bui Build Type'),
             'buiApple' => Yii::t('app', 'Apple account'),
-            'buiSVN' => Yii::t('app', 'Feed SVN repository version'),
+            'buiSVN' => Yii::t('app', 'Feed version'),
             'buiFeedUrl' => Yii::t('app', 'Feed URL'),
             'buiVisibleClient' => Yii::t('app', 'Visible to client'),
             'buiDeviceOS' => Yii::t('app', 'Bui Device Os'),

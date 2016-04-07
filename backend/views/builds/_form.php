@@ -21,8 +21,6 @@ use backend\models\Utils;
 <div class="builds-form">
     <?php $form = ActiveForm::begin(['id'=>$model->formName()]); ?>
 
-    <?= $form->field($model, 'buiName')->textInput(['maxlength' => true]) ?>
-
     <?php
     if ($model->isNewRecord) {
         echo $form->field($model, 'buiFile')->hiddenInput(['value' => '']);
@@ -81,6 +79,9 @@ use backend\models\Utils;
         ]
     ]);
     ?>
+
+    <?= $form->field($model, 'buiName')->textInput(['maxlength' => true]) ?>
+
 
     <div class="form-group field-buiTemplate required">
         <label class="control-label" for="buiTemplate">Template</label>

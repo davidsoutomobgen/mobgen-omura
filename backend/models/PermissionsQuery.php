@@ -64,23 +64,16 @@ class PermissionsQuery extends \yii\db\ActiveQuery
             if (empty($data[0]['state'])) {
 
                 //If don't have permission as User check if have permission by Group
-                /*
-                echo '<pre>';print_r($data);echo '</pre>';die;
-                */
-                /*
-                $data = Yii::$app->db->createCommand('SELECT *
-                        FROM permissions_groups pg
-                        LEFT JOIN groups g ON g.id = pg.id_group
-                        WHERE id_permission =:id_permission'
-                    , array('id_permission' => $perm->id) )->queryAll();
-                */
+                //echo $permission;
 
+                //echo '<pre>';print_r($data);echo '</pre>';die;
+                                
                 $data = Yii::$app->db->createCommand('SELECT *
                         FROM permissions_groups pg
                         LEFT JOIN groups g ON g.id = pg.id_group
                         LEFT JOIN user_groups ug ON ug.id_group=g.id
                         WHERE pg.id_permission =:id_permission AND ug.id_user = '. Yii::$app->user->identity->id
-                    , array('id_permission' => $perm->id))->queryAll();
+                        , array('id_permission' => $perm->id))->queryAll();
 
                 //echo  Yii::$app->user->identity->id;die;
                 /*

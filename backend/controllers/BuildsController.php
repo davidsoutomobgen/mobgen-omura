@@ -41,13 +41,14 @@ class BuildsController extends Controller
 
     public function beforeAction($action)
     {
-        $permission = $this->action->controller->id.'_'.$this->action->id;
-        $hasPermission = Permissions::find()->hasPermission($permission);
-        //echo $permission.'<br>';die;
-        if ($hasPermission == 0) {
-            throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+        if (($this->action->id != 'fileupload') &&  ($this->action->id != 'download')) {
+            $permission = $this->action->controller->id.'_'.$this->action->id;
+            $hasPermission = Permissions::find()->hasPermission($permission);
+            //echo $permission.'<br>';die;
+            if ($hasPermission == 0) {
+                throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+            }
         }
-
         return true;
     }
 
@@ -109,7 +110,8 @@ class BuildsController extends Controller
 
             $timestamp = $model->buiSafename;
             $extension = strtolower(Builds::_GetExtension($model->buiFile));
-            $model->buiSafename = Builds::_RemoveExtension($model->buiFile);
+            //$model->buiSafename = Builds::_RemoveExtension($model->buiFile);
+            $model->buiSafename = Builds::_GenerateSafeFileName((string) $model->buiName);
             $model->buiHash = Builds::_GenerateHash();
             $safe = Builds::_GenerateSafeFileName((string) $id.'_'.$timestamp);
 
@@ -601,9 +603,11 @@ class BuildsController extends Controller
 
         if (!empty($model)) {
             $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
+            $extension = Builds::_GetExtension($model->buiFile);
+            $filename = $model->buiSafename.'.'.$extension;
 
             if (file_exists($path_file)) {
-                return  Yii::$app->response->sendFile($path_file);
+                return  Yii::$app->response->sendFile($path_file, $filename);
             }
             else {                
                 echo "Sorry but this build doesn't exist (anymore.) If you think this is an error, please contact us.";
