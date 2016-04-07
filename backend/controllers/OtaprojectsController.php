@@ -105,6 +105,7 @@ class OtaprojectsController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
+            $model->safename = $this->_GenerateSafeFileName($model->name);
             $model->proHash = $this->_GenerateHash();
             $model->proAPIKey = $this->_GenerateHash();
             $model->proAPIBuildKey = $this->_GenerateSecureApiHash($model->name);
@@ -113,12 +114,16 @@ class OtaprojectsController extends Controller
                 $post = Yii::$app->request->post();
                 if (isset($post['proBuildType'])) {
                     foreach ($post['proBuildType'] as $tt){
-                        if (empty(intval($tt))) {
-                            $buildtypes = new OtaBuildTypes;
-                            $buildtypes->name = $tt;
-                            $buildtypes->save();
-
-                            $tt = $buildtypes->id;
+                        if (empty(intval($tt))) {                           
+                            $exist = OtaBuildTypes::find()->where('name LIKE :name')->addParams([':name'=>$tt])->one();
+                            if (isset($exist)) {
+                                $tt = $exist->id;
+                            } else {
+                                $buildtypes = new OtaBuildTypes;
+                                $buildtypes->name = $tt;
+                                $buildtypes->save();                            
+                                $tt = $buildtypes->id;
+                            }
                         }
 
                         $aux = new OtaProjectsBuildtypes();
@@ -234,9 +239,26 @@ class OtaprojectsController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $builds = Builds::find()->where('buiProIdFK = :build_id',  [':build_id' => $id])->all();
 
-        return $this->redirect(['index']);
+        if (empty($builds)){
+            $this->findModel($id)->delete();
+            $message = 1;            
+        }
+        else 
+            $message = 2;
+
+
+        $searchModel = new OtaProjectsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'message' => $message,
+        ]);
+        //return $this->redirect(['index']);
     }
 
     /**
@@ -281,12 +303,21 @@ class OtaprojectsController extends Controller
         $hash = crypt($projectName . $string, $string.$string);
 
         for ($p = $length; $p > 0 ; $p--) {
-            $string .= $characters[mt_rand(0,strlen($characters))];
+            $string .= $characters[mt_rand(0,strlen($characters) - 1)];
         }
 
         $hash .= $string;
 
         return substr($hash, 0, $length);
+    }
+
+    public static function _GenerateSafeFileName($text) {
+        $text = preg_replace('/[^\\pL\d]+/u', '-', $text);
+        $text = trim($text, '-');
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+        $text = strtolower($text);
+        $text = preg_replace('/[^-\w]+/', '', $text);
+        return $text;
     }
 
 }

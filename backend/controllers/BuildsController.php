@@ -370,8 +370,6 @@ class BuildsController extends Controller
 
     public function actionBulk(){
 
-        //echo '<pre>'; print_r(Yii::$app->request->post('selection'));echo '</pre>';//die;
-        //echo '<pre>'; print_r($_POST);echo '</pre>';die;
         $buiProIdFK = Yii::$app->request->post('buildId');
         $submit = Yii::$app->request->post('submit');
         if ($submit == 1)
@@ -384,7 +382,6 @@ class BuildsController extends Controller
             foreach ($selection as $id) {
 
                 $model = $this->findModel($id);
-                //echo '<pre>'; print_r($model->attributes);echo '</pre>';
 
                 if ($action == 1) {
                     $model->buiFav = 1;
@@ -460,8 +457,6 @@ class BuildsController extends Controller
 
                     // Device OS
                     $extension = strtolower(Builds::_GetExtension($_FILES['buiFile']['name'][0]));
-
-                    //echo '<pre>'; print_r($extension);echo '</pre>';//die;
 
                     if ($extension == "ipa") {
                         $device_os = 0; // iOS
@@ -606,13 +601,11 @@ class BuildsController extends Controller
 
         if (!empty($model)) {
             $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
-            //$path_file = '/data/www/mobgen-moby/data/builds/13189.ipa';
-            //echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';die;
+
             if (file_exists($path_file)) {
                 return  Yii::$app->response->sendFile($path_file);
             }
-            else {
-                echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';
+            else {                
                 echo "Sorry but this build doesn't exist (anymore.) If you think this is an error, please contact us.";
                 //return $this->render('error');
             }

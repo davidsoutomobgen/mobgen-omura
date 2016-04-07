@@ -508,3 +508,6 @@ section.content div.hint-block p
     color:#fff;
 }
 
+.file-input .file-preview .close.fileinput-remove{
+    display:none;
+}

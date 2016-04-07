@@ -1,5 +1,4 @@
 <?php
-
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -10,6 +9,28 @@ use yii\grid\GridView;
 $this->title = Yii::t('app', 'Ota Projects');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<?php
+if (isset($message) && ($message == 1)) {
+?>
+    
+        <div class="alert alert-success alert-dismissible">
+          <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+          <h4><i class="icon fa fa-check"></i>Project deleted!</h4>
+          <!-- <p class="alignleft">Lorem ipsum...</p> -->
+        </div>
+   <?php
+} else if (isset($message) && ($message == 2)) {
+?>
+        <div class="alert alert-danger alert-dismissible">
+          <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+          <h4><i class="icon fa fa-warning"></i>Warning!</h4>
+          <p class="alignleft">This project proHash builds, contact with admin to remove the project.</p>
+        </div>
+<?php
+}
+?>
+
 <div class="ota-projects-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
