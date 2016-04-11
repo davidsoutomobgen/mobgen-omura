@@ -76,12 +76,25 @@ use backend\models\Utils;
                 'timestamp' => $time,
             ],
             'maxFileCount' => 1
+        ],
+        'pluginEvents' => [
+            'filebatchuploadcomplete' => "function(event, files, extra) {
+                console.log('File batch upload complete');
+                $('.uploadfirst').hide();
+                $('.btn.btn-success').removeAttr('disabled');  //Enable createbutton 
+            }",
         ]
     ]);
     ?>
 
-    <?= $form->field($model, 'buiName')->textInput(['maxlength' => true]) ?>
+    <?php if ($model->isNewRecord) { ?>
+        <div class="callout callout-danger uploadfirst">
+            <h4>Warning!</h4>
+            <p class="alignleft">Upload first the file to active the Create button.</p>
+        </div>
+    <?php } ?>
 
+    <?= $form->field($model, 'buiName')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group field-buiTemplate required">
         <label class="control-label" for="buiTemplate">Template</label>
@@ -230,8 +243,18 @@ use backend\models\Utils;
     <?php }  ?>
     <div class="clear"></div>
 
+    <?php if ($model->isNewRecord) { ?>
+        <div class="callout callout-danger uploadfirst">
+            <h4>Warning!</h4>
+            <p class="alignleft">Upload first the file to active the Create button.</p>
+        </div>
+    <?php } ?>
     <div id="submit_form" class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php if ($model->isNewRecord) { ?>
+            <?= Html::submitButton(Yii::t('app', 'Create'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'disabled'=>true ]) ?>
+        <?php } else { ?>
+            <?= Html::submitButton(Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php } ?>
         <?= Html::a( Yii::t('app', 'Back'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);?>
     </div>
 
@@ -300,6 +323,7 @@ $('form#{$model->formName()}').on('beforeSubmit', function(e)
                     //alert( $('#builds-buifile').val());
             }
 });
+
 
 JS;
 $this->registerJs($script);

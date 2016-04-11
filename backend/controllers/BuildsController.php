@@ -145,7 +145,8 @@ class BuildsController extends Controller
                     if ($model->buiSendEmail == 1)
                         $this->_sendEmail($model, Yii::$app->request->post()['BuildsNotification']['email']);
 
-                    $this->redirect(['view', 'id' => $model->buiId]);
+                    //$this->redirect(['view', 'id' => $model->buiId]);
+                    $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
                 } else {
                     print_r($model->getErrors());
                     echo 'error haciendo save ';die;
@@ -221,8 +222,9 @@ class BuildsController extends Controller
 
         if (!empty(Yii::$app->request->post())) {
             $process = $this->_process($id, $model);
-            if ($process) {
-                return $this->redirect(['view', 'id' => $model->buiId]);
+            if ($process) {                  
+                //return $this->redirect(['view', 'id' => $model->buiId]);
+                return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
             }
             else {
                 return $this->render('update', [
