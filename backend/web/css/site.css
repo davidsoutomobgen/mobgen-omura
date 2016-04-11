@@ -511,3 +511,9 @@ section.content div.hint-block p
 .file-input .file-preview .close.fileinput-remove{
     display:none;
 }
+
+.file-input{
+  margin-bottom: 20px;
+}
+
+
