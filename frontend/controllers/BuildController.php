@@ -36,8 +36,7 @@ class BuildController extends Controller
     /**
      * Lists all Builds models.
      * @return mixed
-     */
-    //public function actionIndex()
+     */  
     public function actionIndex($hash, $safename)
     {
         $model = Builds::find()->where("buiHash = '$hash' AND buiSafename = '$safename' ")->one();
@@ -97,24 +96,80 @@ class BuildController extends Controller
         ]);
         
         return false;
+        
+    }
+
+    public function actionIpa ($hash, $safename, $plist) {
+
+        $model = Builds::find()->where("buiHash = '$hash' AND buiSafename = '$safename' ")->one();
+        $path_file = Yii::$app->params["FRONTEND"] . '/build/download/' . $model->buiId;
+        //http://omura-david-front.mobgendev105.com/build/download/13245';
+
+        $plist = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"/>');
+        $dict = $plist->addChild('dict');
+        $dict->addChild('key', 'items');
+        $array = $dict->addChild('array');
+            $dict2 = $array->addChild('dict');
+                
+                $dict2->addChild('key', 'assets');
+                $array2 = $dict2->addChild('array');
+                    $dict3 = $array2->addChild('dict');
+                    $dict3->addChild('key', 'kind');
+                    $dict3->addChild('string', 'software-package');
+                    $dict3->addChild('key', 'url');
+                    $dict3->addChild('string', $path_file);
+                    
+                    $dict3 = $array2->addChild('dict');
+                    $dict3->addChild('key', 'kind');
+                    $dict3->addChild('string', 'display-image');
+                    $dict3->addChild('key', 'needs-shine');
+                    $dict3->addChild('true');
+                    $dict3->addChild('key', 'url');
+                    $dict3->addChild('string', 'https://otashare.mobgen.com/images/ios_57x57.png');
+                    
+                    $dict3 = $array2->addChild('dict');
+                    $dict3->addChild('key', 'kind');
+                    $dict3->addChild('string', 'full-size-image');
+                    $dict3->addChild('key', 'needs-shine');
+                    $dict3->addChild('true');
+                    $dict3->addChild('key', 'url');
+                    $dict3->addChild('string', 'https://otashare.mobgen.com/images/ios_512x512.jpg');
+
+                $dict2->addChild('key', 'metadata');
+
+                $dict4 = $dict2->addChild('dict');
+                $dict4->addChild('key', 'bundle-identifier');
+                $dict4->addChild('string', 'com.mobgen.vanlanschot.evi');
+                $dict4->addChild('key', 'bundle-version');
+                $dict4->addChild('string', 'test');
+                $dict4->addChild('key', 'kind');
+                $dict4->addChild('string', 'software');
+                $dict4->addChild('key', 'title');
+                $dict4->addChild('string', $model->buiSafename);
+
+        Header('Content-type: text/xml');
+        print($plist->asXML());
+        die;
     }
 
     public function actionDownload($id) {
 
         $model = Builds::find()->where(" buiId = $id ")->one();
-        //echo '<pre>'; print_r($model); echo '</pre>';die;
 
         if (!empty($model)) {
             $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
-            //echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';die;
             if ($model->buiVisibleClient == 1 && file_exists($path_file)) {
+
+                $extension = Builds::_GetExtension($model->buiFile);
+                $filename = $model->buiSafename.'.'.$extension;
+                
                 $downloaded = new BuildsDownloaded();
                 $downloaded->buiId = $model->buiId;
                 $downloaded->save();
-                return  Yii::$app->response->sendFile($path_file);
+                
+                return  Yii::$app->response->sendFile($path_file, $filename);               
             }
             else {
-                //echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';
                 if ($model->buiVisibleClient == 0) {
                     echo "This build is not available for public users.";
                     //return $this->render('error');
