@@ -516,4 +516,22 @@ section.content div.hint-block p
   margin-bottom: 20px;
 }
 
-
+/* COLORS */
+i.skin-blue {
+    color: #3c8dbc;
+}
+i.skin-black{
+    color: #000000;
+}
+i.skin-purple{
+    color: #605ca8;
+}
+i.skin-green{
+    color: #00a65a;
+}
+i.skin-red{
+    color: #dd4b39;
+}
+i.skin-yellow{
+    color: #f39c12;
+}

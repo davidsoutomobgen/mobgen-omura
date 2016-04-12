@@ -114,16 +114,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'format' => 'raw',
                     'value'=>function ($data) {
                         $frontend = Yii::$app->params['FRONTEND'];
-
                         $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $data->buiFile;
-                        //echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';die;
+
                         if (file_exists($path_file))
-                            return ("<a href='$frontend/build/$data->buiHash/$data->buiSafename' target='_blank' title='$data->buiName' alt='$data->buiName' >$data->buiHash</a>");
+                            return Html::a($data->buiHash, Yii::$app->params["FRONTEND"].'/build/'.$data->buiHash.'/'.$data->buiSafename, ['target'=>'_blank', 'title'=>$data->buiName, 'alt'=>$data->buiName]);                            
                         else
                             return 'Not available';
-
-                        //return ("<a href='$frontend/$data->buiHash/$data->buiSafename' target='_blank' title='$data->buiName' alt='$data->buiName' >$data->buiHash</a>");
-                        //return Html::a($data->buiHash, ['@web/build/'.$data->buiHash.'/'.$data->buiSafename]);
                     },
                 ],
                 [
@@ -143,12 +139,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'format'=>'raw',
                     'value' => function($data){
                         if ($data->buiFav == 1) {
-                            $fav = '<span><i class="fa fa-star fa-x" style="color:#3c8dbc"></i></span>';
+                            $fav = '<span><i class="fa fa-star fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
                             $url = '/builds/dislike/'.$data->buiId;
                             $text = Yii::t('app', 'Remove to Favorites');
                         }
                         else {
-                            $fav = '<span><i class="fa fa-star-o fa-x" style="color:#3c8dbc"></i></span>';
+                            $fav = '<span><i class="fa fa-star-o fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
                             $url = '/builds/like/'.$data->buiId;
                             $text = Yii::t('app', 'Add to Favorites');
                         }
@@ -163,12 +159,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'format'=>'raw',
                     'value' => function($data){
                         if ($data->buiVisibleClient == 1) {
-                            $fav = '<span><i class="fa fa-eye fa-x" style="color:#3c8dbc"></i></span>';
+                            $fav = '<span><i class="fa fa-eye fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
                             $url = '/builds/hidden/'.$data->buiId;
                             $text = Yii::t('app', 'Hidden to the client');
                         }
                         else {
-                            $fav = '<span><i class="fa fa-eye-slash fa-x" style="color:#3c8dbc"></i></span>';
+                            $fav = '<span><i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
                             $url = '/builds/show/'.$data->buiId;
                             $text = Yii::t('app', 'Visible to the client');
                         }
@@ -207,8 +203,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     ],
                 ],
-
-
 
             ],
         ]); ?>
