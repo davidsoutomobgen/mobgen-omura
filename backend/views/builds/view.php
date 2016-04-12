@@ -64,7 +64,8 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'buiFav',
                 'format' => 'html',
-                'value' => $model->buiFav == 1 ? '<i class="fa fa-heart fa-x" style="color:#3c8dbc"></i>' : '<i class="fa fa-heart-o fa-x" style="color:#3c8dbc"></i>'
+                'value' => $model->buiFav == 1 ? '<i class="fa fa-star fa-x ' . $_SESSION['skin-color'] . '" ></i>' : '<i class="fa fa-star-o fa-x ' . $_SESSION['skin-color'] . '"></i>',
+               //'value' => $model->buiFav == 1 ? '<i class="fa fa-star fa-x" class="'.$_SESSION['skin-color'].'"  ></i>' : '<i class="fa fa-star-o fa-x" style="color:#3c8dbc"></i>'
             ],
             [
                 'label' => Yii::t('app', 'Created by'),
