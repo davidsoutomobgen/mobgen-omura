@@ -45,3 +45,4 @@ frontend/web/.htaccess
 frontend/web/index.php
 frontend/web/robots.txt
 backend/web/assets/
+frontend/web/whoiswho/
