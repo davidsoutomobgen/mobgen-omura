@@ -218,6 +218,7 @@ os.name="WINNT" -> windows system
 		<mkdir dir="./api/web/assets" mode="0775" />
 		<mkdir dir="./frontend/runtime" mode="0775" />
 		<mkdir dir="./frontend/web/assets" mode="0775" />
+		<mkdir dir="./frontend/web/whoiswho" mode="0775" />
 		<mkdir dir="./backend/runtime" mode="0775" />
 		<mkdir dir="./backend/web/assets" mode="0775" />
 		<mkdir dir="./backend/web/files/mobgenners" mode="0775" />
