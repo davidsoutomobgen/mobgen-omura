@@ -516,6 +516,17 @@ section.content div.hint-block p
   margin-bottom: 20px;
 }
 
+.modalButton {
+    background: transparent none repeat scroll 0 0;
+    border: medium none;
+    color: #3c8dbc;
+    font-weight: bold;
+    padding: 0px;
+}
+.modalButton i{
+    font-weight: bold;
+}
+
 /* COLORS */
 i.skin-blue {
     color: #3c8dbc;

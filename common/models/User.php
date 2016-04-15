@@ -29,6 +29,9 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_ACTIVE = 10;
     const ROLE_USER = 10;
 
+    //ADMIN = 10
+    //QA = 11
+
     /**
      * @var array EAuth attributes
      */
@@ -155,6 +158,19 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->getPrimaryKey();
     }
 
+
+    public static function getUser()
+    {
+        $id_user = Yii::$app->user->getId(); 
+        return static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);        
+    }
+
+    public static function getUserIdRole()
+    {
+        $id_user = Yii::$app->user->getId(); 
+        $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);   
+        return $user->role_id;
+    }
     /**
      * @inheritdoc
      */

@@ -19,6 +19,8 @@ use yii\web\Controller;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
+
 
 /**
  * BuildsController implements the CRUD actions for Builds model.
@@ -48,8 +50,15 @@ class BuildsController extends Controller
             if ($hasPermission == 0) {
                 throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
             }
+            if (!isset($_SESSION['skin-color'])) {
+                $_SESSION['skin-color'] = 'skin-blue';
+            }    
+            return true;
         }
-        return true;
+        else {
+            $this->redirect('/site/logout');
+        } 
+        
     }
 
     /**

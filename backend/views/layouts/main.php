@@ -62,16 +62,19 @@ else {
 
     <link rel="apple-touch-icon" sizes="144x144" href="/images/favicon/favicon_144x144.png">
     <?php $this->head() ?>
+    <?php 
+    if (!isset($_SESSION['skin-color'])) {
+        $_SESSION['skin-color'] = 'skin-blue';
+    }
+    ?>
 </head>
 <body class="
-        <?=(isset($_SESSION['skin-color'])) ? $_SESSION['skin-color'] : 'skin-blue';?>
+        <?= (isset($_SESSION['skin-color'])) ? $_SESSION['skin-color'] : 'skin-blue';?>
         sidebar-mini
         <?= ((isset($_SESSION['fixed-header'])) && ($_SESSION['fixed-header'] == 1 )) ? 'fixed' : '';?>
         <?= ((isset($_SESSION['layout-boxed'])) && ($_SESSION['layout-boxed'] == 1 )) ? 'layout-boxed' : '';?>
         <?= ((isset($_SESSION['sidebar-collapse'])) && ($_SESSION['sidebar-collapse'] == 1 )) ? 'sidebar-collapse' : '';?>
         <?= ((isset($_SESSION['control-sidebar-open'])) && ($_SESSION['control-sidebar-open'] == 1 )) ? 'control-sidebar-open' : '';?>
-
-
         ">
     <?php $this->beginBody() ?>
     <div class="wrap wrapper">

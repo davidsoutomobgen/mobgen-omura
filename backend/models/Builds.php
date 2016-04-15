@@ -40,13 +40,16 @@ use backend\models\BuildsNotification;
  *
  * @property User $createdBy
  * @property OtaProjects $buiProIdFK0
- *
+ * @property BuildsDownloaded[] $buildsDownloadeds
+ * @property BuildsNotification[] $buildsNotifications
+ * @property BuildsQa[] $buildsQas
  */
 class Builds extends \common\models\CActiveRecord
 {
 
     public $fld_sent_email;
     public $fld_email_list;
+    public $status;
     /**
      * @inheritdoc
      */
@@ -126,6 +129,35 @@ class Builds extends \common\models\CActiveRecord
     public function getBuiProIdFK0()
     {
         return $this->hasOne(OtaProjects::className(), ['id' => 'buiProIdFK']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBuildsDownloadeds()
+    {
+        return $this->hasMany(BuildsDownloaded::className(), ['buiId' => 'buiId']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBuildsNotifications()
+    {
+        return $this->hasMany(BuildsNotification::className(), ['buiId' => 'buiId']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBuildsQas()
+    {
+        return $this->hasMany(BuildsQa::className(), ['buiId' => 'buiId'])->orderBy(['builds_qa.updated_at'=>SORT_DESC]);
+    }
+
+    public function getLastBuildsQas()
+    {        
+        return $this->hasMany(BuildsQa::className(), ['buiId' => 'buiId'])->orderBy(['builds_qa.updated_at'=>SORT_DESC])->limit(1);        
     }
 
     /**
