@@ -3,7 +3,11 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\grid\GridView;
+use yii\widgets\Pjax;
+use yii\bootstrap\Modal;
+use yii\helpers\Url;
 use backend\models\BuildsDownloaded;
+use backend\models\Utils;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\OtaProjects */
@@ -65,6 +69,18 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
+    
+    <?php
+        Modal::begin([
+                'header'=>'<h3>QA Status</h3>',
+                'id' => 'modal',
+                'size'=>'modal-lg',
+            ]);
+     
+        echo "<div id='modalContent'></div>";
+     
+        Modal::end();
+    ?>
     <div class="builds_list" >
         <h2><?= Yii::t('app', 'Builds') ?></h2>
 
@@ -87,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'columns' => [
                 //['class' => 'yii\grid\SerialColumn'],
-                ['class' => 'yii\grid\CheckboxColumn'],
+                ['class' => 'yii\grid\CheckboxColumn'],                
                 [
                     'attribute' => 'buiType',
                     'filter'=>array("0"=>"iOS","1"=>"Android"),
@@ -126,7 +142,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'label' => Yii::t('app', 'Created by'),
                     'attribute' => 'createdBy',
                     'content'=>function($data){
-                        //echo '<pre>'; print_r($data->project); echo '</pre>';
                         return ($data->createdBy->first_name.' '.$data->createdBy->last_name);
                     }
 
@@ -176,14 +191,48 @@ $this->params['breadcrumbs'][] = $this->title;
                     'label' => Yii::t('app', 'Downloads'),
                     'attribute' => 'downloads',
                     'content'=>function($data){
-                        //echo '<pre>'; print_r($data->project); echo '</pre>';
                         return BuildsDownloaded::getDownloads($data->buiId);
                     }
                 ],
+                [
+                    'attribute'=>'status',
+                    'filter'=>array("0"=>"-", "1"=>"Testing", "2"=>"With Errors", "3"=>"Correct"),
+                    'label'=>Yii::t('app', 'QA Status'),
+                    'format'=>'raw',
+                    'value' => function($data){
+                        $lastqa = 0;
+                        foreach ($data->lastBuildsQas as $qa) {
+                            $lastqa = $qa->status;
+                        }                        
+                        switch ($lastqa) {
+                            case 0:
+                                $color = 'grey';
+                                break;
+                            case 1:
+                                $color = '#f39c12';
+                                break;
+                            case 2:
+                                $color = '#dd4b39';
+                                break;
+                            case 3:
+                                $color = '#00a65a';
+                                break;           
+                        }
+
+                        $text = Utils::getQAStatusById($lastqa);
+                        $icon = '<span><i class="fa fa-circle fa-x" style="color:'.$color.'"></i></span>';
+                        $url = '/buildsqa/qa/'.$data->buiId;
+
+                        //return Html::a($icon, $url, ['title' => $text, 'data-method' => 'post']);
+                        return Html::button($icon, ['value'=>Url::to($url),'class' => 'modalButton', 'id'=>'modalButton'.$data->buiId, 'title' => $text]);
+                    }
+                ],
+
+
                 //['class' => 'yii\grid\ActionColumn'],
                 [
                     'class' => 'yii\grid\ActionColumn',
-                    'template' => '{view} {update} {delete}',
+                    'template' => '{view} {update} {delete} ',
                     'buttons' => [
                         'view' => function ($url,$model) {
                             $url = str_replace('otaprojects', 'builds', $url);
@@ -199,13 +248,19 @@ $this->params['breadcrumbs'][] = $this->title;
                             $url = str_replace('otaprojects', 'builds', $url);
                             return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
                                 'title' => Yii::t('app', 'Delete'), 'data-confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),'data-method' => 'post']);
-                        }
-
+                        },
+                        /*
+                        'qa' => function($url, $model) {
+                            $url = str_replace('otaprojects', 'buildsqa', $url);
+                            return Html::button('<i class="fa fa-circle ></i>', ['value'=>Url::to($url),'class' => 'modalButton', 'id'=>'modalButton'.$model->buiId]);
+                        },
+                        */     
                     ],
                 ],
 
             ],
         ]); ?>
+
         <div class="dropdown-list">
             <?=Html::beginForm(['builds/bulk'],'post');?>
             <?=Html::dropDownList('action2','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>

@@ -8,6 +8,7 @@
 
 namespace backend\models;
 
+use Yii;
 
 class Utils
 {
@@ -105,7 +106,35 @@ class Utils
         return $template;
     }
 
+    public static function getQAStatus()
+    {
+        return array(
+            0 => "-",
+            1 => "Testing", //Checkbox (true/false)",
+            2 => "With Errors",
+            3 => "Correct",            
+        );
+    }
 
+    public static function getQAStatusById($id)
+    {
+        switch ($id) {
+            case 0:
+                $qa = Yii::t('app', 'No defined');
+                break;
+            case 1:
+                $qa = Yii::t('app', 'Testing');
+                break;
+            case 2:
+                $qa = Yii::t('app', 'With Errors');
+                break;
+            case 3:
+                $qa = Yii::t('app', 'Correct');
+                break;           
+        }
+
+        return $qa;
+    }
 
     public static function cleanString($string) {
         $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
@@ -113,7 +142,6 @@ class Utils
 
         return preg_replace('/-+/', '-', $string); // Replaces multiple hyphens with single one.
     }
-
 
     public static function remove_extra_crs($string) {
         $new_string = urlencode ($string);

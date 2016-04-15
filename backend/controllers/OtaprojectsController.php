@@ -14,6 +14,7 @@ use yii\web\Controller;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 
 /**
  * OtaprojectsController implements the CRUD actions for OtaProjects model.
@@ -36,15 +37,20 @@ class OtaprojectsController extends Controller
     {
 
         if (isset(Yii::$app->user->identity->id)) {
-            
             $permission = $this->action->controller->id.'_'.$this->action->id;
             $hasPermission = Permissions::find()->hasPermission($permission);
             //echo $permission.'<br>';die;
             if ($hasPermission == 0) {
                 throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
-            }                    
+            }                 
+            if (!isset($_SESSION['skin-color'])) {
+                $_SESSION['skin-color'] = 'skin-blue';
+            }                        
+            return true;         
         } 
-        return true;
+        else {
+            $this->redirect('/site/logout');
+        }       
     }
 
 
@@ -71,14 +77,16 @@ class OtaprojectsController extends Controller
     public function actionView($id)
     {
         $params = Yii::$app->request->queryParams;
-        //echo '<pre>'; print_r($params);echo '</pre>';
-
+        
         $params['BuildsSearch']['buiProIdFK'] =  $id;
 
         $searchBuilds = new BuildsSearch();
         $dataProvider = $searchBuilds->search($params);
         //$dataProvider = $searchBuilds->search(Yii::$app->request->queryParams);
 
+        $builds = Builds::find()->with('buildsQas')->where('buiProIdFK = :id',  [':id' => $id])->all();
+
+//echo  '<pre>'; print_r($dataProvider); echo '</pre>';die;
         return $this->render('view', [
             'model' => $this->findModel($id),
             'searchBuilds' => $searchBuilds,
