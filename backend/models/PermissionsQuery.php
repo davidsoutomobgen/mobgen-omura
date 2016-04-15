@@ -48,59 +48,31 @@ class PermissionsQuery extends \yii\db\ActiveQuery
                                                     WHERE pu.id_user = :id_user AND p.name = :permission'
                 , array('id_user' => Yii::$app->user->identity->id, 'permission' => $permission) )->queryAll();
 
-            /*
-            echo '<pre>';print_r($permission);echo '</pre>';
-            echo '<pre>';print_r(Yii::$app->user->identity->id);echo '</pre>';
-            echo $permission;
-            */
-            //die;
-
             $perm = Permissions::findOne(['name' => $permission]);
-            //$perm = Permissions::findOne->where('name = '.$permission);
-
-            //echo '<pre>';print_r($perm);echo '</pre>';die;
-
-
+ 
             if (empty($data[0]['state'])) {
 
                 //If don't have permission as User check if have permission by Group
                 //echo $permission;
-
-                //echo '<pre>';print_r($data);echo '</pre>';die;
-                                
-                $data = Yii::$app->db->createCommand('SELECT *
-                        FROM permissions_groups pg
-                        LEFT JOIN groups g ON g.id = pg.id_group
-                        LEFT JOIN user_groups ug ON ug.id_group=g.id
-                        WHERE pg.id_permission =:id_permission AND ug.id_user = '. Yii::$app->user->identity->id
-                        , array('id_permission' => $perm->id))->queryAll();
+                $data = '';
+                if (isset($perm->id)) {                                
+                    $data = Yii::$app->db->createCommand('SELECT *
+                            FROM permissions_groups pg
+                            LEFT JOIN groups g ON g.id = pg.id_group
+                            LEFT JOIN user_groups ug ON ug.id_group=g.id
+                            WHERE pg.id_permission =:id_permission AND ug.id_user = '. Yii::$app->user->identity->id
+                            , array('id_permission' => $perm->id))->queryAll();
+                }
 
                 //echo  Yii::$app->user->identity->id;die;
-                /*
-                SELECT *
-                FROM permissions_groups pg
-                LEFT JOIN permissions_users pu ON pu.id_permission = pg.id_permission
-                LEFT JOIN groups g ON g.id = pg.id_group
-                WHERE pg.id_permission = 28 AND id_user =
-                */
-
-                /*
-                SELECT *
-                FROM permissions_groups pg
-                LEFT JOIN groups g ON g.id = pg.id_group
-                WHERE id_permission = 9
-                */
-               //echo '<pre>';print_r($data);echo '</pre>';die;
+                //echo '<pre>';print_r($data);echo '</pre>';die;
                 if (!empty($data))
                     $data[0]['state'] = 1;
                 else
                     $data[0]['state'] = 0;
             }
-
         }
-        //echo '<pre>'; print_r($permission);echo '</pre>'; die;
         return $data[0]['state'];
-
     }
 
     /**
