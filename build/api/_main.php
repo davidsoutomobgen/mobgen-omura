@@ -37,6 +37,10 @@ return [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
+                'v1/whoiswho' => 'v1/whoiswho/index',
+//              'v1/whoiswho/<action:\w+>' => 'v1/whoiswho/<action>',
+                // http://chris-backhouse.com/Yii2-using-hyphenated-URLs-in-URL-manager-rules/1030
+                'v1/whoiswho/<action:\w+(-\w+)*>' => 'v1/whoiswho/<action>',
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
