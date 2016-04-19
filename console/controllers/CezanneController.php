@@ -316,12 +316,15 @@ QUERY;
 				'person_code' => $userdata->PersonCode,
 				'person_guide' => $userdata->PersonGUID,
 				'name' => $userdata->FullName != null ? $userdata->FullName : '',	// So something shows up in the UI
+				'salutation' => $userdata->Salutation != null ? $userdata->Salutation : '',
 				'full_name' => $userdata->FullName != null ? $userdata->FullName : '',
 				'first_name' => $userdata->FirstName != null ? $userdata->FirstName : '',
 				'family_name' => $userdata->FamilyName != null ? $userdata->FamilyName : '',
-				'know_nas' => $userdata->KnownAs != null ? $userdata->KnownAs : '',
+				'middle_name' => $userdata->MiddleName != null ? $userdata->MiddleName : '',
+				'known_as' => $userdata->KnownAs != null ? $userdata->KnownAs : '',
 				'gender' => $userdata->Gender != null ? $userdata->Gender : '',
 				'date_of_birth' => $userdata->DateOfBirth != null ? $userdata->DateOfBirth : '',
+				'country_of_birth' => $userdata->CountryOfBirth != null ? $userdata->CountryOfBirth : '',
 				'city_of_birth' => $userdata->CityOfBirth != null ? $userdata->CityOfBirth : '',
 				'active_employee' => $userdata->ActiveEmployee != null ? $userdata->ActiveEmployee : 0,
 				'student' => $userdata->Student != null ? $userdata->Student : 0,
@@ -451,77 +454,34 @@ QUERY;
 
 
 
-	public function actionTest() {
-		echo "::actionTest()\nLOGPATH: ". LOGPATH . "\n";
-//		Yii::log('actionTest...', CLogger::LEVEL_INFO, 'mobgen-script');
-		Yii::info('actionTest...');
-		echo "did we log?\n";
-		echo '::getCommandPath(): ' . _app()->getCommandPath() . "\n";
-		echo 'basePath: ' . _app()->getBasePath() . "\n";
-		echo 'baseUrl: ' . _app()->getBaseUrl() . "\n";
-//    	echo 'request: '. _app()->getRequest() ."\n";
-		echo 'getRuntimePath(): ' . _app()->getRuntimePath() . "\n";
-		echo 'getRuntimePath(): ' . _app()->getRuntimePath() . "\n";
-	}
+	public function actionTest()
+	{
+		$neo4j = new Client();
+		$neo4j->getTransport()->setAuth('neo4j','none');
 
-	public function actionDebug() {
-		User::sendBadges();
-	}
+		$queryTemplate = "MATCH (n:OrgUnit) RETURN n ORDER BY n.sort_order";
 
-	public function actionTestPush() {
-		echo "::actionTestPush()\n";
+		$cypher = new Query($neo4j, $queryTemplate);
+		$results = $cypher->getResultSet();
+//		$results = $neo4j->executeCypherQuery($cypher);
 
-		$pm = Yii::app()->mgpushmanager;
-		$queueId = $pm->createQueue('com.mobgen.nibeapi');
-		/*
-		  //		$queueId = $pm->createQueue('com.mobgen.shellinno', 'main');
-		  //		$queueId = $pm->createQueue('com.mobgen.shellinno', 'background');
-		  //		$queueId = $pm->createQueue('com.mobgen.shellinno');
-		  $tokenId = $pm->registerToken('com.mobgen.nibeapi', '7141AF4B678461449DBEF98DB9FE55B845CD19BB3891FC5BE5E1FE55E88536AB');
-		  //		$tokenId = $pm->registerToken('com.mobgen.shellinno', 'tst12345',
-		  //							array('type'=>'android', 'device'=>'LG One', 'deviceos'=>'android') );
-		  //		$tokenId = $pm->registerToken('com.mobgen.shellinno', 'APA91bGWikrEjd5moVXcv9NDY6bS60KV1mDGP-f1RlK0T699u-wUaEhsKFKom6Wu4HCBzS9b5JqaNGmFDlc0z09zSLEB7fSUa2rdx9LRW_OwopL0I1gif2RvdqINSjfFvGwVECpa_HCjY5Fr9nOZzgzrtBlDpvU3mg',
-		  //							array('type'=>'android', 'device'=>'GT-I9000', 'deviceos'=>'Android-2.3.6') );
-		  //		$tokenId = $pm->registerToken('com.mobgen.shellinno', 'APA91bESKRAmmFR_E0AQkiniobtXcBFvV6niTESRZYuVuvo-uLc8y5xKSF-yNZh5_2Pmen5TuyShNJuyMjozeIaPAeEnL4b9UZFm7lM9S8PnsWyfWM3tfDrtoeAq0D4-umtfxUrRIj1GViJ7MwA-kJ2VymNvDGBM5A',
-		  //							array('type'=>'android', 'device'=>'GT-I9000', 'deviceos'=>'Android-2.3.6') );
+		$nodes = [];
+		foreach ($results as $row) {
 
-		  $messageId = $pm->getActiveMessage($queueId);
-		  if (!$messageId) {
-		  $messageId = $pm->createMessage('This is a yii MgPushManager test push message.');
-		  echo "Created new message with id $messageId\n";
-		  }
-
-		  $pm->pushToQueue($queueId, $tokenId, $messageId);
-		 */
-		$pm->prepareQueue($queueId);
-
-//		$pm->processQueue($queueId);
-//		$pm->processQueues('com.mobgen.shellinno', 'main');
-//		$pm->processQueues('com.mobgen.shellinno');
-//		echo "queueId: $queueId\n";
-	}
-
-	public function actionTestPush2() {
-		echo "::actionTestPush2()\n";
-
-		$pm = Yii::app()->mgpushmanager;
-		$queueId = $pm->createQueue('com.mobgen.nibeapi');
-
-		if ($tk = $pm->getTokenByRefId(117)) {
-			echo "tokenId: $tk->ptkId [$tk->ptkToken]\n";
+			$nodes[] = array(
+				'org_unit_code' => $row['n']->org_unit_code,
+				'org_unit_name' => $row['n']->org_unit_name,
+				'sort_order' => $row['n']->sort_order,
+				'parent_org_unit_code' => $row['n']->parent_org_unit_code,
+				'manager_of_org_unit_person_code' => $row['n']->manager_of_org_unit_person_code,
+				'effective_from' => $row['n']->effective_from,
+				'effective_to' => $row['n']->effective_to,
+			);
 		}
 
-		$messageId = $pm->getCustomBadgeMessage();
-		$pm->pushToQueue($queueId, $tk->ptkId, $messageId, 124, MgPush::MGPUSH_STATUS_PREPARED);
+		echo "nodes: ". var_export($nodes,true) ."\n";
+		return 0;
 	}
 
-	public function actionProcessQueues($bundleId, $tag = null) {
-		$pm = Yii::app()->mgpushmanager;
-		$pm->processQueues($bundleId, $tag);
-		$error =  $pm->getLastError();
-		if (strlen($error) > 0) {
-			echo 'last errors: '. $error ."\n";
-		}
-	}
 }
 
