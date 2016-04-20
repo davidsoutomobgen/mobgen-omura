@@ -103,7 +103,7 @@ class WhoiswhoController extends Controller
 //				'effective_from' =>  $row['n']->effective_from,
 				'company_name' =>   $row['n']->company_name,
 				'location_name' =>   $row['n']->location_name,
-//				'deployment_effective_from' =>   $row['n']->deployment_effective_from,
+				'deployment_effective_from' =>   $row['n']->deployment_effective_from,
 				'last_modified_date' =>   $row['n']->last_modified_date,
 				'work_number' =>   $row['n']->work_number,
 				'mobile_number' =>   $row['n']->mobile_number,
