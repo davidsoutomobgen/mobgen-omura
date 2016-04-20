@@ -108,8 +108,9 @@ class WhoiswhoController extends Controller
 				'work_number' =>   $row['n']->work_number,
 				'mobile_number' =>   $row['n']->mobile_number,
 				'internal_email' =>   $row['n']->internal_email,
-				'skype_name' =>   $row['n']->skype_name,
-				'messenger' =>   $row['n']->messenger,
+				'skype_name' =>  $row['n']->skype_name,
+				'messenger' =>  $row['n']->messenger,
+				'image_filename' => isset($row['n']->image_filename) ? $row['n']->image_filename : '',
             );
         }
 
