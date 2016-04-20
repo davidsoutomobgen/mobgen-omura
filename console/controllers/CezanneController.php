@@ -350,6 +350,8 @@ QUERY;
 				'nationality' => $userdata->Nationality != null ? $userdata->Nationality : '',
 				'primary_language' => $userdata->PrimaryLanguage != null ? $userdata->PrimaryLanguage : '',
 //				'position_code' => $usersearchdata->PositionCode != null ? $usersearchdata->PositionCode : '',
+				'company_name' => $usersearchdata->CompanyName_Search != null ? $usersearchdata->CompanyName_Search : '',
+				'location_name' => $usersearchdata->LocationName_Search != null ? $usersearchdata->LocationName_Search : '',
 				'position_title' => $usersearchdata->PositionTitle_Search != null ? $usersearchdata->PositionTitle_Search : '',
 				'manager_of_unit' => $usersearchdata->IsManagerOfUnit_Search != null ? $usersearchdata->IsManagerOfUnit_Search : 0,
 //				'number_of_subordinates' => $usersearchdata->NumberOfSubordinates != null ? $usersearchdata->NumberOfSubordinates : 0,
