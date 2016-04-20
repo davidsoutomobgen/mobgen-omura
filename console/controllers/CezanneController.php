@@ -268,26 +268,43 @@ QUERY;
 		}
 
 		/*
-		 * Get the organization unit data
+		 * Get the employee search data
 		 */
 //		$url = $apibaseurl . "People('$this->userid')/PeopleToOrgUnitPositionDeploymentCurrentPrimary";
-		$url = $apibaseurl . "People('$this->userid')/PeopleToOrgUnitPositionDeploymentsAll";
+//		$url = $apibaseurl . "People('$this->userid')/PeopleToOrgUnitPositionDeploymentsAll";
+		$url = $apibaseurl . "ActiveEmployeesSearch('$this->userid')";
 		$curlinfo = $this->curlRequest($url, $headers);
 		if ($curlinfo['http_code'] != 200) {
 			echo "Did not get a 200 return code, skipping remaining import.\n";
 			echo "http: ". var_export($curlinfo,true) ."\n";
 			return 1;
 		}
-		$userorgarray = json_decode($curlinfo['response']);
-//		echo "userorgdata: ". var_export($userorgarray->value,true) ."\n";
-		if (!isset($userorgarray->value[0]->OrgUnitCode)) {
+		$usersearcharray = json_decode($curlinfo['response']);
+//		echo "userorgdata: ". var_export($usersearcharray->value,true) ."\n";
+//		if (!isset($usersearcharray->value[0]->OrgUnitCode)) {
+		if (!isset($usersearcharray->OrgUnitCode_Search)) {
 			echo "No organisation data available for user\n";
 			return 1;
 		}
-		$userorgdata = $userorgarray->value[0];
-		echo "OrgName: ". $userorgdata->OrgUnitName ."\n";
-//		echo "userorgdata: ". var_export($userorgdata,true) ."\n";
+//		$usersearchdata = $usersearcharray->value[0];
+		$usersearchdata = $usersearcharray;
+		echo "OrgName: ". $usersearchdata->OrgUnitName_Search ."\n";
+//		echo "userorgdata: ". var_export($usersearchdata,true) ."\n";
 
+
+		/*
+		 * Get the communication data
+		 */
+		$url = $apibaseurl . "Communications('$this->userid')";
+		$curlinfo = $this->curlRequest($url, $headers);
+		if ($curlinfo['http_code'] != 200) {
+			echo "Did not get a 200 return code, skipping remaining import.\n";
+			echo "http: ". var_export($curlinfo,true) ."\n";
+			return 1;
+		}
+//		echo "curlResponse: {$curlinfo['response']}\n";
+		$communicationdata = json_decode($curlinfo['response']);
+		echo "InternalEmail: ". $communicationdata->InternalEmail ."\n";
 
 		/*
 		 * Set up the neo4j connection
@@ -320,23 +337,31 @@ QUERY;
 				'full_name' => $userdata->FullName != null ? $userdata->FullName : '',
 				'first_name' => $userdata->FirstName != null ? $userdata->FirstName : '',
 				'family_name' => $userdata->FamilyName != null ? $userdata->FamilyName : '',
+				'family_name_prefix' => $userdata->FamilyNamePrefix != null ? $userdata->FamilyNamePrefix : '',
 				'middle_name' => $userdata->MiddleName != null ? $userdata->MiddleName : '',
 				'known_as' => $userdata->KnownAs != null ? $userdata->KnownAs : '',
 				'gender' => $userdata->Gender != null ? $userdata->Gender : '',
 				'date_of_birth' => $userdata->DateOfBirth != null ? $userdata->DateOfBirth : '',
 				'country_of_birth' => $userdata->CountryOfBirth != null ? $userdata->CountryOfBirth : '',
 				'city_of_birth' => $userdata->CityOfBirth != null ? $userdata->CityOfBirth : '',
+				'country_of_residence' => $userdata->CountryOfResidence != null ? $userdata->CountryOfResidence : '',
 				'active_employee' => $userdata->ActiveEmployee != null ? $userdata->ActiveEmployee : 0,
 				'student' => $userdata->Student != null ? $userdata->Student : 0,
 				'nationality' => $userdata->Nationality != null ? $userdata->Nationality : '',
 				'primary_language' => $userdata->PrimaryLanguage != null ? $userdata->PrimaryLanguage : '',
-				'position_code' => $userorgdata->PositionCode != null ? $userorgdata->PositionCode : '',
-				'position_title' => $userorgdata->PositionTitle != null ? $userorgdata->PositionTitle : '',
-				'manager_of_unit' => $userorgdata->ManagerOfUnit != null ? $userorgdata->ManagerOfUnit : 0,
-				'number_of_subordinates' => $userorgdata->NumberOfSubordinates != null ? $userorgdata->NumberOfSubordinates : 0,
-				'org_unit_code' => $userorgdata->OrgUnitCode != null ? $userorgdata->OrgUnitCode : '',
-				'org_unit_name' => $userorgdata->OrgUnitName != null ? $userorgdata->OrgUnitName : '',
-				'effective_from' => $userorgdata->EffectiveFrom != null ? $userorgdata->EffectiveFrom : '0000-00-00T00:00:00',
+//				'position_code' => $usersearchdata->PositionCode != null ? $usersearchdata->PositionCode : '',
+				'position_title' => $usersearchdata->PositionTitle_Search != null ? $usersearchdata->PositionTitle_Search : '',
+				'manager_of_unit' => $usersearchdata->IsManagerOfUnit_Search != null ? $usersearchdata->IsManagerOfUnit_Search : 0,
+//				'number_of_subordinates' => $usersearchdata->NumberOfSubordinates != null ? $usersearchdata->NumberOfSubordinates : 0,
+				'org_unit_code' => $usersearchdata->OrgUnitCode_Search != null ? $usersearchdata->OrgUnitCode_Search : '',
+				'org_unit_name' => $usersearchdata->OrgUnitName_Search != null ? $usersearchdata->OrgUnitName_Search : '',
+				'deployment_effective_from' => $usersearchdata->DeploymentEffectiveFrom_Search != null ? $usersearchdata->DeploymentEffectiveFrom_Search : '0000-00-00T00:00:00',
+				'last_modified_date' => $userdata->LastModifiedDate != null ? $userdata->LastModifiedDate : '0000-00-00T00:00:00',
+				'work_number' => $communicationdata->WorkNumber != null ? $communicationdata->WorkNumber : '',
+				'mobile_number' => $communicationdata->MobileNumber != null ? $communicationdata->MobileNumber : '',
+				'internal_email' => $communicationdata->InternalEmail != null ? $communicationdata->InternalEmail : '',
+				'skype_name' => $communicationdata->SkypeName != null ? $communicationdata->SkypeName : '',
+				'messenger' => $communicationdata->Messenger != null ? $communicationdata->Messenger : '',
 				);
 
 //			$queryTemplate = "CREATE (user:User { props })";
@@ -361,17 +386,18 @@ QUERY;
 		 * Now create the relations
 		 */
 		// We only need to create a relationship if there is one of course
-		if ($userorgdata->OrgUnitCode != null) {
-			if ($userorgdata->ManagerOfUnit == 1) {
-				echo "Manager of: " . $userorgdata->OrgUnitCode . "\n";
+		if ($usersearchdata->OrgUnitCode_Search != null) {
+//			if ($userdata->ManagerOfUnit == 1) {
+			if ($usersearchdata->IsManagerOfUnit_Search == 1) {
+				echo "Manager of: " . $usersearchdata->OrgUnitCode_Search . "\n";
 				$queryTemplate = "MATCH (user:User { person_code: {userid} }),(org:OrgUnit { org_unit_code: {orgunitid} }) " .
 					"MERGE (user)-[r:MANAGER_OF]->(org)";
 			} else {
-				echo "Works in: " . $userorgdata->OrgUnitCode . "\n";
+				echo "Works in: " . $usersearchdata->OrgUnitCode_Search . "\n";
 				$queryTemplate = "MATCH (user:User { person_code: {userid} }),(org:OrgUnit { org_unit_code: {orgunitid} }) " .
 					"MERGE (user)-[r:WORKS_IN]->(org)";
 			}
-			$cypher = new Query($neo4j, $queryTemplate, array('userid'=> $userdata->PersonCode, 'orgunitid' => $userorgdata->OrgUnitCode));
+			$cypher = new Query($neo4j, $queryTemplate, array('userid'=> $userdata->PersonCode, 'orgunitid' => $usersearchdata->OrgUnitCode_Search));
 			$results = $neo4j->executeCypherQuery($cypher);
 		}
 
