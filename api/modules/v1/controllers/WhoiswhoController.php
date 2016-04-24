@@ -8,6 +8,7 @@ use Yii;
 //use backend\models\OtaProjectsBuildtypes;
 //use common\models\User;
 //use common\models\LoginForm;
+use yii\filters\auth\HttpBasicAuth;
 
 use yii\rest\Controller;
 //use yii\rest\ActiveController;
@@ -30,6 +31,31 @@ class WhoiswhoController extends Controller
 //    public $modelClass = 'api\modules\v1\models\Builds';
 //    public $prepareDataProvider;
 
+/*	public function init()
+	{
+		parent::init();
+		Yii::$app->user->enableSession = false;
+	}
+*/
+/*	public function behaviors()
+	{
+		$behaviors = parent::behaviors();
+		$behaviors['authenticator'] = [
+			'class' => HttpBasicAuth::className(),
+		];
+		return $behaviors;
+	}
+	public function authenticate ( $user, $request, $response )
+	{
+		return null;
+	}
+
+	public function findIdentityByAccessToken()
+	{
+
+	}
+*/
+
 	//With this behavior only show json format
 	public function behaviors()
 	{
@@ -43,6 +69,11 @@ class WhoiswhoController extends Controller
 					'application/json' => Response::FORMAT_JSON,
 				],
 			],
+            // @SAS: If I enable this a basic http authentication is presented.
+            //  I think we need to create our own auth class (or derive) to handle a api token passed in the http header
+//			'authenticator' => [
+//				'class' => HttpBasicAuth::className(),
+//			],
 		]);
 	}
 
