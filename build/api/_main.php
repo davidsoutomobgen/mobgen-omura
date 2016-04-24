@@ -19,15 +19,28 @@ return [
     ],
     'components' => [
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'api\modules\v1\models\ApiUser',
             'enableAutoLogin' => false,
+            'enableSession' => false,
+            'loginUrl' => null,
         ],
         'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
+//            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'traceLevel' => 0,
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning', 'info'],
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['api'],
+                    'except' => ['yii\web\HttpException'],
+                    'logFile' => '@app/runtime/logs/api.log',
+                    'logVars' => [],    // To get rid of the _SERVER info in the log
+//                  'maxFileSize' => 1024 * 2,
+//                  'maxLogFiles' => 20,
                 ],
             ],
         ],
@@ -59,7 +72,7 @@ return [
                         'POST registernewbuild/{projectid}/{apikey2}/{apikeybuild}' => 'registernewbuild',
                         'GET test' => 'test',
                     ],
-                ]
+                ],
             ],
         ],
         'request' => [

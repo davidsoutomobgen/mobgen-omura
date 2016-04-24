@@ -108,6 +108,32 @@ QUERY;
 		return $curlinfo;
 	}
 
+    public function actionCreateLocations()
+    {
+        echo "actionCreateLocations()\n";
+
+        $alocations = [
+            ['location_code' => 'KK', 'name' => 'Unknown', 'country' => 'Unknown', 'city' => 'Unknown', 'subnet' => '0.0.0.0', 'subnet_mask' => '255.255.255.255'],
+            ['location_code' => 'AMS', 'name' => 'Amsterdam', 'country' => 'The Netherlands', 'city' => 'Amsterdam', 'subnet' => '192.168.0.0', 'subnet_mask' => '255.255.240.0'],
+            ['location_code' => 'COR', 'name' => 'La Coruna', 'country' => 'Spain', 'city' => 'La Coruna', 'subnet' => '192.168.16.0', 'subnet_mask' => '255.255.240.0'],
+            ['location_code' => 'MAL', 'name' => 'Malaga', 'country' => 'Spain', 'city' => 'Malaga', 'subnet' => '0.0.0.0', 'subnet_mask' => '255.255.255.255'],
+            ['location_code' => 'LON', 'name' => 'London', 'country' => 'United Kingdom', 'city' => 'London', 'subnet' => '0.0.0.0', 'subnet_mask' => '255.255.255.255'],
+        ];
+
+        $neo4j = new Client();
+        $neo4j->getTransport()->setAuth('neo4j','none');
+
+        foreach ($alocations as $loc) {
+            echo "Create Location for {$loc['name']}\n";
+
+            $queryTemplate = "MERGE (location:Location { location_code: {loccode} }) " .
+                "ON MATCH SET location = {props} ";
+                "ON CREATE SET location = {props}";
+            $cypher = new Query($neo4j, $queryTemplate, array('loccode'=> $loc['location_code'], 'props' => $loc));
+            $results = $neo4j->executeCypherQuery($cypher);
+        }
+    }
+
 	public function actionImportDepartments()
 	{
 		echo "actionImportDepartments()\n";
