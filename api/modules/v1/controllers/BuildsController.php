@@ -88,7 +88,7 @@ class BuildsController extends ActiveController
                         foreach ($build_types as $types) {
                             $btypes[$types->id] = $types->idOtaBuildtypes->name;
                         }
-                        //echo '<pre>';print_r($btypes);echo'</pre>'; die;
+                        //echo '<pre>';print_r($temp);echo'</pre>'; die;
         
                         if (!empty($project)  ) {
                             $build = new Builds();
@@ -107,10 +107,10 @@ class BuildsController extends ActiveController
                                         $device_os = 0; // iOS
                                         $cerIdFK = 1;
                                     } elseif ($extension == "apk") {
-                                        $device_os = 1; // Android
                                         $cerIdFK = 0;
                                     }
                                     // Check extension
+                                        $device_os = 1; // Android
                                     if (isset($device_os)) {
                                         //print_r($post->attributes);die;
                                         $safe = Builds::_GenerateSafeFileName($_REQUEST['buiName']);
@@ -249,8 +249,9 @@ class BuildsController extends ActiveController
                                             echo "Build ADDED.\n"; 
 
                                             if ($buiSendEmail) {
-                                                if (($post->fld_email_list)) {       
-                                                    $to = $post->fld_email_list;
+
+                                                if (!empty($temp['Builds']['fld_email_list'])) {       
+                                                    $to = $temp['Builds']['fld_email_list'];
                                                 }
                                                 else {
                                                     $to = $project->default_notify_email;        
