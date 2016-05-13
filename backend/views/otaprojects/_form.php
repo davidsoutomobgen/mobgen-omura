@@ -47,7 +47,11 @@ use backend\models\OtaBuildTypes;
     ])->textInput()->hint('<p><small>Old version , only for check if the new version is correct.</small></p>')->label('PrBuildTypes') ?>
 
 
-    <div class="form-group field-proBuildTypes required">
+    <?php
+    if ($value == -1) $error_class = 'has-error';
+    else $error_class = '';
+    ?>
+    <div class="form-group field-proBuildTypes required <?php echo $error_class;?> ">
         <label class="control-label" for="proBuildTypes">Pro Build Types</label>
         <div class="hint-block"><p class=""><small><?=Yii::t('app', 'You can add new build types automatically');?></small></p></div>
         <?php
@@ -63,6 +67,9 @@ use backend\models\OtaBuildTypes;
             ],
         ]);
         ?>
+        <?php if ($value == -1) { ?>
+            <div class="help-block">BuildTypes cannot be blank.</div>
+        <?php } ?>
     </div>
 
     <?= $form->field($model, 'default_notify_email')->textInput(['maxlength' => true]) ?>
