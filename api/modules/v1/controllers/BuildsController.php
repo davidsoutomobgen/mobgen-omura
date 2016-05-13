@@ -259,6 +259,7 @@ class BuildsController extends ActiveController
                                                 $domain =  Yii::$app->params["FRONTEND"]; 
                                                 $template = Yii::$app->params["TEMPLATES"]; 
                                       
+                                                $user = User::findByUsername($model->username);  
                                                 Builds::_SendMail($to, $template, $domain, $project, $build, $user->id);
                                                 echo "Emails send to: $to \n";
                                             }
