@@ -97,7 +97,7 @@ class BuildsController extends ActiveController
                             $post = new Builds();
                             $post->load($temp);
 
-                            //echo '<pre>';print_r($post->buiName);echo'</pre>';die;
+                            //echo '<pre>';print_r($post);echo'</pre>';die;
                             if (isset($post->buiFeedUrl1)) $post->buiFeedUrl1 = urldecode($post['buiFeedUrl1']);
 
                             if (!empty($post->buiName)) {
@@ -128,12 +128,13 @@ class BuildsController extends ActiveController
                                         die;
                                     }
 
-                                    if(isset($post['api_build_hash'])) {
+                                    if(isset($post->buiHash)) {
                                         // Add to database
-                                        $build = Builds::find()->where('buiHash = :api_build_hash',  [':api_build_hash' =>  $post->api_build_hash])->one();
+                                        $build = Builds::find()->where('buiHash = :api_build_hash',  [':api_build_hash' =>  $post->buiHash])->one();
 
                                         if (!isset($build)) {
                                             $error = "Build Hash not exists.\n";
+                                            echo $error;
                                             die;
                                         } else {
                                             $build->load($temp);
@@ -199,7 +200,10 @@ class BuildsController extends ActiveController
                                         $build->buiLimitedUDID = 0;
                                         $identifier = "";
                                         if ($extension == "ipa") {
-                                            
+                                                      
+                                            $build->buiType = 0; // iOS
+                                            $build->buiCerIdFK = 1;
+
                                             $udids = Builds::_getUDIDs($path_file);
                                             if (count($udids) > 0) {
                                                 $bui->buiLimitedUDID = 1;
@@ -229,8 +233,10 @@ class BuildsController extends ActiveController
                                             $identifier = Builds::_getIdentifier($path_file);
 
                                         } elseif ($extension == "apk") {
-                                                $identifier = Builds::_getPackage($path_file);
-                                                $build->buiId = $id;
+                                            $identifier = Builds::_getPackage($path_file);
+                                            $build->buiId = $id;
+                                            $build->buiType = 1; // Android
+                                            $build->buiCerIdFK = 0;
                                         }
 
                                         $build->buiFile = $filename;
@@ -279,7 +285,9 @@ class BuildsController extends ActiveController
                                         echo "Error uploading file.\n";
                                     }
                                 }
+                                else echo "Error FILES['error'] = ".$_FILES['buiFile']['error'];
                             }
+                            else echo "Error: buiName is empty";
                         }
                         else
                         {   

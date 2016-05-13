@@ -117,37 +117,48 @@ class OtaprojectsController extends Controller
             $model->proHash = $this->_GenerateHash();
             $model->proAPIKey = $this->_GenerateHash();
             $model->proAPIBuildKey = $this->_GenerateSecureApiHash($model->name);
-
-            if ($model->save()) {
-                $post = Yii::$app->request->post();
-                if (isset($post['proBuildType'])) {
-                    foreach ($post['proBuildType'] as $tt){
-                        if (empty(intval($tt))) {                           
-                            $exist = OtaBuildTypes::find()->where('name LIKE :name')->addParams([':name'=>$tt])->one();
-                            if (isset($exist)) {
-                                $tt = $exist->id;
-                            } else {
-                                $buildtypes = new OtaBuildTypes;
-                                $buildtypes->name = $tt;
-                                $buildtypes->save();                            
-                                $tt = $buildtypes->id;
+            $post = Yii::$app->request->post();
+            if (isset($post['proBuildType'])) {
+                if ($model->save()) {
+                    if (isset($post['proBuildType'])) {
+                        foreach ($post['proBuildType'] as $tt){
+                            if (empty(intval($tt))) {                           
+                                $exist = OtaBuildTypes::find()->where('name LIKE :name')->addParams([':name'=>$tt])->one();
+                                if (isset($exist)) {
+                                    $tt = $exist->id;
+                                } else {
+                                    $buildtypes = new OtaBuildTypes;
+                                    $buildtypes->name = $tt;
+                                    $buildtypes->save();                            
+                                    $tt = $buildtypes->id;
+                                }
                             }
+
+                            $aux = new OtaProjectsBuildtypes();
+                            $aux->id_ota_project = $model->id;
+                            $aux->id_ota_buildtypes = $tt;
+                            $aux->save();
                         }
-
-                        $aux = new OtaProjectsBuildtypes();
-                        $aux->id_ota_project = $model->id;
-                        $aux->id_ota_buildtypes = $tt;
-                        $aux->save();
                     }
-                }
-                return $this->redirect(['view', 'id' => $model->id]);
+                    return $this->redirect(['view', 'id' => $model->id]);
 
-            } else {
+                } else {
+                    return $this->render('create', [
+                        'model' => $model,
+                        'select_buildtype' => $selected,
+                        'value' => $value,
+                        'ota_buildtypes' => $data,
+                    ]);
+                }
+            }
+            else {
+                //print_r($post['proBuildType']);die;
+                $value = -1;
                 return $this->render('create', [
                     'model' => $model,
                     'select_buildtype' => $selected,
                     'value' => $value,
-                    'ota_buildtypes' => $data,
+                    'ota_buildtypes' => $data,                    
                 ]);
             }
             
