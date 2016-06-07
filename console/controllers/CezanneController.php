@@ -293,6 +293,28 @@ QUERY;
 			return 0;
 		}
 
+
+		/*
+		 * Fetch the bio and login name from the comments field in the users personal data.
+		 */
+		$usr_login = '';
+		$usr_bio = '';
+		if(isset($userdata->Comments)) {
+			$regex = '#<\s*?login\b[^>]*>(.*?)</login\b[^>]*>#s';
+			if (preg_match($regex, (string)$userdata->Comments, $matches))
+				$usr_login = $matches[1];
+
+			$regex = '#<\s*?bio\b[^>]*>(.*?)</bio\b[^>]*>#s';
+			if (preg_match($regex, (string)$userdata->Comments, $matches))
+				$usr_bio = $matches[1];
+//			echo "regex result: " . var_export($matches, true) . "\n";
+		}
+//		echo "usr_login: $usr_login - usr_bio: $usr_bio\n";
+//		return 0;
+		if (empty($usr_login) || empty($usr_bio)) {
+			echo "Warning! - missing login or bio data from this user!\n";
+		}
+
 		/*
 		 * Get the employee search data
 		 */
@@ -331,6 +353,7 @@ QUERY;
 //		echo "curlResponse: {$curlinfo['response']}\n";
 		$communicationdata = json_decode($curlinfo['response']);
 		echo "InternalEmail: ". $communicationdata->InternalEmail ."\n";
+
 
 		/*
 		 * Set up the neo4j connection
@@ -390,11 +413,14 @@ QUERY;
 				'internal_email' => $communicationdata->InternalEmail != null ? $communicationdata->InternalEmail : '',
 				'skype_name' => $communicationdata->SkypeName != null ? $communicationdata->SkypeName : '',
 				'messenger' => $communicationdata->Messenger != null ? $communicationdata->Messenger : '',
-				);
+				'network_name' => $usr_login,
+				'bio' => $usr_bio,
+			);
 
 //			$queryTemplate = "CREATE (user:User { props })";
 			$queryTemplate = "MERGE (user:User { person_code: {userid} }) ".
-								"ON CREATE SET user = {props}";
+								"ON CREATE SET user = {props} ".
+								"ON MATCH SET user = {props}";
 			$cypher = new Query($neo4j, $queryTemplate, array('userid'=> $userdata->PersonCode, 'props' => $props));
 			$results = $neo4j->executeCypherQuery($cypher);
 

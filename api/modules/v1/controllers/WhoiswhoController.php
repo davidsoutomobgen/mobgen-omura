@@ -23,7 +23,7 @@ use Everyman\Neo4j\Cypher\Query;
 /**
  * Builds Controller API
  *
- * @author Sascha Främbs <sascha@mobgen.com>
+ * @author Sascha Frï¿½mbs <sascha@mobgen.com>
  */
 //class WhoiswhoController extends ActiveController
 class WhoiswhoController extends Controller
@@ -83,11 +83,35 @@ class WhoiswhoController extends Controller
             'api_name' => 'whoiswho',
             'api_version' => '1.0.0',
             'api_owner' => 'Mobgen BV',
-            'api_copyright' => '&copy; Copyright 2016 by Mobgen BV',    // ©
+            'api_copyright' => '&copy; Copyright 2016 by Mobgen BV',    // ï¿½
             'owner_website' => 'http://www.mobgen.com',
         ));
 		return $items;
 	}
+
+    public function actionLocations()
+    {
+        /*
+         * Set up the neo4j connection
+         */
+        $neo4j = new Client();
+        $neo4j->getTransport()->setAuth('neo4j','none');
+
+        $queryTemplate = "MATCH (n:Location) RETURN n ORDER BY n.name";
+        $cypher = new Query($neo4j, $queryTemplate);
+        $results = $cypher->getResultSet();
+        $ncnt = count($results);
+
+        $nodes = array('dataset' => 'locations', 'count' => $ncnt, 'status' => 'ok', 'data' => array());
+        foreach ($results as $row) {
+            $nodes['data'][] = array(
+                'person_code' =>  $row['n']->person_code,
+                'image_filename' => isset($row['n']->image_filename) ? $row['n']->image_filename : '',
+            );
+        }
+
+        return $nodes;
+    }
 
 	public function actionPersons()
 	{
@@ -121,27 +145,27 @@ class WhoiswhoController extends Controller
 				'country_of_birth' =>  $row['n']->country_of_birth,
 				'city_of_birth' =>  $row['n']->city_of_birth,
 				'country_of_residence' =>  $row['n']->country_of_residence,
-				'active_employee' =>  $row['n']->active_employee,
-				'student' =>  $row['n']->student,
-				'nationality' =>  $row['n']->nationality,
-				'primary_language' =>  $row['n']->primary_language,
-//				'position_code' =>  $row['n']->position_code,
-				'position_title' =>  $row['n']->position_title,
-				'manager_of_unit' =>  $row['n']->manager_of_unit,
-//				'number_of_subordinates' =>  $row['n']->number_of_subordinates,
-				'org_unit_code' =>  $row['n']->org_unit_code,
-				'org_unit_name' =>  $row['n']->org_unit_name,
-//				'effective_from' =>  $row['n']->effective_from,
-				'company_name' =>   $row['n']->company_name,
-				'location_name' =>   $row['n']->location_name,
-				'deployment_effective_from' =>   $row['n']->deployment_effective_from,
-				'last_modified_date' =>   $row['n']->last_modified_date,
-				'work_number' =>   $row['n']->work_number,
-				'mobile_number' =>   $row['n']->mobile_number,
-				'internal_email' =>   $row['n']->internal_email,
-				'skype_name' =>  $row['n']->skype_name,
-				'messenger' =>  $row['n']->messenger,
-				'public_bio' =>  'Morbi in ligula ac erat maximus ultrices. Nullam auctor a erat vitae accumsan. Praesent ultrices semper sem non gravida. Etiam rhoncus facilisis libero, id suscipit nisl luctus sit amet. Maecenas pharetra congue ex a commodo. Vivamus at posuere urna. Duis est mauris, pulvinar ac quam vel, vestibulum scelerisque nisl. Ut cursus fermentum metus eget mollis. Morbi a dui at magna sagittis ultricies nec in massa. Etiam et est auctor, molestie ipsum ut, eleifend odio. Praesent vel molestie nulla. Donec porttitor, ipsum in sodales convallis, massa lectus dictum neque, vestibulum posuere nisi velit vitae tellus. Cras vitae facilisis eros, rutrum mollis libero. Integer non felis ligula.Morbi in ligula ac erat maximus ultrices. Nullam auctor a erat vitae accumsan. Praesent ultrices semper sem non gravida. Etiam rhoncus facilisis libero, id suscipit nisl luctus sit amet. Maecenas pharetra congue ex a commodo. Vivamu',
+				'active_employee' => $row['n']->active_employee,
+				'student' => $row['n']->student,
+				'nationality' => $row['n']->nationality,
+				'primary_language' => $row['n']->primary_language,
+//				'position_code' => $row['n']->position_code,
+				'position_title' => $row['n']->position_title,
+				'manager_of_unit' => $row['n']->manager_of_unit,
+//				'number_of_subordinates' => $row['n']->number_of_subordinates,
+				'org_unit_code' => $row['n']->org_unit_code,
+				'org_unit_name' => $row['n']->org_unit_name,
+//				'effective_from' => $row['n']->effective_from,
+				'company_name' => $row['n']->company_name,
+				'location_name' => $row['n']->location_name,
+				'deployment_effective_from' => $row['n']->deployment_effective_from,
+				'last_modified_date' => $row['n']->last_modified_date,
+				'work_number' => $row['n']->work_number,
+				'mobile_number' => $row['n']->mobile_number,
+				'internal_email' => $row['n']->internal_email,
+				'skype_name' => $row['n']->skype_name,
+				'messenger' => $row['n']->messenger,
+				'public_bio' => isset($row['n']->bio) ? $row['n']->bio : 'PLEASE ADD A BIO!! - Morbi in ligula ac erat maximus ultrices. Nullam auctor a erat vitae accumsan. Praesent ultrices semper sem non gravida. Etiam rhoncus facilisis libero, id suscipit nisl luctus sit amet. Maecenas pharetra congue ex a commodo. Vivamus at posuere urna. Duis est mauris, pulvinar ac quam vel, vestibulum scelerisque nisl. Ut cursus fermentum metus eget mollis. Morbi a dui at magna sagittis ultricies nec in massa. Etiam et est auctor, molestie ipsum ut, eleifend odio. Praesent vel molestie nulla. Donec porttitor, ipsum in sodales convallis, massa lectus dictum neque, vestibulum posuere nisi velit vitae tellus. Cras vitae facilisis eros, rutrum mollis libero. Integer non felis ligula.Morbi in ligula ac erat maximus ultrices. Nullam auctor a erat vitae accumsan. Praesent ultrices semper sem non gravida. Etiam rhoncus facilisis libero, id suscipit nisl luctus sit amet. Maecenas pharetra congue ex a commodo. Vivamu',
 				'image_filename' => isset($row['n']->image_filename) ? $row['n']->image_filename : '',
             );
         }

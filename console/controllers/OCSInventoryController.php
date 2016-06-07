@@ -38,6 +38,10 @@ class OcsinventoryController extends Controller
         echo "::actionIndex()\n";
     }
 
+    public function actionBoekenbonImportOnlineShops()
+    {
+
+    }
 
     public function actionTest()
     {
@@ -255,24 +259,31 @@ STREND;
                         /*
                          * Try to match the Location based on IP
                          */
+                        $locid = 'KK';
                         if (strlen($hardware_node->ip_address) >= 8) {
                             $ipval = ip2long($hardware_node->ip_address);
                             foreach ($alocations as $loc) {
                                 $ipmask = ip2long($loc['subnet_mask']);
                                 $ipsub = ip2long($loc['subnet']) & $ipmask;
+
                                 $ipval_sub = $ipval & $ipmask;
-
-//                                printf("ip: %s, %s, %s\n", long2ip($ipval), long2ip($ipsnet), long2ip($ipmask));
-//                                printf("and: %s AND %s = %s\n", long2ip($ipval), long2ip($iprev), long2ip($ipval & $iprev));
-//                                printf("and: %s AND %s = %s\n", long2ip($ipval), long2ip($ipmask), long2ip($ipval & $ipmask));
-
                                 if ($ipval_sub == $ipsub) {
-                                    echo "We have a matching subnet, the IP belongs to the location: {$loc['name']}\n";
+                                    $locid = $loc['location_code'];
                                     break;
                                 }
                             }
                         }
 
+                        /*
+                         * Now create the relations
+                         */
+                        echo "IP maps to the location $locid, creating a relation to it\n";
+                        $queryTemplate = "MATCH (hardware:Hardware),(location:Location { location_code: {locid} }) " .
+                            "WHERE id(hardware)={hardwareid} ".
+                            "MERGE (hardware)-[r:LOCATED_AT]->(location)";
+                        echo "cypher: $queryTemplate\n";
+                        $cypher = new Query($neo4j, $queryTemplate, array('hardwareid'=> $hardware_node->getId(), 'locid' => $hardware_node->$locid));
+                        $results = $neo4j->executeCypherQuery($cypher);
                     }
                 }
 
