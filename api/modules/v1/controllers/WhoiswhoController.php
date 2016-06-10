@@ -167,6 +167,7 @@ class WhoiswhoController extends Controller
 				'messenger' => $row['n']->messenger,
 				'public_bio' => isset($row['n']->bio) ? $row['n']->bio : 'PLEASE ADD A BIO!! - Morbi in ligula ac erat maximus ultrices. Nullam auctor a erat vitae accumsan. Praesent ultrices semper sem non gravida. Etiam rhoncus facilisis libero, id suscipit nisl luctus sit amet. Maecenas pharetra congue ex a commodo. Vivamus at posuere urna. Duis est mauris, pulvinar ac quam vel, vestibulum scelerisque nisl. Ut cursus fermentum metus eget mollis. Morbi a dui at magna sagittis ultricies nec in massa. Etiam et est auctor, molestie ipsum ut, eleifend odio. Praesent vel molestie nulla. Donec porttitor, ipsum in sodales convallis, massa lectus dictum neque, vestibulum posuere nisi velit vitae tellus. Cras vitae facilisis eros, rutrum mollis libero. Integer non felis ligula.Morbi in ligula ac erat maximus ultrices. Nullam auctor a erat vitae accumsan. Praesent ultrices semper sem non gravida. Etiam rhoncus facilisis libero, id suscipit nisl luctus sit amet. Maecenas pharetra congue ex a commodo. Vivamu',
 				'image_filename' => isset($row['n']->image_filename) ? $row['n']->image_filename : '',
+				'image_update_date' => isset($row['n']->image_update_date) ? $row['n']->image_update_date : '0000-00-00T00:00:00',
             );
         }
 
