@@ -260,9 +260,12 @@ QUERY;
 		$neo4j = new Client();
 		$neo4j->getTransport()->setAuth('neo4j','none');
 
+		$datetime = date("Y-m-d\TH:i:s", time());
+		echo "datetime: $datetime\n";
+
 		$queryTemplate = "MATCH (user:User { person_code: {userid} }) ".
-			"SET user.image_filename = {imagename}";
-		$cypher = new Query($neo4j, $queryTemplate, array('userid'=> $userdata->PersonCode, 'imagename' => $filename));
+			"SET user.image_filename={imagename},user.image_update_date={upddate}";
+		$cypher = new Query($neo4j, $queryTemplate, array('userid'=> $userdata->PersonCode, 'imagename' => $filename, 'upddate' => $datetime));
 		$results = $neo4j->executeCypherQuery($cypher);
 
 	}
