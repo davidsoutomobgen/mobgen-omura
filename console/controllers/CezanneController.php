@@ -201,6 +201,25 @@ QUERY;
 
 	}
 
+	public function actionUpdateAllImageDates()
+	{
+		echo "actionUpdateAllImageDates()\n";
+
+		/*
+		 * Set up the neo4j connection
+		 */
+		$neo4j = new Client();
+		$neo4j->getTransport()->setAuth('neo4j','none');
+
+		$datetime = date("Y-m-d\TH:i:s", time());
+		echo "datetime: $datetime\n";
+
+		$queryTemplate = "MATCH (user:User) WHERE user.image_filename<>'' ".
+			"SET user.image_update_date={upddate}";
+		$cypher = new Query($neo4j, $queryTemplate, array('userid'=> $this->userid, 'upddate' => $datetime));
+		$results = $neo4j->executeCypherQuery($cypher);
+	}
+
 	public function actionUpdateImageDate()
 	{
 		echo "actionUpdateImageDate('$this->userid')\n";
@@ -208,7 +227,6 @@ QUERY;
 		/*
 		 * Set up the neo4j connection
 		 */
-		$limit = 10;
 		$neo4j = new Client();
 		$neo4j->getTransport()->setAuth('neo4j','none');
 
