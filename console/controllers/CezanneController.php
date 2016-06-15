@@ -201,9 +201,29 @@ QUERY;
 
 	}
 
+	public function actionUpdateImageDate()
+	{
+		echo "actionUpdateImageDate('$this->userid')\n";
+
+		/*
+		 * Set up the neo4j connection
+		 */
+		$limit = 10;
+		$neo4j = new Client();
+		$neo4j->getTransport()->setAuth('neo4j','none');
+
+		$datetime = date("Y-m-d\TH:i:s", time());
+		echo "datetime: $datetime\n";
+
+		$queryTemplate = "MATCH (user:User { person_code: {userid} }) ".
+			"SET user.image_update_date={upddate}";
+		$cypher = new Query($neo4j, $queryTemplate, array('userid'=> $this->userid, 'upddate' => $datetime));
+		$results = $neo4j->executeCypherQuery($cypher);
+	}
+
 	public function actionImportImage()
 	{
-		echo "actionImportUser('$this->userid')\n";
+		echo "actionImportImage('$this->userid')\n";
 
 		$headers = Yii::$app->params['cezanne_api']['headers'];
 		$apibaseurl = Yii::$app->params['cezanne_api']['url'];
