@@ -255,7 +255,7 @@ use backend\models\Utils;
         <?php } else { ?>
             <?= Html::submitButton(Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
         <?php } ?>
-        <?= Html::a( Yii::t('app', 'Back'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);?>
+        <?= Html::a( Yii::t('app', 'Back Project'), $url = '/otaprojects/'.$model->buiProIdFK, ['class' => 'btn btn-warning']);?>
     </div>
 
     <?php ActiveForm::end(); ?>

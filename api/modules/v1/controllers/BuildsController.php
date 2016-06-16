@@ -59,6 +59,7 @@ class BuildsController extends ActiveController
      */
     public function actionRegisternewbuild($projectid = 0, $apikey2 = '', $apikeybuild = ''){
 
+         //echo $apikey2.' '.$apikeybuild;die;
         //Start             
         if(isset($projectid))
         {
@@ -128,7 +129,7 @@ class BuildsController extends ActiveController
                                         die;
                                     }
 
-                                    if(isset($post->buiHash)) {
+                                    if(isset($post->buiHash) && !empty($post->buiHash)) {
                                         // Add to database
                                         $build = Builds::find()->where('buiHash = :api_build_hash',  [':api_build_hash' =>  $post->buiHash])->one();
 
@@ -146,6 +147,8 @@ class BuildsController extends ActiveController
                                             $build->buiVisibleClient = $buiVisibleClient;
                                             $build->buiFav = $buiFav;
 
+                                            $build->updated_at = strtotime(date("Y-m-d H:i:s"));
+
                                             if ($build->save()) {
                                                 $id = $build->buiId;
 
@@ -153,7 +156,11 @@ class BuildsController extends ActiveController
                                                 echo "Error updating build\n";
                                                 die;
                                             }
-                                            echo "Build UPDATED Correctly!\n";                                    
+                                            echo "Build UPDATED Correctly!\n";
+
+                                            $project = OtaProjects::find()->where('id = :buiProIdFK',  [':buiProIdFK' =>  $build->buiProIdFK])->one();
+                                            $project->updated_at = $build->updated_at;
+                                            $project->save();
                                         }
                                     }
                                     else{
@@ -161,10 +168,12 @@ class BuildsController extends ActiveController
                                         $build = Builds::find()->where('buiSafename = :buiSafename',  [':buiSafename' =>  $safe])->one();
 
                                         if (isset($build)) {
-                                            echo "Build already exists.\n";
-                                            $id = $build->buiId;
-                                            die;
-                                        } else {
+                                            //echo "Build already exists.\n";
+                                            //$id = $build->buiId;
+                                            //die;
+                                            $safe = $safe.'_'.rand();
+                                        } 
+                                        //else {
 
                                             $build = new Builds();
                                             $build->load($temp);
@@ -181,6 +190,9 @@ class BuildsController extends ActiveController
                                             $user = User::findByUsername($model->username);  
                                             $build->created_by = $user->id;
 
+                                            $build->created_at = strtotime(date("Y-m-d H:i:s"));
+                                            $build->updated_at = strtotime(date("Y-m-d H:i:s"));
+
                                             if ($build->save()) {
                                                 $id = $build->buiId;
                                             } else {
@@ -188,8 +200,12 @@ class BuildsController extends ActiveController
                                                 echo "Error adding build\n";
                                                 die;
                                             }
-                                            echo "Build CREATED correctly!\n";                                    
-                                        }
+                                            echo "Build CREATED correctly!\n";
+
+					    $project = OtaProjects::find()->where('id = :buiProIdFK',  [':buiProIdFK' =>  $build->buiProIdFK])->one();
+                                            $project->updated_at = $build->updated_at;
+					    $project->save();
+                                        //}
                                     }
                                 
                                     //UPLOAD    

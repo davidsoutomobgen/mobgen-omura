@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\User;
 use backend\models\UserSearch;
+use backend\models\SignupForm;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -57,7 +58,8 @@ class UserController extends Controller
      * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
-     */
+     */	
+/*
     public function actionCreate()
     {
         $model = new User();
@@ -70,7 +72,7 @@ class UserController extends Controller
             ]);
         }
     }
-
+*/
     /**
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -84,7 +86,7 @@ class UserController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('update', [
+            return $this->render('signup', [
                 'model' => $model,
             ]);
         }
@@ -129,6 +131,29 @@ class UserController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+        ]);
+    }
+
+    public function actionCreate()
+    {
+        $model = new SignupForm();
+        //$authItems = AuthItem::find()->all();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($user = $model->signup()) {
+                return $this->redirect(['/user']);
+                /*
+                if (Yii::$app->getUser()->login($user)) {
+                    //return $this->goHome();
+                    return $this->redirect(['/dashboard']);
+                }
+                */
+            }
+        }
+
+        return $this->render('signup', [
+            'model' => $model,
+            //'authItems'=> $authItems,
         ]);
     }
 }

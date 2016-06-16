@@ -70,7 +70,7 @@
                         <nav class="secondary-menu">
                             <ul id="secondary-nav" class="menu">
                                 <li class="menu-item">
-                                    <a href="/?mod=admin&action=projects" >Projects</a>
+                                    <a href="https://otashare-backend.mobgen.com/otaprojects" >Projects</a>
                                 </li>
                                 <li class="menu-item">
                                     <a href="#">Builds</a>
@@ -107,12 +107,15 @@
 
                             <?php foreach ($builds as $i) { ?>
                             <article  class=" post type-post status-publish format-standard  grid-4 ">
+
+				<?php //echo $i->buiDeviceOS.' --- '.$i->buiType.' --- '. $i->buiFile.'<br>'; ?>
                                 <!-- <a href="/build/<?= $i->buiHash;?>/<?= $i->buiSafename;?>" class="button">Go Build</a> -->
-                                <?php if ($i->buiDeviceOS == 1) { ?>
-                                    <a href="/build/<?= $i->buiHash;?>/<?= $i->buiSafename;?>/download/<?= $i->buiSafename;?>.apk" class="button">Install</a>
+                                <?php if ($i->buiType == 1) { ?>
+                                    <!-- a href="/build/<?= $i->buiHash;?>/<?= $i->buiSafename;?>/download/<?= $i->buiSafename;?>.apk" class="button">Install</a -->
+                                    <a href="/build/download/<?= $i->buiHash;?>" class="button">Install</a>
                                     <?php $build_type = "Android";?>
                                 <?php } else { ?>
-                                    <a href="itms-services://?action=download-manifest&url=<?= Yii::$app->params['FRONTEND'];?>/build/<?= $i->buiHash;?>/<?= $i->buiSafename;?>/plist" class="button">Install</a>
+                                    <a href="itms-services://?action=download-manifest&url=<?= Yii::$app->params['FRONTEND'];?>/build/ipa/<?= $i->buiHash;?>/<?= $i->buiSafename;?>/plist" class="button">Install</a>
                                     <?php $build_type = "iOS";?>
                                 <?php } ?>
 
@@ -124,7 +127,7 @@
                                 <header class="entry-header">
                                     <div class="entry-meta">
                                         <span class="entry-category"><span class="label">Version:</span> <?= $i->buiVersion;?></span>
-                                        <span class="entry-date"> <?= $i->buiCreated;?></span>
+                                        <span class="entry-date"> <?= date('Y-m-d H:i:s', $i->updated_at);?></span>
                                     </div>
                                     <h2 class="entry-title">
                                         <?= $i->buiName;?>
@@ -139,7 +142,7 @@
                                     </div>
                                 </div>
                                 <div class="entry-summary">
-                                    <?php if ($i->buiDeviceOS == 1) { ?>
+                                    <?php if ($i->buiType == 1) { ?>
                                         <i class="fa fa-android fa-4x" style="color:#A4C639"></i>
                                     <?php } else { ?>
                                         <i class="fa fa-apple fa-4x" style="color:#ACB8BE"></i>

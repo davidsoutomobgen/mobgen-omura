@@ -37,9 +37,13 @@ class BuildController extends Controller
      * Lists all Builds models.
      * @return mixed
      */  
-    public function actionIndex($hash, $safename)
+    public function actionIndex($hash, $safename='')
     {
-        $model = Builds::find()->where("buiHash = '$hash' AND buiSafename = '$safename' ")->one();
+        if (!empty($safename))
+            $model = Builds::find()->where("buiHash = '$hash' AND buiSafename = '$safename' ")->one();
+        else
+            $model = Builds::find()->where("buiHash = '$hash'")->one();
+
         if (!empty($model)) {
             $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
             //echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';
@@ -102,7 +106,7 @@ class BuildController extends Controller
     public function actionIpa ($hash, $safename, $plist) {
 
         $model = Builds::find()->where("buiHash = '$hash' AND buiSafename = '$safename' ")->one();
-        $path_file = Yii::$app->params["FRONTEND"] . '/build/download/' . $model->buiId;
+        $path_file = Yii::$app->params["FRONTEND"] . '/build/download/' . $model->buiHash;
         //http://omura-david-front.mobgendev105.com/build/download/13245';
 
         $plist = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"/>');
@@ -125,7 +129,7 @@ class BuildController extends Controller
                     $dict3->addChild('key', 'needs-shine');
                     $dict3->addChild('true');
                     $dict3->addChild('key', 'url');
-                    $dict3->addChild('string', 'https://otashare.mobgen.com/images/ios_57x57.png');
+                    $dict3->addChild('string', 'https://otashare-front.mobgen.com/images/ios_57x57.png');
                     
                     $dict3 = $array2->addChild('dict');
                     $dict3->addChild('key', 'kind');
@@ -133,7 +137,7 @@ class BuildController extends Controller
                     $dict3->addChild('key', 'needs-shine');
                     $dict3->addChild('true');
                     $dict3->addChild('key', 'url');
-                    $dict3->addChild('string', 'https://otashare.mobgen.com/images/ios_512x512.jpg');
+                    $dict3->addChild('string', 'https://otashare-front.mobgen.com/images/ios_512x512.jpg');
 
                 $dict2->addChild('key', 'metadata');
 
@@ -152,9 +156,9 @@ class BuildController extends Controller
         die;
     }
 
-    public function actionDownload($id) {
+    public function actionDownload($hash) {
 
-        $model = Builds::find()->where(" buiId = $id ")->one();
+        $model = Builds::find()->where(" buiHash = '$hash' ")->one();
 
         if (!empty($model)) {
             $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
