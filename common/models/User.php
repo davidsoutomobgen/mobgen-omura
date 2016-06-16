@@ -17,7 +17,7 @@ use yii\web\IdentityInterface;
  * @property string $password_reset_token
  * @property string $email
  * @property string $auth_key
- * @property integer $role
+ * @property integer $role_id
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
@@ -52,12 +52,6 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
-            /*'eauth' => [
-                // required to disable csrf validation on OpenID requests
-                'class' => \nodge\eauth\openid\ControllerBehavior::className(),
-                'only' => ['login'],
-            ],
-            */
         ];
     }
 
@@ -70,31 +64,18 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
 
-            ['role', 'default', 'value' => self::ROLE_USER],
-            ['role', 'in', 'range' => [self::ROLE_USER]],
+            //['role_id', 'default', 'value' => self::ROLE_USER],
+            //['role_id', 'in', 'range' => [self::ROLE_USER]],
         ];
     }
 
     /**
      * @inheritdoc
      */
-
     public static function findIdentity($id)
     {
         return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
     }
-
-    /*
-    public static function findIdentity($id) {
-        if (Yii::$app->getSession()->has('user-'.$id)) {
-            return new self(Yii::$app->getSession()->get('user-'.$id));
-        }
-        else {
-            return isset(self::$users[$id]) ? new self(self::$users[$id]) : null;
-        }
-    }
-    */
-
 
     /**
      * @inheritdoc
@@ -144,9 +125,11 @@ class User extends ActiveRecord implements IdentityInterface
         if (empty($token)) {
             return false;
         }
+
+        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
-        $parts = explode('_', $token);
-        $timestamp = (int) end($parts);
+        //$parts = explode('_', $token);
+        //$timestamp = (int) end($parts);
         return $timestamp + $expire >= time();
     }
 
@@ -208,6 +191,11 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
+    public function getPassword()
+    {
+        return '';
+    }
+
     /**
      * Generates "remember me" authentication key
      */
@@ -231,28 +219,4 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = null;
     }
-
-
-    /**
-     * @param \nodge\eauth\ServiceBase $service
-     * @return User
-     * @throws ErrorException
-     */
-    public static function findByEAuth($service) {
-        if (!$service->getIsAuthenticated()) {
-            throw new ErrorException('EAuth user should be authenticated before creating identity.');
-        }
-
-        $id = $service->getServiceName().'-'.$service->getId();
-        $attributes = [
-            'id' => $id,
-            'username' => $service->getAttribute('name'),
-            'authKey' => md5($id),
-            'profile' => $service->getAttributes(),
-        ];
-        $attributes['profile']['service'] = $service->getServiceName();
-        Yii::$app->getSession()->set('user-'.$id, $attributes);
-        return new self($attributes);
-    }
-
 }

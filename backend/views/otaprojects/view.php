@@ -8,6 +8,7 @@ use yii\bootstrap\Modal;
 use yii\helpers\Url;
 use backend\models\BuildsDownloaded;
 use backend\models\Utils;
+use common\models\User;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\OtaProjects */
@@ -21,14 +22,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
+        <?=  (User::getUserIdRole() == 10) ? Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) : '' ?>
+        <?=  (User::getUserIdRole() == 10) ? Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
                 'method' => 'post',
             ],
-        ]) ?>
+        ]) : '' ?>
         <?= Html::a( Yii::t('app', 'Back'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);?>
     </p>
 
@@ -46,52 +47,35 @@ $this->params['breadcrumbs'][] = $this->title;
             'proAPIKey',
             'proAPIBuildKey',
             //'proBuildTypes',
-
             //'default_notify_email:email',
-            /*
-            'proDevUrl1:url',
-            'proDevUrl2:url',
-            'proDevUrl3:url',
-            'proDevUrl4:url',
-            'proAltUrl1:url',
-            'proAltUrl2:url',
-            'proAltUrl3:url',
-            'proAltUrl4:url',
-            'proProdUrl1:url',
-            'proProdUrl2:url',
-            'proProdUrl3:url',
-            'proProdUrl4:url',
-            */
             //'proCreated',
             //'proModified',
             //'created_at:date',
-            //'updated_at:date',
+            'updated_at:date',
         ],
     ]) ?>
 
-    
     <?php
         Modal::begin([
                 'header'=>'<h3>QA Status</h3>',
                 'id' => 'modal',
                 'size'=>'modal-lg',
             ]);
-     
         echo "<div id='modalContent'></div>";
-     
         Modal::end();
     ?>
     <div class="builds_list" >
         <h2><?= Yii::t('app', 'Builds') ?></h2>
-
-        <div class="dropdown-list left">
-            <?=Html::beginForm(['builds/bulk'],'post');?>
-            <?=Html::dropDownList('action1','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
-            <?=Html::hiddenInput('buildId', $model->id);?>
-            <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>           
-        </div>
+	<?php if ( User::getUserIdRole() != 11 ) { ?>
+            <div class="dropdown-list left">
+                <?=Html::beginForm(['builds/bulk'],'post');?>
+                <?=Html::dropDownList('action1','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
+                <?=Html::hiddenInput('buildId', $model->id);?>
+                <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>
+            </div>
+	<?php } ?>
         <div class="addbuild right">
-            <?= Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']) ?>
+            <?=  (User::getUserIdRole() == 10) ? Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']) : '' ?>
         </div>
         <div class="clear"></div>
 
@@ -103,9 +87,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'columns' => [
                 //['class' => 'yii\grid\SerialColumn'],
-                ['class' => 'yii\grid\CheckboxColumn'],                
+                ['class' => 'yii\grid\CheckboxColumn'],
                 [
                     'attribute' => 'buiType',
+                    'label' => 'BuiType',
                     'filter'=>array("0"=>"iOS","1"=>"Android"),
                     'format' => 'html',
                     'value' => function($data) {
@@ -119,8 +104,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     'label'=>'Name',
                     'format' => 'raw',
                     'value'=>function ($data) {
-                        return (Html::a($data->buiName, ['/builds/update/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>');
-
+                        return ( User::getUserIdRole() == 11 ) ?
+                            (Html::a($data->buiName, ['/builds/view/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>')
+                            :
+                            (Html::a($data->buiName, ['/builds/update/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>')
+                            ;
                     },
                 ],
                 'buiVersion',
@@ -135,7 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         if (file_exists($path_file))
                             return Html::a($data->buiHash, Yii::$app->params["FRONTEND"].'/build/'.$data->buiHash.'/'.$data->buiSafename, ['target'=>'_blank', 'title'=>$data->buiName, 'alt'=>$data->buiName]);                            
                         else
-                            return 'Not available';
+                            return 'Not available '.$path_file;
                     },
                 ],
                 [
@@ -203,7 +191,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $lastqa = 0;
                         foreach ($data->lastBuildsQas as $qa) {
                             $lastqa = $qa->status;
-                        }                        
+                        }
                         switch ($lastqa) {
                             case 0:
                                 $color = 'grey';
@@ -216,7 +204,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 break;
                             case 3:
                                 $color = '#00a65a';
-                                break;           
+                                break;
                         }
 
                         $text = Utils::getQAStatusById($lastqa);
@@ -233,6 +221,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{view} {update} {delete} ',
+                    'visibleButtons' => [
+                         'update' => function ($model, $key, $index) {
+                            return  User::getUserIdRole() == 11 ? false : true;
+                         },
+                         'delete' => function ($model, $key, $index) {
+                            return  User::getUserIdRole() == 11 ? false : true;
+                         }
+                    ],
                     'buttons' => [
                         'view' => function ($url,$model) {
                             $url = str_replace('otaprojects', 'builds', $url);

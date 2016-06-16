@@ -527,6 +527,15 @@ section.content div.hint-block p
     font-weight: bold;
 }
 
+#form-signup p {
+    float: none;
+    margin-top: 1px;
+}
+.site-error p {
+    float: none;
+    margin-top: 0px !important;
+    text-align: left !important;
+} 
 /* COLORS */
 i.skin-blue {
     color: #3c8dbc;

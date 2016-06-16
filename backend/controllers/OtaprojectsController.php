@@ -232,11 +232,15 @@ class OtaprojectsController extends Controller
                     foreach ($post['proBuildType'] as $tt){
 
                         if (empty(intval($tt))) {
-                            $buildtypes = new OtaBuildTypes;
-                            $buildtypes->name = $tt;
-                            $buildtypes->save();
-
-                            $tt = $buildtypes->id;
+                            $exist = OtaBuildTypes::find()->where('name LIKE :name')->addParams([':name'=>$tt])->one();
+                            if (isset($exist)) {
+                                $tt = $exist->id;
+                            } else {
+                                $buildtypes = new OtaBuildTypes;
+                                $buildtypes->name = $tt;
+                                $buildtypes->save();                            
+                                $tt = $buildtypes->id;
+                            }
                         }
 
                         $aux = new OtaProjectsBuildtypes();
@@ -326,6 +330,9 @@ class OtaprojectsController extends Controller
         }
 
         $hash .= $string;
+
+        $chars = array("/", ".");
+        $hash = str_replace($chars, "_", $hash);
 
         return substr($hash, 0, $length);
     }

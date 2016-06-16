@@ -368,7 +368,7 @@ class Builds extends \common\models\CActiveRecord
         $mail = str_replace('{{$url}}', $url, $mail);
         $mail = str_replace('{{$project.proName}}', $project->name, $mail);
         //str_replace('{{build}}', $build, $tmpcont);
-/*
+
         $mail = Utils::remove_extra_crs($mail);  // Must do this: replaces returns.
         //echo "mail: $mail<br />\n";die;
 
@@ -380,7 +380,7 @@ class Builds extends \common\models\CActiveRecord
 //      echo "to: $to<br />\n";
         mail($to, $subject, $mail, $headers);
 
-*/
+
 
         $emails = explode(',', $to);
 
@@ -389,7 +389,7 @@ class Builds extends \common\models\CActiveRecord
             $sendTo [] = trim($email);
         }
 
-        $sendTo = 'david.souto@mobgen.com';
+        //$sendTo = 'david.souto@mobgen.com';
 
         $sendEmail = Yii::$app->mailer->compose()
             ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
@@ -398,7 +398,7 @@ class Builds extends \common\models\CActiveRecord
             ->setHtmlBody($mail)
             ->send();
 
-        //var_dump($sendEmail);
+        //print_r($sendEmail);
 
         $modelNotification = new BuildsNotification();
         $modelNotification->buiId = $build->buiId;
