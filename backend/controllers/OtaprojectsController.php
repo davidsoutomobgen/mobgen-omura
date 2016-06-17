@@ -118,7 +118,7 @@ class OtaprojectsController extends Controller
             $model->proAPIKey = $this->_GenerateHash();
             $model->proAPIBuildKey = $this->_GenerateSecureApiHash($model->name);
             $post = Yii::$app->request->post();
-            if (isset($post['proBuildType'])) {
+            //if (isset($post['proBuildType'])) {
                 if ($model->save()) {
                     if (isset($post['proBuildType'])) {
                         foreach ($post['proBuildType'] as $tt){
@@ -150,7 +150,7 @@ class OtaprojectsController extends Controller
                         'ota_buildtypes' => $data,
                     ]);
                 }
-            }
+            /*}
             else {
                 //print_r($post['proBuildType']);die;
                 $value = -1;
@@ -158,10 +158,9 @@ class OtaprojectsController extends Controller
                     'model' => $model,
                     'select_buildtype' => $selected,
                     'value' => $value,
-                    'ota_buildtypes' => $data,                    
+                    'ota_buildtypes' => $data,
                 ]);
-            }
-            
+            }*/
         } else {
             return $this->render('create', [
                 'model' => $model,

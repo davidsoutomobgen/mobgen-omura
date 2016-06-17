@@ -103,9 +103,12 @@ class BuildsController extends Controller
 
         //Build Types
         $otaBuildTypes = OtaProjectsBuildtypes::find()->with('idOtaBuildtypes')->where('id_ota_project = :id_ota_project',  [':id_ota_project' => $id])->all();
-        foreach ($otaBuildTypes as $buildtypes) {
-            $data[$buildtypes->id] =  $buildtypes->idOtaBuildtypes->name;
-        }
+        if (!empty($otaBuildTypes)) {
+	    foreach ($otaBuildTypes as $buildtypes) {
+                $data[$buildtypes->id] =  $buildtypes->idOtaBuildtypes->name;
+            }
+	}
+	else $data = array();
         $selectedBuildTypes = array();
 
         //Mails notifications
