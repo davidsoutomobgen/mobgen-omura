@@ -28,7 +28,7 @@ setTimeout(function () {
 		<div id="installBox">
 			<div id="install">
 				<?php if ($buildata->buiType) { ?>
-					<a href="/build/download/<?=$buildata->buiId;?>">Install</a>
+					<a href="/build/download/<?=$buildata->buiHash;?>">Install</a>
 				<?php } else { ?>
 					<a href="itms-services://?action=download-manifest&amp;url=<?php echo Yii::$app->params["FRONTEND"] . '/build/ipa/' . $buildata->buiHash . '/' . $buildata->buiSafename . '/plist' ?>">Install</a>
 				<?php } ?>

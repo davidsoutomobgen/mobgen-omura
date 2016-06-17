@@ -68,7 +68,7 @@ use backend\models\OtaBuildTypes;
         ]);
         ?>
         <?php if ($value == -1) { ?>
-            <div class="help-block">BuildTypes cannot be blank.</div>
+           <div class="help-block">BuildTypes cannot be blank.</div>
         <?php } ?>
     </div>
 

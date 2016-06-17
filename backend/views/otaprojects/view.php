@@ -111,7 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ;
                     },
                 ],
-                'buiVersion',
+                //'buiVersion',
                 [
                     'attribute'=>'buiHash',
                     'label'=>'Public URL',
@@ -126,6 +126,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return 'Not available '.$path_file;
                     },
                 ],
+		'buiVersion',
                 [
                     'label' => Yii::t('app', 'Created by'),
                     'attribute' => 'createdBy',
@@ -134,7 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
 
                 ],
-                'updated_at:date',
+                'updated_at:datetime',
                 [
                     'attribute'=>'buiFav',
                     'filter'=>array("0"=>"No","1"=>"Yes"),
