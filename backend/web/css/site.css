@@ -580,4 +580,8 @@ i.skin-yellow{
     overflow-y: auto;
 }
 
+#w0 th {
+    width: 30% !important;
+}
+
 
