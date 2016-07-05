@@ -405,7 +405,10 @@ class BuildsController extends Controller
                     $model->save();
                 }
                 else if ($action == 3) {
-                    $this->findModel($id)->delete();
+                    $model = $this->findModel($id);
+                    $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
+                    @unlink($path_file);
+                    $model->buiStatus = '9';
                     $model->save();
                 }
             }
