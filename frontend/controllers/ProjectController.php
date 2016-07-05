@@ -48,14 +48,17 @@ class ProjectController extends Controller
 
             $condition = '';
             $post = Yii::$app->request->post();
-            /*        
+            $proBuildTypeSelect = 'all';
+
             if (!empty($post)) {            
                 if ($post['proBuildType'] != 'all') 
-                    $condition = ' AND buiBuildType = '.$post['proBuildType'] ;                
+                    $condition = ' AND buiBuildType = "'.$post['proBuildType'].'"' ;                
+                $proBuildTypeSelect = $post['proBuildType'];
             }   
-            */
+
+
         
-            $builds = Builds::find()->where("buiProIdFK = '$model->id' AND buiVisibleClient = 1 ".$condition)->orderBy('buiFav desc, updated_at desc')->all();
+            $builds = Builds::find()->where("buiProIdFK = '$model->id' AND buiVisibleClient = 1 AND buiStatus = 0 ".$condition)->orderBy('buiFav desc, updated_at desc')->all();
             $project = Yii::$app->params["TEMPLATES"] . 'default/project_new.php';
 
             //CHANGE THIS WHEN TEMPLATES WILL BE ADMiNISTRABLES FROM BACKEND
@@ -91,7 +94,8 @@ class ProjectController extends Controller
             return $this->renderFile($project, [
                 'project' => $model,
                 'builds' => $builds,
-                'buildtypes' => $data
+                'buildtypes' => $data,
+                'proBuildTypeSelect' => $proBuildTypeSelect,
                 //'url' => $path_file,
             ]);
         }

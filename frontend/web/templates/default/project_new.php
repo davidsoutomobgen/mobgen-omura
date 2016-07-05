@@ -28,37 +28,16 @@
 
                 <div class="top-strip">
                     <div class="wrapper clearfix">
-
-                       <!--
-                        <form method="get" id="searchform" action="#" role="search">
-                            <!--
-                            <input name="s" id="s" value="Search" onfocus="if(this.value=='Search')this.value='';" onblur="if(this.value=='')this.value='Search';" type="text">
-                            <button type="submit">
-                                <i class="icon-search"></i>
-                            </button>
-                        </form>
-                        -->
-                        <?php
-                        //echo '<pre>'; print_r($project->otaProjectsBuildtypes); echo '</pre>'; die;
-                        ?>
                         <?php if (!empty($buildtypes)) { ?>
-                            <form id="form_buildtype" action="/project/uvn0opsmz7p4/shell-inside-energy" method="POST">                                                              
+                            <form id="form_buildtype" action="/project/<?=$project->proHash;?>/<?=$project->safename;?>" method="POST">                                                              
                                 <select name="proBuildType" onchange="jQuery('#form_buildtype').submit();">
                                     <option value="all" >See all</option>
                                         <?php foreach ($buildtypes as $j=>$type) { ?>
-
-                                        <?php
-                                        //echo '<pre>'; print_r($type); echo '</pre>'; die;
-                                        ?>
-                                        <!--
-                                        <?php //if ($j|@trim) == ($proBuildTypeSelect|@trim);?>
-                                        -->
-                                            <option value="<?= $j;?>" selected="selected" ><?=$type;?></option>
-                                         
-                                        <?php //else;?>
-                                             <!--  <option value="<?= $j;?>" ><?= $type;?></option>-->
-                                        <?php // if;?>
-                                        
+                                            <?php if (trim($type) == trim($proBuildTypeSelect)) {?>
+                                                <option value="<?= $type;?>" selected="selected" ><?=$type;?></option>
+                                            <?php } else { ?>
+                                                 <option value="<?= $type;?>" ><?= $type;?></option>
+                                            <?php  } ?>                                        
                                     <?php } ?>
                                 </select>
                                 <input type="hidden" name="_csrf" value="<?=Yii::$app->request->getCsrfToken()?>" />

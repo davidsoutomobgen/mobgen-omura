@@ -79,14 +79,15 @@ class OtaprojectsController extends Controller
         $params = Yii::$app->request->queryParams;
         
         $params['BuildsSearch']['buiProIdFK'] =  $id;
+        $params['BuildsSearch']['buiStatus'] = 0;
 
         $searchBuilds = new BuildsSearch();
         $dataProvider = $searchBuilds->search($params);
+
         //$dataProvider = $searchBuilds->search(Yii::$app->request->queryParams);
-
-        $builds = Builds::find()->with('buildsQas')->where('buiProIdFK = :id',  [':id' => $id])->all();
-
-//echo  '<pre>'; print_r($dataProvider); echo '</pre>';die;
+        //$builds = Builds::find()->with('buildsQas')->where('buiProIdFK = :id AND buiStatus = 0',  [':id' => $id])->all();
+        //echo  '<pre>'; print_r($dataProvider); echo '</pre>';die;
+        
         return $this->render('view', [
             'model' => $this->findModel($id),
             'searchBuilds' => $searchBuilds,

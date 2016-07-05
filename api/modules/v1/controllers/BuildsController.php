@@ -222,7 +222,7 @@ class BuildsController extends ActiveController
 
                                             $udids = Builds::_getUDIDs($path_file);
                                             if (count($udids) > 0) {
-                                                $bui->buiLimitedUDID = 1;
+                                                $build->buiLimitedUDID = 1;
                                                 /*
                                                 $udid_array = array();
                                                 foreach ($udids as $udid) {
