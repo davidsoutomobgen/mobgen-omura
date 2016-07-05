@@ -205,9 +205,6 @@ class BuildsController extends Controller
      */
     public function actionUpdate($id)
     {
-        //echo '<pre>';print_r($_FILES); echo '</pre>'; die;
-        //echo '<pre>';print_r(Yii::$app->request->post()); echo '</pre>'; die;
-
         //BuildsNotifications
         $params = Yii::$app->request->queryParams;
         $params['BuildsNotificationSearch']['buiId'] =  $id;
@@ -216,7 +213,6 @@ class BuildsController extends Controller
 
 
         $model = $this->findModel($id);
-        //echo '<pre>';print_r($model->attributes); echo '</pre>';die;
 
         //Build Types
         $otaBuildTypes = OtaProjectsBuildtypes::find()->with('idOtaBuildtypes')->where('id_ota_project = :id_ota_project',  [':id_ota_project' => $model->buiProIdFK])->all();
@@ -235,10 +231,9 @@ class BuildsController extends Controller
         //Template
         $templates = Templates::getTemplatesTemporaly();
 
-        if (!empty(Yii::$app->request->post())) {
+        if (!empty($_POST['Builds'])){ 
             $process = $this->_process($id, $model);
             if ($process) {                  
-                //return $this->redirect(['view', 'id' => $model->buiId]);
                 return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
             }
             else {
@@ -270,14 +265,10 @@ class BuildsController extends Controller
 
         $post = Yii::$app->request->post('Builds');
 
-        //echo '<pre>';print_r($model->attributes); echo '</pre>';
-        //echo '<pre>';print_r($post); echo '</pre>'; die;
-
         if (($model->buiFile != $post['buiFile']) && ($post['buiFile'] != '')) {
 
             if ($post['time'] != $post['buiSafename']) {
                 //Update app
-                //echo 'update';
                 $timestamp = $post['time'];
                 $extension = strtolower(Builds::_GetExtension($model->buiFile));
                 $safe = Builds::_GenerateSafeFileName((string)$model->buiId . '_' . $timestamp);
@@ -365,8 +356,10 @@ class BuildsController extends Controller
         $model = $this->findModel($id);
         $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
         //echo $path_file;die;
-        $this->findModel($id)->delete();
+        //$this->findModel($id)->delete();
         @unlink($path_file);
+        $model->buiStatus = '9';
+        $model->save();
         return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
 
     }

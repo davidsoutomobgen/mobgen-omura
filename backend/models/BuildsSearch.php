@@ -19,8 +19,8 @@ class BuildsSearch extends Builds
     public function rules()
     {
         return [
-            [['buiId', 'buiProIdFK', 'buiCerIdFK', 'buiType', 'buiVisibleClient', 'buiDeviceOS', 'buiLimitedUDID', 'buiFav', 'buiSendEmail', 'created_by', 'created_at', 'updated_at'], 'integer'],
-            [['buiName', 'buiSafename', 'buiCreated', 'buiModified', 'buiTemplate', 'buiFile', 'buiVersion', 'buiBuildNum', 'buiChangeLog', 'buiBuildType', 'buiApple', 'buiSVN', 'buiFeedUrl', 'buiBundleIdentifier', 'buiHash', 'createdBy'], 'safe'],
+            [['buiId', 'buiProIdFK', 'buiCerIdFK', 'buiType', 'buiVisibleClient', 'buiDeviceOS', 'buiLimitedUDID', 'buiFav', 'buiSendEmail', 'status', 'created_by', 'created_at', 'updated_at'], 'integer'],
+            [['buiName', 'buiSafename', 'buiCreated', 'buiModified', 'buiTemplate', 'buiFile', 'buiVersion', 'buiBuildNum', 'buiChangeLog', 'buiBuildType', 'buiApple', 'buiSVN', 'buiFeedUrl', 'buiBundleIdentifier', 'buiHash', 'buiStatus', 'createdBy'], 'safe'],
         ];
     }
 
@@ -73,6 +73,7 @@ class BuildsSearch extends Builds
             'buiLimitedUDID' => $this->buiLimitedUDID,
             'buiFav' => $this->buiFav,
             'buiSendEmail' => $this->buiSendEmail,
+            'buiStatus' => $this->buiStatus,
             'created_by' => $this->created_by,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

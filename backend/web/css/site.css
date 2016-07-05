@@ -555,3 +555,29 @@ i.skin-red{
 i.skin-yellow{
     color: #f39c12;
 }
+
+.wrap {
+    width: 100%;
+}
+
+.wrap table {
+    width: 100%;
+}
+
+.wrap table tr td {
+    padding: 5px;
+    border: 1px solid #eee;
+    width: 100px;
+    word-wrap: break-word;
+}
+
+.wrap table.head tr td {
+    background: #eee;
+}
+
+.wrap .inner_table {
+    height: 100%;
+    overflow-y: auto;
+}
+
+

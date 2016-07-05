@@ -68,7 +68,9 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        //Redirect to mobgen.com
+        return $this->redirect('http://mobgen.com');
+        //return $this->render('index');
     }
 
     public function actionLogin()

@@ -34,6 +34,7 @@ use backend\models\BuildsNotification;
  * @property string $buiHash
  * @property integer $buiFav
  * @property integer $buiSendEmail
+ * @property integer $buiStatus
  * @property integer $created_by
  * @property integer $created_at
  * @property integer $updated_at
@@ -67,7 +68,7 @@ class Builds extends \common\models\CActiveRecord
             [['buiName', 'buiSafename', 'buiTemplate', 'buiProIdFK', 'buiVisibleClient', 'buiFav', 'buiSendEmail'], 'required'],
             [['buiCreated', 'buiModified'], 'safe'],
             [['buiChangeLog'], 'string'],
-            [['buiProIdFK', 'buiCerIdFK', 'buiType', 'buiVisibleClient', 'buiDeviceOS', 'buiLimitedUDID', 'buiFav', 'buiSendEmail', 'created_by', 'created_at', 'updated_at'], 'integer'],
+            [['buiProIdFK', 'buiCerIdFK', 'buiType', 'buiVisibleClient', 'buiDeviceOS', 'buiLimitedUDID', 'buiFav', 'buiSendEmail', 'created_by', 'created_at', 'updated_at', 'buiStatus'], 'integer'],
             [['buiName', 'buiSafename', 'buiTemplate', 'buiFile', 'buiVersion', 'buiApple', 'buiSVN'], 'string', 'max' => 64],
             [['buiBuildNum', 'buiHash'], 'string', 'max' => 16],
             [['buiBuildType'], 'string', 'max' => 255],
@@ -108,6 +109,7 @@ class Builds extends \common\models\CActiveRecord
             'buiHash' => Yii::t('app', 'Bui Hash'),
             'buiFav' => Yii::t('app', 'Fav'),
             'buiSendEmail' => Yii::t('app', 'Sent notification email with install link'),
+            'buiStatus' => Yii::t('app', 'Status'),
             'created_by' => Yii::t('app', 'Created by'),
             'created_at' => Yii::t('app', 'Created at'),
             'updated_at' => Yii::t('app', 'Updated at'),
