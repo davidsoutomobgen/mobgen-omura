@@ -261,8 +261,8 @@ QUERY;
 		$userdata = json_decode($curlinfo['response']);
 		echo "FullName: " . $userdata->FullName . "\n";
 		if ($userdata->ActiveEmployee == 0) {
-			echo "Employee no longer active.\n";
-			return 0;
+			echo "Employee no longer active, let's import anyway.\n";
+//			return 0;
 		}
 		if (strlen($userdata->Picture) < 10) {
 			echo "No image available.\n";
@@ -289,7 +289,17 @@ QUERY;
 		$filename = $imagename .'.jpg';
 		echo "fortmat: $format\n";
 		echo "image name: " . $filename . "\n";
+
+		/*
+		 * Only create a file on disk if not already exists.
+		 * This way we want to prevent overwriting higher quality images with low-res thumbnails from Cezanne.
+		 */
+		if (file_exists($mediapath .'/'. $filename)) {
+			echo "Image already exist. Not importing.\n";
+			return 0;
+		}
 		file_put_contents($mediapath .'/'. $filename, $image);
+
 
 		/*
 		 * Set up the neo4j connection
@@ -330,8 +340,8 @@ QUERY;
 		$userdata = json_decode($curlinfo['response']);
 		echo "FullName: ". $userdata->FullName ."\n";
 		if ($userdata->ActiveEmployee == 0) {
-			echo "Employee no longer active.\n";
-			return 0;
+			echo "Employee no longer active. Lets import anyway.\n";
+//			return 0;
 		}
 
 
@@ -361,7 +371,8 @@ QUERY;
 		 */
 //		$url = $apibaseurl . "People('$this->userid')/PeopleToOrgUnitPositionDeploymentCurrentPrimary";
 //		$url = $apibaseurl . "People('$this->userid')/PeopleToOrgUnitPositionDeploymentsAll";
-		$url = $apibaseurl . "ActiveEmployeesSearch('$this->userid')";
+//		$url = $apibaseurl . "ActiveEmployeesSearch('$this->userid')";
+		$url = $apibaseurl . "AllPeopleSearch('$this->userid')";
 		$curlinfo = $this->curlRequest($url, $headers);
 		if ($curlinfo['http_code'] != 200) {
 			echo "Did not get a 200 return code, skipping remaining import.\n";
@@ -387,13 +398,15 @@ QUERY;
 		$url = $apibaseurl . "Communications('$this->userid')";
 		$curlinfo = $this->curlRequest($url, $headers);
 		if ($curlinfo['http_code'] != 200) {
-			echo "Did not get a 200 return code, skipping remaining import.\n";
+//			echo "Cezanne->Communications('$this->userid'): Did not get a 200 return code, skipping remaining import.\n";
+			echo "Cezanne->Communications('$this->userid'): Did not get a 200 return code, but continuing the import.\n";
 			echo "http: ". var_export($curlinfo,true) ."\n";
-			return 1;
+//			return 1;
+		} else {
+//		    echo "curlResponse: {$curlinfo['response']}\n";
+			$communicationdata = json_decode($curlinfo['response']);
+			echo "InternalEmail: ". $communicationdata->InternalEmail ."\n";
 		}
-//		echo "curlResponse: {$curlinfo['response']}\n";
-		$communicationdata = json_decode($curlinfo['response']);
-		echo "InternalEmail: ". $communicationdata->InternalEmail ."\n";
 
 
 		/*
@@ -449,11 +462,11 @@ QUERY;
 				'org_unit_name' => $usersearchdata->OrgUnitName_Search != null ? $usersearchdata->OrgUnitName_Search : '',
 				'deployment_effective_from' => $usersearchdata->DeploymentEffectiveFrom_Search != null ? $usersearchdata->DeploymentEffectiveFrom_Search : '0000-00-00T00:00:00',
 				'last_modified_date' => $userdata->LastModifiedDate != null ? $userdata->LastModifiedDate : '0000-00-00T00:00:00',
-				'work_number' => $communicationdata->WorkNumber != null ? $communicationdata->WorkNumber : '',
-				'mobile_number' => $communicationdata->MobileNumber != null ? $communicationdata->MobileNumber : '',
-				'internal_email' => $communicationdata->InternalEmail != null ? $communicationdata->InternalEmail : '',
-				'skype_name' => $communicationdata->SkypeName != null ? $communicationdata->SkypeName : '',
-				'messenger' => $communicationdata->Messenger != null ? $communicationdata->Messenger : '',
+				'work_number' => (isset($communicationdata->WorkNumber) && $communicationdata->WorkNumber != null) ? $communicationdata->WorkNumber : '',
+				'mobile_number' => (isset($communicationdata->MobileNumber) && $communicationdata->MobileNumber != null) ? $communicationdata->MobileNumber : '',
+				'internal_email' => (isset($communicationdata->InternalEmail) && $communicationdata->InternalEmail != null) ? $communicationdata->InternalEmail : '',
+				'skype_name' => (isset($communicationdata->SkypeName) && $communicationdata->SkypeName != null) ? $communicationdata->SkypeName : '',
+				'messenger' => (isset($communicationdata->Messenger) && $communicationdata->Messenger != null) ? $communicationdata->Messenger : '',
 				'network_name' => $usr_login,
 				'bio' => $usr_bio,
 			);
