@@ -296,10 +296,10 @@ QUERY;
 		 */
 		if (file_exists($mediapath .'/'. $filename)) {
 			echo "Image already exist. Not importing.\n";
-			return 0;
+//			return 0;
+		} else {
+			file_put_contents($mediapath .'/'. $filename, $image);
 		}
-		file_put_contents($mediapath .'/'. $filename, $image);
-
 
 		/*
 		 * Set up the neo4j connection
