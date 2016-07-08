@@ -121,7 +121,8 @@ class WhoiswhoController extends Controller
         $neo4j = new Client();
         $neo4j->getTransport()->setAuth('neo4j','none');
 
-        $queryTemplate = "MATCH (n:User) RETURN n ORDER BY n.first_name";
+//      $queryTemplate = "MATCH (n:User) RETURN n ORDER BY n.first_name";
+        $queryTemplate = "MATCH (n:User {active_employee: 1}) RETURN n ORDER BY n.first_name";
         $cypher = new Query($neo4j, $queryTemplate);
         $results = $cypher->getResultSet();
         $ncnt = count($results);
