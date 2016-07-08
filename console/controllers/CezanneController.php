@@ -539,12 +539,12 @@ QUERY;
 		 */
 		foreach ($userdata->value as $key => $user) {
 			echo "FullName: " . $user->FullName . "\n";
-			if ($user->ActiveEmployee == 0) {
-				echo "Skipping import: employee no longer active.\n";
-			} else {
+//			if ($user->ActiveEmployee == 0) {
+//				echo "Skipping import: employee no longer active.\n";
+//			} else {
 				$this->userid = $user->PersonCode;
 				$this->actionImportUser();
-			}
+//			}
 		}
 
 		return 0;
@@ -575,12 +575,12 @@ QUERY;
 		 */
 		foreach ($userdata->value as $key => $user) {
 			echo "FullName: " . $user->FullName . "\n";
-			if ($user->ActiveEmployee == 0) {
-				echo "Skipping import: employee no longer active.\n";
-			} else {
+//			if ($user->ActiveEmployee == 0) {
+//				echo "Skipping import: employee no longer active.\n";
+//			} else {
 				$this->userid = $user->PersonCode;
 				$this->actionImportImage();
-			}
+//			}
 		}
 
 		return 0;
