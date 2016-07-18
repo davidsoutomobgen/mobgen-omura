@@ -474,7 +474,7 @@ QUERY;
 //			$queryTemplate = "CREATE (user:User { props })";
 			$queryTemplate = "MERGE (user:User { person_code: {userid} }) ".
 								"ON CREATE SET user = {props} ".
-								"ON MATCH SET user = {props}";
+								"ON MATCH SET user += {props}";
 			$cypher = new Query($neo4j, $queryTemplate, array('userid'=> $userdata->PersonCode, 'props' => $props));
 			$results = $neo4j->executeCypherQuery($cypher);
 
@@ -615,6 +615,97 @@ QUERY;
 
 		echo "nodes: ". var_export($nodes,true) ."\n";
 		return 0;
+	}
+
+	public function actionImportAbsences()
+	{
+		echo "actionImportAbsences()\n";
+
+		$headers = Yii::$app->params['cezanne_api']['headers'];
+		$apibaseurl = Yii::$app->params['cezanne_api']['url'];
+
+//		$url = $apibaseurl . "PersonAbsenceEvents?1000&$filter=(AbsenceEventEffectiveFrom ge datetime'2016-07-01')";
+
+		$url = $apibaseurl . "PersonAbsenceEvents?1000=&%24filter=(AbsenceEventEffectiveFrom%20ge%20datetime'2016-07-01')";
+							//PersonAbsenceEvents?1000&%24filter=(AbsenceEventEffectiveFrom ge datetime'2016-07-01')
+		echo "url: $url";
+		echo "headers: " . var_export($headers);
+		$curlinfo = $this->curlRequest($url, $headers);
+		if ($curlinfo['http_code'] != 200) {
+			echo "Did not get a 200 return code, failed import.\n";
+			echo "http: ". $curlinfo['http_code'] ."\n";
+			return 1;
+		}
+
+		/*
+		 * Set up the neo4j connection
+		 */
+		$neo4j = new Client();
+		$neo4j->getTransport()->setAuth('neo4j','none');
+
+//		echo "curlResponse: {$curlinfo['response']}\n";
+		$absencedata = json_decode($curlinfo['response']);
+		foreach ($absencedata->value as $key => $absevent) {
+			echo "OrgUnitName: " . $absevent->OrgUnitName . "\n";
+
+			/*
+			 * Lets create the Absence event in the DB is not yet exist
+			 */
+			echo "Create a Absence event in the DB\n";
+			$props = array(
+				'person_absence_event_guid' => $absevent->PersonAbsenceEventGUID,
+				'person_code' => $absevent->PersonCode,
+				'absence_reason' => $absevent->AbsenceReason != null ? $absevent->AbsenceReason : '',
+				'absence_status' => $absevent->AbsenceStatus != null ? $absevent->AbsenceStatus : '',
+				'approver_person_code' => $absevent->ApproverPersonCode != null ? $absevent->ApproverPersonCode : '',
+				'effective_from' => $absevent->AbsenceEventEffectiveFrom != null ? $absevent->AbsenceEventEffectiveFrom : '',
+				'effective_to' => $absevent->AbsenceEventEffectiveTo != null ? $absevent->AbsenceEventEffectiveTo : '',
+
+				'absence_plan_type_name' => $absevent->AbsencePlanTypeName != null ? $absevent->AbsencePlanTypeName : '',
+				'absence_type_name' => $absevent->AbsenceTypeName != null ? $absevent->AbsenceTypeName : '',
+				'absence_category' => $absevent->AbsenceCategory != null ? $absevent->AbsenceCategory : '',
+				'org_unit_code' => $absevent->OrgUnitCode != null ? $absevent->OrgUnitCode : '',
+
+				'commences_code' => $absevent->CommencesCode != null ? $absevent->CommencesCode : '',
+				'commences' => $absevent->Commences != null ? $absevent->Commences : '',
+				'finishes_code' => $absevent->FinishesCode != null ? $absevent->FinishesCode : '',
+				'finishes' => $absevent->Finishes != null ? $absevent->Finishes : '',
+
+				'time_units' => $absevent->TimeUnits != null ? $absevent->TimeUnits : '',
+
+				'total_by_time_unit' => $absevent->TotalByTimeUnit != null ? $absevent->TotalByTimeUnit : 0.0,
+				'total_days' => $absevent->TotalDays != null ? $absevent->TotalDays : 0.0,
+				'total_working_time_taken_by_time_unit' => $absevent->TotalWorkingTimeTakenByTimeUnit != null ? $absevent->TotalWorkingTimeTakenByTimeUnit : 0.0,
+				'absence_event_total_working_hours' => $absevent->AbsenceEventTotalWorkingHours != null ? $absevent->AbsenceEventTotalWorkingHours : 0.0,
+			);
+
+			$queryTemplate = "MERGE (absevent:AbsenceEvent { person_absence_event_guid: {abseventcode} }) " .
+				"ON CREATE SET absevent = {props}".
+				"ON MATCH SET absevent += {props}";
+			$cypher = new Query($neo4j, $queryTemplate, array('abseventcode'=> $absevent->PersonAbsenceEventGUID, 'props' => $props));
+			$results = $neo4j->executeCypherQuery($cypher);
+
+			$queryTemplate = "MATCH (absevent:AbsenceEvent { person_absence_event_guid: {abseventcode} }),(user:User { person_code: {usercode} }) " .
+				"MERGE (absevent)-[r:EVENT_FOR]->(user)";
+			$cypher = new Query($neo4j, $queryTemplate, array('abseventcode'=> $absevent->PersonAbsenceEventGUID, 'usercode' => $absevent->PersonCode));
+			$results = $neo4j->executeCypherQuery($cypher);
+		}
+
+		/*
+		 * Now create the relations
+		 */
+/*		foreach ($absencedata->value as $key => $absevent) {
+			echo "PersonAbsenceEventGUID: " . $absevent->PersonAbsenceEventGUID . "\n";
+
+			// We only need to create a relationship if there is one of course
+			if ($absevent->PersonAbsenceEventGUID != null) {
+				$queryTemplate = "MATCH (org1:OrgUnit { org_unit_code: {child} }),(org2:OrgUnit { org_unit_code: {parent} }) " .
+					"MERGE (org1)-[r:CHILD_OF]->(org2)";
+				$cypher = new Query($neo4j, $queryTemplate, array('child'=> $absevent->OrgUnitCode, 'parent' => $absevent->ParentOrgUnitCode));
+				$results = $neo4j->executeCypherQuery($cypher);
+			}
+		}
+*/
 	}
 
 }
