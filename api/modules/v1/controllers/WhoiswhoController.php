@@ -203,6 +203,82 @@ class WhoiswhoController extends Controller
 
         return $nodes;
 	}
+
+	public function actionCalendar($from='',$to='')
+	{
+		/*
+         * Set up the neo4j connection
+         */
+		$neo4j = new Client();
+		$neo4j->getTransport()->setAuth('neo4j','none');
+
+		if (!empty($from)) {
+			$ts_from = strtotime($from);
+		} else {
+			$ts_from = time();
+		}
+		if (!empty($to)) {
+			$ts_to = strtotime($to);   // 30 days from today
+		} else {
+			$ts_to = $ts_from + (86400 * 30);   // 30 days from today
+		}
+
+		$date_from = date("Y-m-d\T00:00:00", $ts_from);
+		$date_to = date("Y-m-d\T23:59:59", $ts_to);
+
+		/*
+		 * Check if to date is after from date
+		 */
+		if ($ts_to < $ts_from) {
+			// @TODO: Implement propper REST jsson error
+			echo "Error: from date is after to date - from: $date_from - to: $date_to";
+			return;
+		}
+
+
+		$queryTemplate = "MATCH (n:AbsenceEvent {absence_type_name: 'Holiday'})-[:EVENT_FOR]->(u:User)".
+			" WHERE (n.effective_to >= '$date_from') AND (n.effective_from <= '$date_to')".
+			" RETURN n,u".
+			" ORDER BY n.effective_from";
+		$cypher = new Query($neo4j, $queryTemplate);
+		$results = $cypher->getResultSet();
+
+		$ncnt = count($results);
+
+		$nodes = array('dataset' => 'calendar', 'count' => $ncnt, 'status' => 'ok', 'data' => array());
+		foreach ($results as $row) {
+			$nodes['data'][] = array(
+                'event_guid' => $row['n']->person_absence_event_guid,
+				'person_code' => $row['n']->person_code,
+				'person_name' => $row['u']->name,
+				'image_filename' => isset($row['n']->image_filename) ? $row['n']->image_filename : '',
+				'org_unit_code' => $row['u']->org_unit_code,
+
+				'event_name' => $row['n']->absence_reason,
+//				'event_status' => $row['n']->absence_status,
+				'effective_from' => $row['n']->effective_from,
+				'effective_to' => $row['n']->effective_to,
+
+//				'absence_plan_type_name' => $row['n']->absence_plan_type_name,
+//				'absence_type_name' => $row['n']->absence_type_name,
+//				'absence_category' => $row['n']->absence_category,
+
+				'commences_code' => $row['n']->commences_code,
+				'commences' => $row['n']->commences,
+				'finishes_code' => $row['n']->finishes_code,
+				'finishes' => $row['n']->finishes,
+
+//				'time_units' => $row['n']->time_units,
+//				'total_by_time_unit' => $row['n']->total_by_time_unit,
+//				'total_days' => $row['n']->total_days,
+//				'total_working_time_taken_by_time_unit' => $row['n']->total_working_time_taken_by_time_unit,
+//				'absence_event_total_working_hours' => $row['n']->absence_event_total_working_hours,
+			);
+		}
+
+		return $nodes;
+	}
+
 }
 
 

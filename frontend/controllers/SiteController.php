@@ -14,6 +14,9 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
+use Everyman\Neo4j\Client,
+    Everyman\Neo4j\Cypher\Query;
+
 /**
  * Site controller
  */
@@ -69,6 +72,58 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    public function actionAbsences()
+    {
+        /*
+         * Set up the neo4j connection
+         */
+        $neo4j = new Client();
+        $neo4j->getTransport()->setAuth('neo4j','none');
+
+//        $queryTemplate = "MATCH (n:AbsenceEvent)-[:EVENT_FOR]->(u:User) RETURN n,u ORDER BY n.effective_from";
+        $queryTemplate = "MATCH (n:AbsenceEvent {absence_type_name: 'Holiday'})-[:EVENT_FOR]->(u:User)".
+                        " WHERE (n.effective_to >= '2016-07-20T00:00:00') AND (n.effective_from <= '2016-08-20T00:00:00')".
+                        " RETURN n,u".
+                        " ORDER BY n.effective_from";
+        $cypher = new Query($neo4j, $queryTemplate);
+        $results = $cypher->getResultSet();
+        $ncnt = count($results);
+
+//      $nodes = array('dataset' => 'locations', 'count' => $ncnt, 'status' => 'ok', 'data' => array());
+        $eventdata = array();
+        foreach ($results as $row) {
+            $eventdata[] = array(
+//                'person_absence_event_guid' => $row['n']->person_absence_event_guid,
+                'person_code' => $row['n']->person_code,
+                'person_name' => $row['u']->name,
+                'org_unit_code' => $row['u']->org_unit_code,
+
+                'absence_reason' => $row['n']->absence_reason,
+                'absence_status' => $row['n']->absence_status,
+                'effective_from' => $row['n']->effective_from,
+                'effective_to' => $row['n']->effective_to,
+
+                'absence_plan_type_name' => $row['n']->absence_plan_type_name,
+                'absence_type_name' => $row['n']->absence_type_name,
+                'absence_category' => $row['n']->absence_category,
+
+                'commences_code' => $row['n']->commences_code,
+                'commences' => $row['n']->commences,
+                'finishes_code' => $row['n']->finishes_code,
+                'finishes' => $row['n']->finishes,
+
+                'time_units' => $row['n']->time_units,
+                'total_by_time_unit' => $row['n']->total_by_time_unit,
+
+                'total_days' => $row['n']->total_days,
+                'total_working_time_taken_by_time_unit' => $row['n']->total_working_time_taken_by_time_unit,
+                'absence_event_total_working_hours' => $row['n']->absence_event_total_working_hours,
+            );
+        }
+
+        return $this->render('absences', ['data' => $eventdata]);
     }
 
     public function actionLogin()
