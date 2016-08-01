@@ -251,7 +251,7 @@ class WhoiswhoController extends Controller
                 'event_guid' => $row['n']->person_absence_event_guid,
 				'person_code' => $row['n']->person_code,
 				'person_name' => $row['u']->name,
-				'image_filename' => isset($row['n']->image_filename) ? $row['n']->image_filename : '',
+				'image_filename' => isset($row['u']->image_filename) ? $row['u']->image_filename : '',
 				'org_unit_code' => $row['u']->org_unit_code,
 
 				'event_name' => $row['n']->absence_reason,
