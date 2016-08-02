@@ -218,9 +218,14 @@ class WhoiswhoController extends Controller
 			$ts_from = time();
 		}
 		if (!empty($to)) {
-			$ts_to = strtotime($to);   // 30 days from today
+			$ts_to = strtotime($to);
 		} else {
-			$ts_to = $ts_from + (86400 * 30);   // 30 days from today
+//			$ts_to = $ts_from + (86400 * 30);   // 30 days from today
+			$last_day = date('t', $ts_from);
+			$month = date('m', $ts_from);
+			$year = date('Y', $ts_from) + 1;    // We add one year
+			$ts_to = mktime(null,null,null,$month,$last_day,$year);
+//			$ts_to = mktime(23,59,59,$month,$last_day,$year);
 		}
 
 		$date_from = date("Y-m-d\T00:00:00", $ts_from);
@@ -234,7 +239,6 @@ class WhoiswhoController extends Controller
 			echo "Error: from date is after to date - from: $date_from - to: $date_to";
 			return;
 		}
-
 
 		$queryTemplate = "MATCH (n:AbsenceEvent {absence_type_name: 'Holiday'})-[:EVENT_FOR]->(u:User)".
 			" WHERE (n.effective_to >= '$date_from') AND (n.effective_from <= '$date_to')".
@@ -267,6 +271,9 @@ class WhoiswhoController extends Controller
 				'commences' => $row['n']->commences,
 				'finishes_code' => $row['n']->finishes_code,
 				'finishes' => $row['n']->finishes,
+
+				'total_time' => $row['n']->total_working_time_taken_by_time_unit,
+				'time_units' => $row['n']->time_units,
 
 //				'time_units' => $row['n']->time_units,
 //				'total_by_time_unit' => $row['n']->total_by_time_unit,
