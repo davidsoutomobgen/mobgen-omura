@@ -109,9 +109,9 @@ class BuildController extends Controller
         $path_file = Yii::$app->params["FRONTEND"] . '/build/download/' . $model->buiHash;
         //http://omura-david-front.mobgendev105.com/build/download/13245';
 
-        $filename = $model->buiId . ".ipa";
-        $path_file = Yii::$app->params["BUILD_DIR"] . $filename;
-        $info = Builds::_getPlist($path_file);
+        $filename2 = $model->buiId . ".ipa";
+        $path_file2 = Yii::$app->params["BUILD_DIR"] . $filename2;
+        $info = Builds::_getPlist($path_file2);
         //echo '<pre>'; print_r($info); echo '</pre>';
 
         $plist = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"/>');
