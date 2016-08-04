@@ -50,6 +50,9 @@ class OtaProjectsSearch extends OtaProjects
         ]);
         */
         $dataProvider = new ActiveDataProvider([
+           'pagination'=>array(
+                    'pageSize'=>20,
+            ),
             'query' => $query,
             'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]]
         ]);

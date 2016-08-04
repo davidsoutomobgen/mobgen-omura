@@ -48,6 +48,9 @@ class BuildsSearch extends Builds
         $query->leftJoin('user', 'builds.created_by = user.id');
 
         $dataProvider = new ActiveDataProvider([
+            'pagination'=>array(
+                'pageSize'=>20,
+            ),            
             'query' => $query,
             //'sort'=> ['defaultOrder' => ["buiFav"=>SORT_DESC, 'buiModified'=>SORT_ASC]],
         ]);
