@@ -234,9 +234,8 @@ class Builds extends \common\models\CActiveRecord
     
         $zip = new \ZipArchive;
         if ($zip->open($file) === TRUE) {
-            $parts = pathinfo($file);            
+            $parts = pathinfo($file);
             require_once(Yii::$app->params["BACKEND_WEB"] . 'cfpropertylist/CFPropertyList.php');
-
             $data = $zip->getFromIndex($zip->locateName('embedded.mobileprovision', \ZIPARCHIVE::FL_NODIR));
             $zip->close();
             $data = substr($data, strpos($data, '<?xml'));
@@ -244,7 +243,6 @@ class Builds extends \common\models\CActiveRecord
             $plist = new \CFPropertyList();
             $plist->parse($data);
             $plist = $plist->toArray();
-            
 
             if (isset($plist['ProvisionedDevices'])) {
                 $udids = $plist['ProvisionedDevices'];
@@ -274,11 +272,41 @@ class Builds extends \common\models\CActiveRecord
             $plist->parse($data);
             $plist = $plist->toArray();
             $entitlements = $plist['Entitlements'];
+            //echo '<pre>';print_r($plist);echo'</pre>';die;
+
+
             return substr($entitlements['application-identifier'], strpos($entitlements['application-identifier'], '.') + 1);
         } else {
             throw new \Exception("IPA could not get opened\n");
         }
     }
+
+
+    public static function _getPlist($filename) {
+        $zip = new \ZipArchive;
+        if ($zip->open($filename) === TRUE) {
+            $parts = pathinfo($filename);
+            require_once(Yii::$app->params["BACKEND_WEB"] . 'cfpropertylist/CFPropertyList.php');
+
+            $data = $zip->getFromIndex($zip->locateName('embedded.mobileprovision', \ZIPARCHIVE::FL_NODIR));
+            $zip->close();
+            $data = substr($data, strpos($data, '<?xml'));
+            $data = substr($data, 0, strpos($data, '</plist>') + 8);
+            $plist = new \CFPropertyList();
+            $plist->parse($data);
+            $plist = $plist->toArray();
+            $entitlements = $plist['Entitlements'];
+
+            //echo '<pre>';print_r($plist);echo'</pre>';//die;
+            $info['identifier'] = substr($entitlements['application-identifier'], strpos($entitlements['application-identifier'], '.') + 1);
+            $info['appName'] = $plist['AppIDName'];
+            $info['aps-environment'] = $plist['Entitlements']['aps-environment'];
+            return $info;
+        } else {
+            throw new \Exception("IPA could not get opened\n");
+        }
+    }
+
 
     public static function _getPackage($filename) {
         $zip = new \ZipArchive;

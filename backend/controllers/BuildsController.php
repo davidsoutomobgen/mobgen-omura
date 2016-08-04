@@ -48,7 +48,7 @@ class BuildsController extends Controller
             if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'upload') || ($this->action->id == 'delete')) {
                 $permission = $this->action->controller->id.'_'.$this->action->id;
                 $hasPermission = Permissions::find()->hasPermission($permission);
-                //echo $permission.'<br>';die;
+
                 if ($hasPermission == 0) {
                     throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
                 }
@@ -211,7 +211,6 @@ class BuildsController extends Controller
         $searchBuildsNotification = new BuildsNotificationSearch();
         $dataProvider = $searchBuildsNotification->search($params);
 
-
         $model = $this->findModel($id);
 
         //Build Types
@@ -225,7 +224,6 @@ class BuildsController extends Controller
         //Mails notifications
         $otaProject = OtaProjects::find()->where('id = :id_ota_project',  [':id_ota_project' =>  $model->buiProIdFK])->one();
         $modelNotification = new BuildsNotification();
-        //echo '<pre>';print_r($otaProject); echo '</pre>';die;
         $modelNotification->email = $otaProject->default_notify_email;
 
         //Template
@@ -264,7 +262,7 @@ class BuildsController extends Controller
     private function _process($id, $model){
 
         $post = Yii::$app->request->post('Builds');
-
+        
         if (($model->buiFile != $post['buiFile']) && ($post['buiFile'] != '')) {
 
             if ($post['time'] != $post['buiSafename']) {
@@ -359,7 +357,7 @@ class BuildsController extends Controller
         //$this->findModel($id)->delete();
         @unlink($path_file);
         $model->buiStatus = '9';
-        $model->save();
+        $model->save(false);
         return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
 
     }
@@ -409,7 +407,7 @@ class BuildsController extends Controller
                     $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
                     @unlink($path_file);
                     $model->buiStatus = '9';
-                    $model->save();
+                    $model->save(false);
                 }
             }
         }
@@ -630,6 +628,32 @@ class BuildsController extends Controller
         else {
             echo 'Error 404. Are you trying aleatory links?';
             //return $this->render('error');
+        }
+    }
+
+    public function actionLostbuilds(){
+        $dir = '/home/davidsouto/www/'.Yii::$app->params["DOWNLOAD_BUILD_DIR"] ;
+        $files = scandir($dir);
+        //print_r($files);
+        foreach ($files as $f) {
+            $ext = pathinfo($f, PATHINFO_EXTENSION);
+            //echo $ext.'<br>';
+            if ($ext == 'apk' || $ext == 'ipa'){
+                
+                $build = Builds::find()->where(" buiFile = '/$f' ")->one();
+                //print_r($build);
+
+                if (empty($build)) {
+                    echo $build->buiId . ' - ' . $build->buiName . ' - ' . $f . ' <br>';
+                    $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
+                    @unlink($path_file);
+                }
+                /*
+                else {
+                    echo $build->buiId . ' - ' . $build->buiName . ' - ' . $f . ' <br>';
+                }
+                */
+            }            
         }
     }
 
