@@ -64,7 +64,8 @@ class Templates extends \common\models\CActiveRecord
             2 => 'Shell Innovation',
             3 => 'Redevco',
             4 => 'WhoIsWho (Ron)',
-            5 => 'National Express'
+            5 => 'National Express',
+            6 => 'James BETA-User',
         ];
     }
 

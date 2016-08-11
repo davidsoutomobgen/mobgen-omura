@@ -67,6 +67,9 @@ class BuildController extends Controller
                 case 5:
                     $build = Yii::$app->params["TEMPLATES"] . 'nationalexpress/build.php';
                     break;
+                case 6:
+                    $build = Yii::$app->params["TEMPLATES"] . 'james-beta-user/build.php';
+                    break;
             }
 
 

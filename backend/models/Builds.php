@@ -300,7 +300,10 @@ class Builds extends \common\models\CActiveRecord
             //echo '<pre>';print_r($plist);echo'</pre>';//die;
             $info['identifier'] = substr($entitlements['application-identifier'], strpos($entitlements['application-identifier'], '.') + 1);
             $info['appName'] = $plist['AppIDName'];
-            $info['aps-environment'] = $plist['Entitlements']['aps-environment'];
+            if (isset($plist['Entitlements']['aps-environment']))
+                $info['aps-environment'] = $plist['Entitlements']['aps-environment'];
+            else
+                $info['aps-environment'] = '';
             return $info;
         } else {
             throw new \Exception("IPA could not get opened\n");
