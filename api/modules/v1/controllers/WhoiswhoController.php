@@ -97,7 +97,7 @@ class WhoiswhoController extends Controller
         $neo4j = new Client();
         $neo4j->getTransport()->setAuth('neo4j','none');
 
-        $queryTemplate = "MATCH (n:Location) RETURN n ORDER BY n.name";
+        $queryTemplate = "MATCH (n:Location) WHERE n.location_code <> 'KK' RETURN n ORDER BY n.name";
         $cypher = new Query($neo4j, $queryTemplate);
         $results = $cypher->getResultSet();
         $ncnt = count($results);
@@ -105,8 +105,21 @@ class WhoiswhoController extends Controller
         $nodes = array('dataset' => 'locations', 'count' => $ncnt, 'status' => 'ok', 'data' => array());
         foreach ($results as $row) {
             $nodes['data'][] = array(
-                'person_code' =>  $row['n']->person_code,
+                'id' =>  $row['n']->id,
+                'location_code' =>  $row['n']->location_code,
+                'name' =>  $row['n']->name,
+                'country' =>  $row['n']->country,
+                'city' =>  $row['n']->city,
+
+	            'address_line1' => $row['n']->address_line1,
+	            'address_line2' => $row['n']->address_line2,
+	            'email' => $row['n']->email,
+	            'phone' => $row['n']->phone,
+	            'geo_lat' => $row['n']->geo_lat,
+	            'geo_lng' => $row['n']->geo_lng,
+
                 'image_filename' => isset($row['n']->image_filename) ? $row['n']->image_filename : '',
+	            'last_modified_date' => $row['n']->last_modified_date,
             );
         }
 

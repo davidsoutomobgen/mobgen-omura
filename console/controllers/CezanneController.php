@@ -112,12 +112,56 @@ QUERY;
     {
         echo "actionCreateLocations()\n";
 
-        $alocations = [
-            ['location_code' => 'KK', 'name' => 'Unknown', 'country' => 'Unknown', 'city' => 'Unknown', 'subnet' => '0.0.0.0', 'subnet_mask' => '255.255.255.255'],
-            ['location_code' => 'AMS', 'name' => 'Amsterdam', 'country' => 'The Netherlands', 'city' => 'Amsterdam', 'subnet' => '192.168.0.0', 'subnet_mask' => '255.255.240.0'],
-            ['location_code' => 'COR', 'name' => 'La Coruna', 'country' => 'Spain', 'city' => 'La Coruna', 'subnet' => '192.168.16.0', 'subnet_mask' => '255.255.240.0'],
-            ['location_code' => 'MAL', 'name' => 'Malaga', 'country' => 'Spain', 'city' => 'Malaga', 'subnet' => '0.0.0.0', 'subnet_mask' => '255.255.255.255'],
-            ['location_code' => 'LON', 'name' => 'London', 'country' => 'United Kingdom', 'city' => 'London', 'subnet' => '0.0.0.0', 'subnet_mask' => '255.255.255.255'],
+	    $datetime = date("Y-m-d\TH:i:s", time());
+
+	    $alocations = [
+            ['location_code' => 'KK', 'name' => 'Unknown', 'country' => 'Unknown', 'city' => 'Unknown',
+	            'subnet' => '0.0.0.0', 'subnet_mask' => '255.255.255.255',
+	            'address_line1' => '', 'address_line2' => '', 'email' => '', 'phone' => '',
+	            'geo_lat' => '0.0', 'geo_lng' => '0.0',
+	            'image_filename' => '',
+	            "last_modified_date" => $datetime,
+            ],
+            ['location_code' => 'AMS', 'name' => 'Amsterdam', 'country' => 'The Netherlands', 'city' => 'Amsterdam',
+	            'subnet' => '192.168.0.0', 'subnet_mask' => '255.255.240.0',
+	            'address_line1' => 'Marnixstraat 317',
+	            'address_line2' => '1016 TB Amsterdam',
+	            'email' => 'info@mobgen.com',
+	            'phone' => '+31 20 626 0923',
+	            'geo_lat' => '52.373338', 'geo_lng' => '4.876341',
+	            'image_filename' => 'location_ams.png',
+	            "last_modified_date" => $datetime,
+            ],
+            ['location_code' => 'COR', 'name' => 'La Coruna', 'country' => 'Spain', 'city' => 'La Coruna',
+	            'subnet' => '192.168.16.0', 'subnet_mask' => '255.255.240.0',
+	            'address_line1' => 'Calle Galera 43-1',
+	            'address_line2' => '15003 A Coruña',
+	            'email' => 'coruna@mobgen.com',
+	            'phone' => '+34 981 201040',
+	            'geo_lat' => '43.369992', 'geo_lng' => '-8.401065',
+	            'image_filename' => 'location_cor.png',
+	            "last_modified_date" => $datetime,
+            ],
+            ['location_code' => 'MAL', 'name' => 'Malaga', 'country' => 'Spain', 'city' => 'Malaga',
+	            'subnet' => '0.0.0.0', 'subnet_mask' => '255.255.255.255',
+	            'address_line1' => 'Plaza de Arriola 12',
+	            'address_line2' => '29005 Málaga',
+	            'email' => 'malaga@mobgen.com',
+	            'phone' => '+34 952 024661',
+	            'geo_lat' => '36.718306', 'geo_lng' => '-4.424620',
+	            'image_filename' => 'location_mal.png',
+	            "last_modified_date" => $datetime,
+            ],
+            ['location_code' => 'LON', 'name' => 'London', 'country' => 'United Kingdom', 'city' => 'London',
+	            'subnet' => '0.0.0.0', 'subnet_mask' => '255.255.255.255',
+	            'address_line1' => '21 Whittlesey St',
+	            'address_line2' => 'SE1 8SZ London',
+	            'email' => 'london@mobgen.com',
+	            'phone' => '',
+	            'geo_lat' => '51.5049645', 'geo_lng' => '-0.1099736',
+	            'image_filename' => 'location_lon.png',
+	            "last_modified_date" => $datetime,
+            ],
         ];
 
         $neo4j = new Client();
@@ -127,7 +171,7 @@ QUERY;
             echo "Create Location for {$loc['name']}\n";
 
             $queryTemplate = "MERGE (location:Location { location_code: {loccode} }) " .
-                "ON MATCH SET location = {props} ";
+                "ON MATCH SET location += {props} ";
                 "ON CREATE SET location = {props}";
             $cypher = new Query($neo4j, $queryTemplate, array('loccode'=> $loc['location_code'], 'props' => $loc));
             $results = $neo4j->executeCypherQuery($cypher);
