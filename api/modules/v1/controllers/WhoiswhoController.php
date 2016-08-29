@@ -119,6 +119,7 @@ class WhoiswhoController extends Controller
 	            'geo_lng' => $row['n']->geo_lng,
 
                 'image_filename' => isset($row['n']->image_filename) ? $row['n']->image_filename : '',
+                'description' => isset($row['n']->description) ? $row['n']->description : '',
 	            'last_modified_date' => $row['n']->last_modified_date,
             );
         }
