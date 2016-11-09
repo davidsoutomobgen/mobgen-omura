@@ -37,9 +37,10 @@ class BuildController extends Controller
      * Lists all Builds models.
      * @return mixed
      */  
-    public function actionIndex($hash, $safename='')
+    public function actionIndex($hash, $safename = '')
     {
-        if (!empty($safename))
+
+        if (!empty ($safename))
             $model = Builds::find()->where("buiHash = '$hash' AND buiSafename = '$safename' ")->one();
         else
             $model = Builds::find()->where("buiHash = '$hash'")->one();
@@ -181,6 +182,40 @@ class BuildController extends Controller
                 $downloaded->save();
                 
                 return  Yii::$app->response->sendFile($path_file, $filename);               
+            }
+            else {
+                if ($model->buiVisibleClient == 0) {
+                    echo "This build is not available for public users.";
+                    //return $this->render('error');
+                } else {
+
+                    echo "Sorry but this build doesn't exist (anymore.) If you think this is an error, please contact us.";
+                    //return $this->render('error');
+                }
+            }
+        }
+        else {
+            echo 'Error 404. Are you trying aleatory links?';
+            //return $this->render('error');
+        }
+    }
+
+    public function actionDownload_hash($hash) {
+
+        $model = Builds::find()->where(" buiHash = $hash ")->one();
+
+        if (!empty($model)) {
+            $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
+            if ($model->buiVisibleClient == 1 && file_exists($path_file)) {
+
+                $extension = Builds::_GetExtension($model->buiFile);
+                $filename = $model->buiSafename.'.'.$extension;
+
+                $downloaded = new BuildsDownloaded();
+                $downloaded->buiId = $model->buiId;
+                $downloaded->save();
+
+                return  Yii::$app->response->sendFile($path_file, $filename);
             }
             else {
                 if ($model->buiVisibleClient == 0) {

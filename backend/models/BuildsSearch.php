@@ -13,14 +13,17 @@ use backend\models\Builds;
 class BuildsSearch extends Builds
 {
     public $createdBy;
+    public $searchString;
+    public $pagesize;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['buiId', 'buiProIdFK', 'buiCerIdFK', 'buiType', 'buiVisibleClient', 'buiDeviceOS', 'buiLimitedUDID', 'buiFav', 'buiSendEmail', 'status', 'created_by', 'created_at', 'updated_at'], 'integer'],
-            [['buiName', 'buiSafename', 'buiCreated', 'buiModified', 'buiTemplate', 'buiFile', 'buiVersion', 'buiBuildNum', 'buiChangeLog', 'buiBuildType', 'buiApple', 'buiSVN', 'buiFeedUrl', 'buiBundleIdentifier', 'buiHash', 'buiStatus', 'createdBy'], 'safe'],
+            [['buiId', 'buiProIdFK', 'buiCerIdFK', 'buiType', 'buiVisibleClient', 'buiDeviceOS', 'buiLimitedUDID', 'buiFav', 'buiSendEmail', 'created_by', 'created_at', 'updated_at'], 'integer'],
+            [['buiName', 'buiSafename', 'buiCreated', 'buiModified', 'buiTemplate', 'buiFile', 'buiVersion', 'buiBuildNum', 'buiChangeLog', 'buiBuildType', 'buiApple', 'buiSVN', 'buiFeedUrl', 'buiBundleIdentifier', 'buiHash', 'createdBy', 'searchString'], 'safe'],
         ];
     }
 
@@ -42,17 +45,21 @@ class BuildsSearch extends Builds
      */
     public function search($params)
     {
+        /** pagesize **/
+        $option = UserOptions::find()->getVariable(Yii::$app->user->id, 'pages_table_otaviews');
+        $pagesize = (int) $option['value'];
+        /**************/
         $query = Builds::find();
         // add conditions that should always apply here
         $query->select(['builds.*', 'CONCAT (user.first_name," ", user.last_name) as createdBy']);
         $query->leftJoin('user', 'builds.created_by = user.id');
 
         $dataProvider = new ActiveDataProvider([
-            'pagination'=>array(
-                'pageSize'=>20,
-            ),            
             'query' => $query,
             //'sort'=> ['defaultOrder' => ["buiFav"=>SORT_DESC, 'buiModified'=>SORT_ASC]],
+            'pagination' => [
+                'pageSize' => $pagesize,
+            ],
         ]);
 
         $this->load($params);
@@ -76,17 +83,20 @@ class BuildsSearch extends Builds
             'buiLimitedUDID' => $this->buiLimitedUDID,
             'buiFav' => $this->buiFav,
             'buiSendEmail' => $this->buiSendEmail,
-            'buiStatus' => $this->buiStatus,
             'created_by' => $this->created_by,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'buiName', $this->buiName])
-            ->andFilterWhere(['like', 'buiSafename', $this->buiSafename])
+        if (isset($params['BuildsSearch']['searchString'])){
+            $this->buiName = $params['BuildsSearch']['searchString'];
+        }
+
+        $query->andFilterWhere(['like', 'LOWER(buiName)', strtolower($this->buiName)])
+            ->andFilterWhere(['like', 'LOWER(buiSafename)', strtolower($this->buiSafename)])
             ->andFilterWhere(['like', 'buiTemplate', $this->buiTemplate])
             ->andFilterWhere(['like', 'buiFile', $this->buiFile])
-            ->andFilterWhere(['like', 'buiVersion', $this->buiVersion])
+            ->andFilterWhere(['like', 'LOWER(buiVersion)', strtolower($this->buiVersion)])
             ->andFilterWhere(['like', 'buiBuildNum', $this->buiBuildNum])
             ->andFilterWhere(['like', 'buiChangeLog', $this->buiChangeLog])
             ->andFilterWhere(['like', 'buiBuildType', $this->buiBuildType])
@@ -94,11 +104,11 @@ class BuildsSearch extends Builds
             ->andFilterWhere(['like', 'buiSVN', $this->buiSVN])
             ->andFilterWhere(['like', 'buiFeedUrl', $this->buiFeedUrl])
             ->andFilterWhere(['like', 'buiBundleIdentifier', $this->buiBundleIdentifier])
-            ->andFilterWhere(['like', 'buiHash', $this->buiHash])
+            ->andFilterWhere(['like', 'LOWER(buiHash)', strtolower($this->buiHash)])
             ->andFilterWhere([
                 'or',
-                ['like', 'user.first_name', $this->createdBy],
-                ['like', 'user.last_name', $this->createdBy]
+                ['like', 'LOWER(user.first_name)', strtolower($this->createdBy)],
+                ['like', 'LOWER(user.last_name)', strtolower($this->createdBy)]
             ]);
 
             //->andFilterWhere(['like', 'buiFav', $this->buiFav]);
@@ -117,7 +127,8 @@ class BuildsSearch extends Builds
                 'updated_at',
                 'buiFav',
             ],
-            'defaultOrder' => ['buiFav'=>SORT_DESC, 'updated_at'=>SORT_DESC],
+            //'defaultOrder' => ['buiFav'=>SORT_DESC, 'updated_at'=>SORT_DESC],
+            'defaultOrder' => ['updated_at'=>SORT_DESC],
         ]);
 
         return $dataProvider;

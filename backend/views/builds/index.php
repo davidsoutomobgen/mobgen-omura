@@ -30,6 +30,21 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\CheckboxColumn'],
             'buiId',
             'buiName',
+            'buiVersion',
+            [
+                'attribute'=>'buiHash',
+                'label'=>'Public URL',
+                'format' => 'raw',
+                'value'=>function ($data) {
+                    $frontend = Yii::$app->params['FRONTEND'];
+                    $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $data->buiFile;
+echo $path_file.'<br />';
+                    if (file_exists($path_file))
+                        return Html::a($data->buiHash, Yii::$app->params["FRONTEND"].'/build/'.$data->buiHash.'/'.$data->buiSafename, ['target'=>'_blank', 'title'=>$data->buiName, 'alt'=>$data->buiName]);
+                    else
+                        return 'Not available';
+                },
+            ],
             'buiSafename',
             'created_at:date',
             'updated_at:date',

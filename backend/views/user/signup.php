@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php 
                     $items[10] = 'DEVELOPER';
                     $items[11] = 'QA';
-                    //$items[12] = 'LEAD';
+                    $items[12] = 'LEAD';
 
                     echo $form->field($model, 'role_id')->dropDownList(
                         $items,           // Flat array ('id'=>'label')

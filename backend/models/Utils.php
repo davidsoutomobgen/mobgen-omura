@@ -65,6 +65,36 @@ class Utils
     }
 
 
+    public static function getRoles() {
+
+        $roles[10] = 'DEVELOPER';
+        $roles[11] = 'QA';
+        $roles[12] = 'LEAD';
+
+        return [
+            'roles' => $roles,
+        ];
+    }
+
+    public static function getRolById($id) {
+        switch ($id) {
+            case 10:
+                $role = 'DEVELOPER';
+                break;
+            case 11:
+                $role = 'QA';
+                break;
+            case 12:
+                $role = 'LEAD';
+                break;
+            default:
+                $role = '-';
+        }
+
+        return $role;
+    }
+
+
     public static function getTemplate()
     {
         return array(
@@ -150,4 +180,88 @@ class Utils
         return $new_string;
     }
 
+    public static function createSummary($text, $characters) {
+
+        $cText=strip_tags(substr($text,0,$characters));
+        $whitespaces= substr_count($text,' ');
+        $aWords = array();
+        $string = '';
+        $aWords = explode(" ",$cText);
+        for ($i = 0; $i <$whitespaces; $i++){
+            $string .= $aWords[$i].' '; 
+        }
+        return $string;
+    }
+
+    public static function formatSizeUnits($bytes)
+    {
+        if ($bytes >= 1073741824)
+        {
+            $bytes = number_format($bytes / 1073741824, 2) . ' GB';
+        }
+        elseif ($bytes >= 1048576)
+        {
+            $bytes = number_format($bytes / 1048576, 2) . ' MB';
+        }
+        elseif ($bytes >= 1024)
+        {
+            $bytes = number_format($bytes / 1024, 2) . ' kB';
+        }
+        elseif ($bytes > 1)
+        {
+            $bytes = $bytes . ' bytes';
+        }
+        elseif ($bytes == 1)
+        {
+            $bytes = $bytes . ' byte';
+        }
+        else
+        {
+            $bytes = '0 bytes';
+        }
+
+        return $bytes;
+    }
+
+    public static function randomPassword() {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+        $pass = array();
+        $alphaLength = strlen($alphabet) - 1;
+        for ($i = 0; $i < 8; $i++) {
+            $n = rand(0, $alphaLength);
+            $pass[] = $alphabet[$n];
+        }
+        return implode($pass); 
+    }
+
+    public static function freeSpace()
+    {
+        // disk space free (in bytes)
+        $df = disk_free_space("/");
+        // disk space total (in bytes)
+        $dt = disk_total_space("/");
+        //disk space used (in bytes)
+        $du = $dt - $df;
+        // percentage of disk used
+        $dp = sprintf('%.2f', ($du / $dt) * 100);
+
+        // format space
+        $df = Utils::formatSize($df);
+        $du = Utils::formatSize($du);
+        $dt = Utils::formatSize($dt);
+
+        $hd['freespace'] = $df;
+        $hd['totalspace'] = $dt;
+        $hd['usedspace'] = $du;
+        $hd['diskused'] = $dp;
+
+        return($hd);
+    }
+
+    private static function formatSize( $bytes )
+    {
+        $types = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+        for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
+        return( round( $bytes, 2 ) . " " . $types[$i] );
+    }
 }

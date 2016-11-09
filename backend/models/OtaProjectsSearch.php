@@ -6,12 +6,15 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use backend\models\OtaProjects;
+use backend\models\UserOptions;
 
 /**
  * OtaProjectsSearch represents the model behind the search form about `backend\models\OtaProjects`.
  */
 class OtaProjectsSearch extends OtaProjects
 {
+    public $pagesize;
+
     /**
      * @inheritdoc
      */
@@ -41,20 +44,26 @@ class OtaProjectsSearch extends OtaProjects
      */
     public function search($params)
     {
+        /** pagesize **/
+        $option = UserOptions::find()->getVariable(Yii::$app->user->id, 'pages_table_otaprojects');
+        $pagesize = (int) $option['value'];
+        /**************/
         $query = OtaProjects::find();
 
         // add conditions that should always apply here
         /*
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-        ]);
+            'pagination' => [
+                'pageSize' => $pagesize,
+            ],
         */
         $dataProvider = new ActiveDataProvider([
-           'pagination'=>array(
-                    'pageSize'=>20,
-            ),
             'query' => $query,
-            'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]]
+            'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]],
+	    'pagination' => [
+                'pageSize' => $pagesize,
+            ],
         ]);
 
         $this->load($params);
@@ -76,8 +85,8 @@ class OtaProjectsSearch extends OtaProjects
             'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'safename', $this->safename])
+        $query->andFilterWhere(['like', 'LOWER(name)', strtolower($this->name)])
+            ->andFilterWhere(['like', 'LOWER(safename)', strtolower($this->safename)])
             ->andFilterWhere(['like', 'proHash', $this->proHash])
             ->andFilterWhere(['like', 'proAPIKey', $this->proAPIKey])
             ->andFilterWhere(['like', 'proAPIBuildKey', $this->proAPIBuildKey])

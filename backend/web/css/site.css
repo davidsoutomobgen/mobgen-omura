@@ -90,6 +90,12 @@ a.desc:after {
     margin: 0 0 15px 0;
 }
 
+section.content-header  ol.breadcrumb {
+    float: none;
+    right: unset;
+    left: 20px;
+}
+
 /* new dashboard */
 #dashboard.ng-scope {
     margin: 20px;
@@ -417,9 +423,10 @@ select.form-control.dropdown-list{
 }
 
 ul.pagination{
-    float: none;
+    float: right;
     display: inline-block;
-    padding-left: 80%;
+    margin-bottom:0px;
+    /*padding-left: 80%;*/
 }
 
 .right{
@@ -439,7 +446,7 @@ ul.pagination{
 }
 
 div.ota-projects-view p {
-    float: right;
+    /*float: right;*/
 }
 
 .field-buildsnotification-email {
@@ -450,10 +457,11 @@ div.ota-projects-view p {
 .reload {
     with: auto;
     width: auto;
-    float: left;
+    /* float: left; */
     margin: 28px;
     padding: 0px;
     height: auto;
+    text-align: right;
 }
 
 .builds-view p {
@@ -465,23 +473,33 @@ div.ota-projects-view p {
     color: #3c8dbc;
 }
 
-section.content div p {
+section.content div.btn-header p {
     text-align: right;
     margin-bottom: 20px;
     margin-top: -40px;
 }
 
-section.content div p.alignleft{
-    float: none;
-    margin-top: 0;
-    text-align: left;
+section.content div h1 {
+    /*width: 60%;*/
+    overflow: hidden;
+    height: 36px;
+    /*background-color: red;*/
 }
 
 
-section.content div p.identifier {
-    float: none;
-    margin-top: 0;
+section.content div.btn-footer p {
+    text-align: right;
+    margin-top: 0px;
+}
+
+section.content div#textpagesize p {
+    margin-top: -40px;
+    font-size: 0.8em;
+}
+
+section.content div.site-error p {
     text-align: left;
+    margin: 0 10px;
 }
 
 section.content div.hint-block p
@@ -527,15 +545,6 @@ section.content div.hint-block p
     font-weight: bold;
 }
 
-#form-signup p {
-    float: none;
-    margin-top: 1px;
-}
-.site-error p {
-    float: none;
-    margin-top: 0px !important;
-    text-align: left !important;
-} 
 /* COLORS */
 i.skin-blue {
     color: #3c8dbc;
@@ -556,32 +565,104 @@ i.skin-yellow{
     color: #f39c12;
 }
 
-.wrap {
+
+h3.box-title {
+    font-size: 1.6em;
+}
+
+div#w0.grid-view,
+div#w1.grid-view {
+    overflow-x: scroll;
+}
+
+div#pagesize {
+    width: 154px;
+    float: right;
+    text-align: right;
+    
+    z-index: 999;
+}
+div#textpagesize {
+    width: 100%;
+    text-align: left;
+    float: left;
+    padding-left: 52px;
+}
+#pagesize select {
+    width: 46px;
+    padding: 0;
+}
+#pagesize p {
     width: 100%;
 }
-
-.wrap table {
-    width: 100%;
+#dias_apertura .col-xs-1 {
+    margin: 0px 15px;
+    width: 11%;
 }
 
-.wrap table tr td {
-    padding: 5px;
-    border: 1px solid #eee;
-    width: 100px;
-    word-wrap: break-word;
+.grid-view tbody tr:hover{
+    cursor: pointer;
+    background: #f5f5f5;
 }
 
-.wrap table.head tr td {
-    background: #eee;
+.left {
+    float: left;
 }
 
-.wrap .inner_table {
-    height: 100%;
-    overflow-y: auto;
+.right {
+    float: right;
 }
 
-#w0 th {
-    width: 30% !important;
+.item p{
+    margin: 0px;
+    padding: 2px 0;
+    text-align: center;
 }
 
+article.item {
+    margin: 0;
+    padding: 8px;
+    border-top: 1px solid #f4f4f4;
+}
 
+article.item.odd{
+    background-color: #f9f9f9;
+}
+
+article.item .lateral_item{
+    text-align: center;
+    width: 15%;
+}
+article.item .lateral_item.icons {
+    padding:  2%;
+    padding-left: 8%;
+}
+
+.callout.callout-danger, .alert-danger, .alert-error, .label-danger, .modal-danger .modal-body {
+    background-color: #FFBAD3 !important;
+    border: 1px solid #DD4B38;
+}
+
+.callout.callout-danger h4, .alert-danger h4, .alert-error h4, .label-danger h4, .modal-danger .modal-body  h4{
+    color: #dd4b38;
+}
+
+.builds-create i.glyphicon.glyphicon-file.kv-caption-icon,
+.builds-update i.glyphicon.glyphicon-file.kv-caption-icon{
+    padding-right: 6px;
+}
+
+div#otaviews {
+    float: left;
+    margin-top: 0px;
+}
+
+ul.products-list li.item ul {
+    list-style: none;
+    padding-left: 0px;
+    text-align: center;
+}
+
+ul.products-list li.item ul li {
+    line-height: 1.6em;
+}

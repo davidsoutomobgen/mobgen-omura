@@ -17,6 +17,7 @@ class SignupForm extends Model
     public $last_name;
     public $username;
     public $email;
+    public $status;
     public $password;
     public $permissions;
     public $role_id;
@@ -33,6 +34,7 @@ class SignupForm extends Model
             ['first_name', 'required','message'=>'have to fill this field'],
             
             ['last_name', 'required'],
+            ['status', 'required'],
             
             ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
@@ -43,6 +45,8 @@ class SignupForm extends Model
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
+
+            //[['email', 'role_id'], 'unique', 'targetAttribute' => ['email', 'role_id'], 'message' => 'DDDD'],
 
             ['password', 'required'],
             ['password', 'string', 'min' => 6],

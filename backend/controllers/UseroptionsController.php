@@ -100,8 +100,7 @@ class UseroptionsController extends Controller
      * @return mixed
      */
     public function actionUpdateajax()
-    {
-        //echo 'aki';die;
+    {        
 
         $option = Options::find()
             ->where('variable = :option', [':option' => Yii::$app->request->post('option')])
@@ -132,10 +131,9 @@ class UseroptionsController extends Controller
 
             echo '1';
         }
-        else {
-
-        }
-        echo '0';
+        else
+            echo '0';
+        
         //return false;
     }
 

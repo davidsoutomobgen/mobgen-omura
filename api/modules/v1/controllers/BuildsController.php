@@ -59,7 +59,6 @@ class BuildsController extends ActiveController
      */
     public function actionRegisternewbuild($projectid = 0, $apikey2 = '', $apikeybuild = ''){
 
-         //echo $apikey2.' '.$apikeybuild;die;
         //Start             
         if(isset($projectid))
         {
@@ -89,7 +88,7 @@ class BuildsController extends ActiveController
                         foreach ($build_types as $types) {
                             $btypes[$types->id] = $types->idOtaBuildtypes->name;
                         }
-                        //echo '<pre>';print_r($temp);echo'</pre>'; die;
+                        //echo '<pre>';print_r($btypes);echo'</pre>'; die;
         
                         if (!empty($project)  ) {
                             $build = new Builds();
@@ -98,7 +97,7 @@ class BuildsController extends ActiveController
                             $post = new Builds();
                             $post->load($temp);
 
-                            //echo '<pre>';print_r($post);echo'</pre>';die;
+                            //echo '<pre>';print_r($post->buiName);echo'</pre>';die;
                             if (isset($post->buiFeedUrl1)) $post->buiFeedUrl1 = urldecode($post['buiFeedUrl1']);
 
                             if (!empty($post->buiName)) {
@@ -108,10 +107,10 @@ class BuildsController extends ActiveController
                                         $device_os = 0; // iOS
                                         $cerIdFK = 1;
                                     } elseif ($extension == "apk") {
+                                        $device_os = 1; // Android
                                         $cerIdFK = 0;
                                     }
                                     // Check extension
-                                        $device_os = 1; // Android
                                     if (isset($device_os)) {
                                         //print_r($post->attributes);die;
                                         $safe = Builds::_GenerateSafeFileName($_REQUEST['buiName']);
@@ -129,19 +128,19 @@ class BuildsController extends ActiveController
                                         die;
                                     }
 
-                                    if(isset($post->buiHash) && !empty($post->buiHash)) {
+                                    if(isset($post['api_build_hash'])) {
                                         // Add to database
-                                        $build = Builds::find()->where('buiHash = :api_build_hash',  [':api_build_hash' =>  $post->buiHash])->one();
+                                        $build = Builds::find()->where('buiHash = :api_build_hash',  [':api_build_hash' =>  $post->api_build_hash])->one();
 
                                         if (!isset($build)) {
                                             $error = "Build Hash not exists.\n";
-                                            echo $error;
                                             die;
                                         } else {
                                             $build->load($temp);
                                             $build->buiProIdFK = $projectid;                                       
                                             $build->buiSafename = $safe;
                                             $build->buiDeviceOS = $device_os;
+                                            $build->buiType = $device_os;
                                             $build->buiCerIdFK = $cerIdFK;
                                             $build->buiSendEmail = $buiSendEmail;
                                             $build->buiVisibleClient = $buiVisibleClient;
@@ -158,7 +157,8 @@ class BuildsController extends ActiveController
                                             }
                                             echo "Build UPDATED Correctly!\n";
 
-                                            $project = OtaProjects::find()->where('id = :buiProIdFK',  [':buiProIdFK' =>  $build->buiProIdFK])->one();
+                                            $project = new OtaProjects();
+                                            $project->load($build->buiProIdFK);
                                             $project->updated_at = $build->updated_at;
                                             $project->save();
                                         }
@@ -166,30 +166,28 @@ class BuildsController extends ActiveController
                                     else{
 
                                         $build = Builds::find()->where('buiSafename = :buiSafename',  [':buiSafename' =>  $safe])->one();
-
+                                        /*
                                         if (isset($build)) {
-                                            //echo "Build already exists.\n";
-                                            //$id = $build->buiId;
-                                            //die;
-                                            $safe = $safe.'_'.rand();
-                                        } 
-                                        //else {
+                                            echo "Build already exists.\n";
+                                            $id = $build->buiId;
+                                            die;
+                                        } else {
+                                            */
 
                                             $build = new Builds();
                                             $build->load($temp);
                                             $build->buiProIdFK = $projectid;                                       
                                             $build->buiSafename = $safe;
                                             $build->buiDeviceOS = $device_os;
+                                            $build->buiType = $device_os;
                                             $build->buiCerIdFK = $cerIdFK;
                                             $build->buiSendEmail = $buiSendEmail;
                                             $build->buiVisibleClient = $buiVisibleClient;
                                             $build->buiFav = $buiFav;
                                             $build->buiHash = Builds::_GenerateHash();                                           
 
-
                                             $user = User::findByUsername($model->username);  
                                             $build->created_by = $user->id;
-
                                             $build->created_at = strtotime(date("Y-m-d H:i:s"));
                                             $build->updated_at = strtotime(date("Y-m-d H:i:s"));
 
@@ -202,9 +200,10 @@ class BuildsController extends ActiveController
                                             }
                                             echo "Build CREATED correctly!\n";
 
-					    $project = OtaProjects::find()->where('id = :buiProIdFK',  [':buiProIdFK' =>  $build->buiProIdFK])->one();
+                                            $project = new OtaProjects();
+                                            $project->load($build->buiProIdFK);
                                             $project->updated_at = $build->updated_at;
-					    $project->save();
+                                            $project->save();
                                         //}
                                     }
                                 
@@ -216,10 +215,7 @@ class BuildsController extends ActiveController
                                         $build->buiLimitedUDID = 0;
                                         $identifier = "";
                                         if ($extension == "ipa") {
-                                                      
-                                            $build->buiType = 0; // iOS
-                                            $build->buiCerIdFK = 1;
-
+                                            
                                             $udids = Builds::_getUDIDs($path_file);
                                             if (count($udids) > 0) {
                                                 $build->buiLimitedUDID = 1;
@@ -249,10 +245,8 @@ class BuildsController extends ActiveController
                                             $identifier = Builds::_getIdentifier($path_file);
 
                                         } elseif ($extension == "apk") {
-                                            $identifier = Builds::_getPackage($path_file);
-                                            $build->buiId = $id;
-                                            $build->buiType = 1; // Android
-                                            $build->buiCerIdFK = 0;
+                                                $identifier = Builds::_getPackage($path_file);
+                                                $build->buiId = $id;
                                         }
 
                                         $build->buiFile = $filename;
@@ -265,9 +259,8 @@ class BuildsController extends ActiveController
                                             echo "Build ADDED.\n"; 
 
                                             if ($buiSendEmail) {
-
-                                                if (!empty($temp['Builds']['fld_email_list'])) {       
-                                                    $to = $temp['Builds']['fld_email_list'];
+                                                if (($post->fld_email_list)) {       
+                                                    $to = $post->fld_email_list;
                                                 }
                                                 else {
                                                     $to = $project->default_notify_email;        
@@ -276,7 +269,6 @@ class BuildsController extends ActiveController
                                                 $domain =  Yii::$app->params["FRONTEND"]; 
                                                 $template = Yii::$app->params["TEMPLATES"]; 
                                       
-                                                $user = User::findByUsername($model->username);  
                                                 Builds::_SendMail($to, $template, $domain, $project, $build, $user->id);
                                                 echo "Emails send to: $to \n";
                                             }
@@ -303,9 +295,7 @@ class BuildsController extends ActiveController
                                         echo "Error uploading file.\n";
                                     }
                                 }
-                                else echo "Error FILES['error'] = ".$_FILES['buiFile']['error'];
                             }
-                            else echo "Error: buiName is empty";
                         }
                         else
                         {   

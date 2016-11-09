@@ -32,4 +32,16 @@ class OtaProjectsQuery extends \yii\db\ActiveQuery
     {
         return parent::one($db);
     }
+
+    public function getLastProjects($status = 0, $n = 5)
+    {
+
+        $data = OtaProjects::find()
+            -> where('deleted = :status ', [':status' => $status])
+            -> orderBY('updated_at DESC')
+            -> limit($n)
+            -> all();
+
+        return ($data);
+    }
 }

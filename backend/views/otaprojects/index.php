@@ -1,6 +1,9 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
+use yii\widgets\ListView;
+use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\OtaProjectsSearch */
@@ -10,6 +13,7 @@ $this->title = Yii::t('app', 'Ota Projects');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
+<?= $this->render('/utils/_alerts', []); ?>
 <?php
 if (isset($message) && ($message == 1)) {
 ?>
@@ -34,16 +38,24 @@ if (isset($message) && ($message == 1)) {
 <div class="ota-projects-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <div class="btn-header">
+        <?= $this->render('/utils/_buttonscreate', [
+            'titulo' => Yii::t('app', 'Ota Projects'),
+        ]); ?>
+    </div>
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3  class="box-title"><?php echo Yii::t('app', 'List'); ?></h3>
+        </div>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Create Ota Projects'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-    <div class="wrap">
-        <div class="inner_table">
+        <div class="box-body">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
+                'filterSelector' => '#' . Html::getInputId($searchModel, 'pagesize'),
+                'rowOptions'   => function ($data, $key, $index, $grid) {
+                        return ['data-id' => $data->id];
+                    },
                 'columns' => [
                     //['class' => 'yii\grid\SerialColumn'],
                     //'id',
@@ -92,9 +104,23 @@ if (isset($message) && ($message == 1)) {
                     ['class' => 'yii\grid\ActionColumn'],
                 ],
                 'pager' => [
+                    'options'=>['class'=>'pagination'],   // set clas name used in ui list of pagination
                     'maxButtonCount'=>3,    // Set maximum number of page buttons that can be displayed
                 ],
+            ]);
+            ?>
+            <div class="clear"></div>
+            <?= $this->render('/utils/_pagination', [
+                'dataProvider' => $dataProvider,
+                'searchModel' => $searchModel,
             ]); ?>
         </div>
+    </div>
+</div>
+<div class="btn-footer">
+    <div class="btn-header">
+        <?= $this->render('/utils/_buttonscreate', [
+            'titulo' => Yii::t('app', 'Modalidad'),
+        ]); ?>
     </div>
 </div>

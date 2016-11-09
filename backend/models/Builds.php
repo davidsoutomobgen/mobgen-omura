@@ -34,7 +34,6 @@ use backend\models\BuildsNotification;
  * @property string $buiHash
  * @property integer $buiFav
  * @property integer $buiSendEmail
- * @property integer $buiStatus
  * @property integer $created_by
  * @property integer $created_at
  * @property integer $updated_at
@@ -51,6 +50,7 @@ class Builds extends \common\models\CActiveRecord
     public $fld_sent_email;
     public $fld_email_list;
     public $status;
+    public $searchString;
     /**
      * @inheritdoc
      */
@@ -65,10 +65,10 @@ class Builds extends \common\models\CActiveRecord
     public function rules()
     {
         return [
-            [['buiName', 'buiSafename', 'buiTemplate', 'buiProIdFK', 'buiVisibleClient', 'buiFav', 'buiSendEmail'], 'required'],
-            [['buiCreated', 'buiModified'], 'safe'],
+            [['buiName', 'buiSafename', 'buiProIdFK', 'buiVisibleClient', 'buiFav', 'buiSendEmail'], 'required'],
+            [['buiCreated', 'buiModified', 'searchString'], 'safe'],
             [['buiChangeLog'], 'string'],
-            [['buiProIdFK', 'buiCerIdFK', 'buiType', 'buiVisibleClient', 'buiDeviceOS', 'buiLimitedUDID', 'buiFav', 'buiSendEmail', 'created_by', 'created_at', 'updated_at', 'buiStatus'], 'integer'],
+            [['buiProIdFK', 'buiCerIdFK', 'buiType', 'buiVisibleClient', 'buiDeviceOS', 'buiLimitedUDID', 'buiFav', 'buiSendEmail', 'created_by', 'created_at', 'updated_at'], 'integer'],
             [['buiName', 'buiSafename', 'buiTemplate', 'buiFile', 'buiVersion', 'buiApple', 'buiSVN'], 'string', 'max' => 64],
             [['buiBuildNum', 'buiHash'], 'string', 'max' => 16],
             [['buiBuildType'], 'string', 'max' => 255],
@@ -109,7 +109,6 @@ class Builds extends \common\models\CActiveRecord
             'buiHash' => Yii::t('app', 'Bui Hash'),
             'buiFav' => Yii::t('app', 'Fav'),
             'buiSendEmail' => Yii::t('app', 'Sent notification email with install link'),
-            'buiStatus' => Yii::t('app', 'Status'),
             'created_by' => Yii::t('app', 'Created by'),
             'created_at' => Yii::t('app', 'Created at'),
             'updated_at' => Yii::t('app', 'Updated at'),
@@ -227,7 +226,7 @@ class Builds extends \common\models\CActiveRecord
     public static function _RemoveExtension($filename)
     {
         $withoutExt = preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename);
-        return $withoutExt;
+         return $withoutExt;
     }
 
     public static function _getUDIDs($file) {
@@ -272,9 +271,6 @@ class Builds extends \common\models\CActiveRecord
             $plist->parse($data);
             $plist = $plist->toArray();
             $entitlements = $plist['Entitlements'];
-            //echo '<pre>';print_r($plist);echo'</pre>';die;
-
-
             return substr($entitlements['application-identifier'], strpos($entitlements['application-identifier'], '.') + 1);
         } else {
             throw new \Exception("IPA could not get opened\n");
@@ -401,7 +397,7 @@ class Builds extends \common\models\CActiveRecord
         $mail = str_replace('{{$url}}', $url, $mail);
         $mail = str_replace('{{$project.proName}}', $project->name, $mail);
         //str_replace('{{build}}', $build, $tmpcont);
-
+/*
         $mail = Utils::remove_extra_crs($mail);  // Must do this: replaces returns.
         //echo "mail: $mail<br />\n";die;
 
@@ -413,7 +409,7 @@ class Builds extends \common\models\CActiveRecord
 //      echo "to: $to<br />\n";
         mail($to, $subject, $mail, $headers);
 
-
+*/
 
         $emails = explode(',', $to);
 

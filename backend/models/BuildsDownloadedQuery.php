@@ -2,6 +2,8 @@
 
 namespace backend\models;
 
+use yii\db\Query;
+
 /**
  * This is the ActiveQuery class for [[BuildsDownloaded]].
  *
@@ -31,5 +33,17 @@ class BuildsDownloadedQuery extends \yii\db\ActiveQuery
     public function one($db = null)
     {
         return parent::one($db);
+    }
+
+    public function totalDownloads()
+    {
+        $query = new Query;
+        $query -> select(['count(*) as total'])
+            -> from('builds_downloaded')
+            -> all();
+
+        $command = $query->createCommand();
+        $data = $command->queryAll();
+        return ($data[0]['total']);
     }
 }

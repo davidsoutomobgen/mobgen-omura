@@ -16,10 +16,6 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a( Yii::t('app', 'Back Project'), $url = '/otaprojects/'.$model->buiProIdFK, ['class' => 'btn btn-warning']);?>
-    </p>
-
     <?= $this->render('_form', [
         'model' => $model,
         'ota_buildtypes' => $ota_buildtypes,
