@@ -4,6 +4,7 @@ namespace backend\controllers;
 use backend\models\UserOptions;
 use backend\models\UserOptionsSearch;
 use backend\models\UserOptionsQuery;
+use common\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -76,31 +77,27 @@ class SiteController extends Controller
         $options = UserOptions::find()->getUserOptionsByUserId((int) $userid);
         $session = Yii::$app->session;
         foreach ($options as $opt) {
-            //var_dump($opt);
-            //echo '<br>';
             if ($opt['type'] == 'integer')
                 $session->set($opt['variable'], (int) $opt['value']);
             else if ($opt['type'] == 'string')
                 $session->set($opt['variable'], (string) $opt['value']);
         }
 
-        //Yii::$app->view->params['fixed'] = '';
-
-        if ($userid == 1)
-            return $this->render('index', ['response' => date('Y-m-d H:i:s')]);
+        if (\Yii::$app->devicedetect->isMobile())
+            $view = 'indexmobile';
         else
-            return $this->redirect('/otaprojects/index');
+            $view = 'index';
 
-        //return $this->render('index', ['response' => date('Y-m-d H:i:s')]);
+        $user = User::find()->where(['id'=>$userid])->one();
+
+
+        return $this->render($view, ['user'=>$user, 'response' => date('Y-m-d H:i:s')]);
+
     }
 
     public function actionLogin()
     {
         $this->layout = 'loginLayout';
-        if (!\Yii::$app->user->isGuest) {
-
-            return $this->goHome();
-        }
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
@@ -112,46 +109,6 @@ class SiteController extends Controller
         }
     }
 
-    /*
-    public function actionLogin()
-    {
-        $serviceName = Yii::$app->getRequest()->getQueryParam('service');
-
-        //echo '<pre>';print_r($serviceName);echo '</pre>'; die;
-        echo '<pre>';var_dump($serviceName);echo '</pre>';
-
-
-        if (isset($serviceName)) {
-            // /** @var $eauth \nodge\eauth\ServiceBase
-            $eauth = Yii::$app->get('eauth')->getIdentity($serviceName);
-            $eauth->setRedirectUrl(Yii::$app->getUser()->getReturnUrl());
-            $eauth->setCancelUrl(Yii::$app->getUrlManager()->createAbsoluteUrl('site/login'));
-
-            try {
-                if ($eauth->authenticate()) {
-//                  var_dump($eauth->getIsAuthenticated(), $eauth->getAttributes()); exit;
-
-                    $identity = User::findByEAuth($eauth);
-                    Yii::$app->getUser()->login($identity);
-
-                    // special redirect with closing popup window
-                    $eauth->redirect();
-                } else {
-                    // close popup window and redirect to cancelUrl
-                    $eauth->cancel();
-                }
-            } catch (\nodge\eauth\ErrorException $e) {
-                // save error to show it later
-                Yii::$app->getSession()->setFlash('error', 'EAuthException: ' . $e->getMessage());
-
-                // close popup window and redirect to cancelUrl
-//              $eauth->cancel();
-                $eauth->redirect($eauth->getCancelUrl());
-            }
-        }
-    }
-
-*/
     public function actionLogout()
     {
         Yii::$app->user->logout();

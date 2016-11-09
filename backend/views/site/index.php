@@ -5,306 +5,142 @@ $this->title = Yii::$app->params['projectName'];
 
 use yii\widgets\Pjax;
 use yii\helpers\Html;
+
+use backend\models\Builds;
+use backend\models\BuildsDownloaded;
+use backend\models\OtaProjects;
+use backend\models\Mobgenners;
+use backend\models\System;
+use backend\models\Utils;
 ?>
-
-
-<div class="site-index">
-    <div id="dashboard" class="ng-scope">
-        <div class="body-content">
-            <div class="dashboard ng-scope">
-                <div id="dashboard-drag-area" class="dashboard-inner">
-
-                    <?php if ((isset($_SESSION['welcome-close'])) && ($_SESSION['welcome-close'] == 0 )) { ?>
-                        <div id="welcometile" class="ng-isolate-scope">
-                            <div class="tile ng-hide" >
-                                <div class="welcome-tile">
-                                    <a id="welcome-close"  href="#" class="welcome-close white right">
-                                        <i  class="fa fa-close"></i>
-                                    </a>
-                                    <h2 class="ng-binding">OTA Share</h2>
-                                    <i  class="fa fa-home fa-5x white" style="float:left"></i>
-                                    <p class="lead ng-binding">
-                                        Customize your dashboard, change the color, setup the header, move and re-order the menu.
-                                    </p>
-                                    <!--
-                                    <ul>
-                                        <li><i class="fa fa-question"></i><span><a class="js-context-help-link ng-binding" href="#">Open help</a></span></li>
-                                    </ul>
-                                    -->
-                                </div>
-                            </div>
-                        </div>
-                    <?php } ?>
-                    <?php $userId= \Yii::$app->user->identity->id; ?>
-                    <ul id="dashboard_ul" class="">
-                        <!-- Otashare -->
-                        <li id="projects" class="tile ng-scope pos_1">
-                            <div class="tile-outer-wrapper ng-isolate-scope">
-                                <div class="ng-scope">
-                                    <div class="tile-background">
-                                    </div>
-                                    <div class="tile-mask">
-                                        <div class="tile-wrapper">
-                                            <div class="tile-dead">
-                                                <a class="tile-btn tile-dead-btn" href="/otaprojects" target="_top" >
-                                                    <div class="ng-isolate-scope">
-                                                        <i class="fa fa-share-alt fa-4x"></i>
-                                                    </div>
-                                                    <h4 class="ng-binding">Otashare</h4>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <?php
-                        if ($userId == 1) {
-                            ?>
-                            <!-- Projects -->
-                            <!--
-                            <li id="projects" class="tile ng-scope pos_1">
-                                <div class="tile-outer-wrapper ng-isolate-scope">
-                                    <div class="ng-scope">
-                                        <div class="tile-background">
-                                        </div>
-                                        <div class="tile-mask">
-                                            <div class="tile-wrapper">
-                                                <div class="tile-dead">
-                                                    <a class="tile-btn tile-dead-btn" href="/project" target="_top">
-                                                        <div class="ng-isolate-scope">
-                                                            <i class="fa fa-flask fa-4x"></i>
-                                                        </div>
-                                                        <h4 class="ng-binding">Projects</h4>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            -->
-                            <!-- Project type -->
-                            <!--
-                            <li id="project_type" class="tile ng-scope pos_2">
-                                <div class="tile-outer-wrapper ng-isolate-scope">
-                                    <div class="ng-scope">
-                                        <div class="tile-background">
-                                        </div>
-                                        <div class="tile-mask">
-                                            <div class="tile-wrapper">
-                                                <div class="tile-dead">
-                                                    <a class="tile-btn tile-dead-btn" href="/type" target="_top">
-                                                        <div class="ng-isolate-scope">
-                                                            <i class="fa fa-desktop fa-4x"></i>
-                                                        </div>
-                                                        <h4 class="ng-binding">Project Type</h4>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            -->
-                            <!-- Company -->
-                            <!--
-                            <li id="mobgenners" class="tile ng-scope pos_3">
-                                <div class="tile-outer-wrapper ng-isolate-scope">
-                                    <div class="ng-scope">
-                                        <div class="tile-background">
-                                        </div>
-                                        <div class="tile-mask">
-                                            <div class="tile-wrapper">
-                                                <div class="tile-dead">
-                                                    <a class="tile-btn tile-dead-btn" target="_top" href="/company">
-                                                        <div class="ng-isolate-scope">
-                                                            <i class="fa fa-institution fa-4x"></i>
-                                                        </div>
-                                                        <h4 class="ng-binding">Company</h4>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li-->
-                            <!-- Company -->
-                            <!--
-                            <li id="mobgenners" class="tile ng-scope pos_3">
-                                <div class="tile-outer-wrapper ng-isolate-scope">
-                                    <div class="ng-scope">
-                                        <div class="tile-background">
-                                        </div>
-                                        <div class="tile-mask">
-                                            <div class="tile-wrapper">
-                                                <div class="tile-dead">
-                                                    <a class="tile-btn tile-dead-btn" target="_top" href="/offices">
-                                                        <div class="ng-isolate-scope">
-                                                            <i class="fa fa-building-o fa-4x"></i>
-                                                        </div>
-                                                        <h4 class="ng-binding">Company</h4>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            -->
-                            <!-- Mobgenners -->
-                            <!--
-                            <li id="mobgenners" class="tile ng-scope pos_3">
-                                <div class="tile-outer-wrapper ng-isolate-scope">
-                                    <div class="ng-scope">
-                                        <div class="tile-background">
-                                        </div>
-                                        <div class="tile-mask">
-                                            <div class="tile-wrapper">
-                                                <div class="tile-dead">
-                                                    <a class="tile-btn tile-dead-btn" target="_top" href="/mobgenners">
-                                                        <div class="ng-isolate-scope">
-                                                            <i class="fa fa-circle-o fa-4x"></i>
-                                                        </div>
-                                                        <h4 class="ng-binding">Mobgenners</h4>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            -->
-                            <!-- Devices -->
-                            <li id="devices" class="tile ng-scope pos_3">
-                                <div class="tile-outer-wrapper ng-isolate-scope">
-                                    <div class="ng-scope">
-                                        <div class="tile-background">
-                                        </div>
-                                        <div class="tile-mask">
-                                            <div class="tile-wrapper">
-                                                <div class="tile-dead">
-                                                    <a class="tile-btn tile-dead-btn" target="_top" href="/devices">
-                                                        <div class="ng-isolate-scope">
-                                                            <i class="fa fa-tablet fa-4x"></i>
-                                                        </div>
-                                                        <h4 class="ng-binding">Test Devices</h4>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <!-- Administrator -->
-                            <!--
-                            <li id="administrator" class="tile ng-scope pos_3">
-                                <div id="admin" class="tile-outer-wrapper ng-isolate-scope">
-                                    <div class="ng-scope">
-                                        <div class="tile-background">
-                                        </div>
-                                        <div class="tile-mask">
-                                            <div class="tile-wrapper">
-                                                <div class="tile-dead">
-                                                    <a class="tile-btn tile-dead-btn" target="_top" href="/groups">
-                                                        <div class="ng-isolate-scope">
-                                                            <i class="fa fa-cog fa-4x"></i>
-                                                        </div>
-                                                        <h4 class="ng-binding">Administrator</h4>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="subadmin" style="display:none">
-                                    <ul>
-                                        <li id="templates" class="tile ng-scope pos_3">
-                                            <div class="tile-outer-wrapper ng-isolate-scope">
-                                                <div class="ng-scope">
-                                                    <div class="tile-background">
-                                                    </div>
-                                                    <div class="tile-mask">
-                                                        <div class="tile-wrapper">
-                                                            <div class="tile-dead">
-                                                                <a class="tile-btn tile-dead-btn" target="_top" href="/groups">
-                                                                    <div class="ng-isolate-scope">
-                                                                        <i class="fa fa-indent fa-2x"></i>
-                                                                    </div>
-                                                                    <p class="ng-binding">Templates</p>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li id="visual_options" class="tile ng-scope pos_3">
-                                            <div class="tile-outer-wrapper ng-isolate-scope">
-                                                <div class="ng-scope">
-                                                    <div class="tile-background">
-                                                    </div>
-                                                    <div class="tile-mask">
-                                                        <div class="tile-wrapper">
-                                                            <div class="tile-dead">
-                                                                <a class="tile-btn tile-dead-btn" target="_top" href="/groups">
-                                                                    <div class="ng-isolate-scope">
-                                                                        <i class="fa fa-cubes fa-2x"></i>
-                                                                    </div>
-                                                                    <p class="ng-binding">Visual Option</p>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li id="groups" class="tile ng-scope pos_3">
-                                            <div class="tile-outer-wrapper ng-isolate-scope">
-                                                <div class="ng-scope">
-                                                    <div class="tile-background">
-                                                    </div>
-                                                    <div class="tile-mask">
-                                                        <div class="tile-wrapper">
-                                                            <div class="tile-dead">
-                                                                <a class="tile-btn tile-dead-btn" target="_top" href="/groups">
-                                                                    <div class="ng-isolate-scope">
-                                                                        <i class="fa fa-cubes fa-2x"></i>
-                                                                    </div>
-                                                                    <p class="ng-binding">Groups</p>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
+<section class="content-header">
+    <h1>
+        Dashboard
+        <small>Version <?= System::getVersion();?></small>
+    </h1>
+    <!--
+    <ol class="breadcrumb right">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Dashboard</li>
+    </ol>
     -->
-                            <!--
-                            <li class="tile tile-shrink ng-hide">
-                                <a class="tile-dead-btn tile-btn tile-btn-add" href="javascript:void(0);" title="Add new application">
-                                    <i aria-hidden="true" class="icon-plus cms-icon-200 tile-icon"></i><span class="sr-only">Add new application</span>
-                                </a>
-                            </li>
-                            -->
-                        <?php
-                        }
-                        ?>
-                    </ul>
-                </div>
+</section>
+<section class="content">
+    <!-- Info boxes -->
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-aqua"><i class="fa  fa-server"></i></span>
 
-                <div class="btn-group dropup anchor-dropup pull-right">
-                    <button id="edit_dashboard" type="button" class="btn btn-default sortable-off" title="Edit dashboard">
-                        <i class="fa fa-cog fa-1x"></i><span class="sr-only">Edit dashboard</span>
-                    </button>
+                <div class="info-box-content">
+                    <span class="info-box-text"><?= Yii::t('app', '% HD used'); ?></span>
+                    <span class="info-box-number">
+                        <?php
+                        $hd = Utils::freeSpace();
+                        echo $hd['diskused'];
+                        ?>
+                        <small>%</small>
+                    </span>
                 </div>
+                <!-- /.info-box-content -->
             </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-red"><i class="ion ion-ios-download-outline"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text"><?= Yii::t('app', 'Downloads')?></span>
+                    <span class="info-box-number"><?= BuildsDownloaded::find()->totalDownloads(); ?></span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <!-- fix for small devices only -->
+        <div class="clearfix visible-sm-block"></div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green"><i class="ion ion-cube"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text"><?= Yii::t('app', 'Builds');?></span>
+                    <span class="info-box-number"><?= Builds::find()->activeBuilds(); ?></span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text"><?= Yii::t('app', 'Mobgenners');?></span>
+                    <span class="info-box-number"><?= Mobgenners::find()->activeMobgenners(); ?></span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <div class="clear"></div>
+
+    <!-- TABLE: LATEST BUILDS -->
+    <div class="row">
+        <div class="col-md-8">
+            <?php
+            $lastBuildsUser = Builds::find()->getLastBuildsByUser(Yii::$app->user->identity->id, 0, 5);
+            if (empty($lastBuildsUser)) $n = 9;
+            else $n = 6;
+
+            $lastBuilds = Builds::find()->getLastBuilds(0, $n);
+
+            echo $this->render('_resume_builds', [
+                'bordercolor' => 'success',
+                'title' => Yii::t('app', 'Latest Builds'),
+                'lastbuilds' => $lastBuilds,
+                'showcreated' => true,
+            ]);
+
+            if (!empty($lastBuildsUser)) {
+                echo $this->render('_resume_builds', [
+                    'bordercolor' => 'primary',
+                    'title' => Yii::t('app', 'Your Latest Builds'),
+                    'lastbuilds' => $lastBuildsUser,
+                    'showcreated' => false,
+                ]);
+            }
+            ?>
+        </div>
+        <div class="col-md-4">
+
+            <?php
+            //LAST PROJECTS
+            echo $this->render('/otaprojects/_block', [
+                'bordercolor' => 'danger',
+                'header' => true,
+            ]);
+            //PROFILE
+            echo $this->render('/user/_block', [
+                'bordercolor' => 'danger',
+                'header' => true,
+                'model' => $user
+            ]);
+            ?>
         </div>
     </div>
-</div>
+    <div class="clear"></div>
+</section>
 
 <?php
 
@@ -328,7 +164,7 @@ $this->registerJs('
                     });', \yii\web\View::POS_READY);
 
 
-$this->registerJs('
+/*$this->registerJs('
                     $(document).ready(function(){
                          $(\'#welcome-close\').click(function(){
                               var id_user = ' . \Yii::$app->user->identity->id . ';
@@ -346,7 +182,7 @@ $this->registerJs('
                          });
 
                     });', \yii\web\View::POS_READY);
-
+*/
 
 $this->registerJs('
                     $(document).ready(function(){

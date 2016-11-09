@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\grid\GridView;
+use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
 use yii\bootstrap\Modal;
 use yii\helpers\Url;
@@ -17,44 +18,44 @@ $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ota Projects'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/utils/_alerts', []); ?>
+
 <div class="ota-projects-view">
+    <div class="title-header">
+        <h1><?= Html::encode($this->title) ?></h1>
+    </div>
+    <div class="btn-header">
+        <?= $this->render('/utils/_buttonsview', [
+            'id' => $model->id,
+        ]); ?>
+    </div>
+    <div class="box box-primary clear">
+        <div class="box-header with-border">
+            <h3  class="box-title"><?php echo Yii::t('app', 'API Keys'); ?></h3>
+        </div>
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?=  (User::getUserIdRole() == 10) ? Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) : '' ?>
-        <?=  (User::getUserIdRole() == 10) ? Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
-            ],
-        ]) : '' ?>
-        <?= Html::a( Yii::t('app', 'Back'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);?>
-    </p>
-
-    <h2><?= Yii::t('app', 'API Keys') ?></h2>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            //'name',
-            //'safename',
-            //'id_project',
-            //'id_ota_template',
-            //'proHash',
-            'proAPIKey',
-            'proAPIBuildKey',
-            //'proBuildTypes',
-            //'default_notify_email:email',
-            //'proCreated',
-            //'proModified',
-            //'created_at:date',
-            'updated_at:date',
-        ],
-    ]) ?>
-
+        <div class="box-body">
+            <?= DetailView::widget([
+                'model' => $model,
+                'attributes' => [
+                    //'id',
+                    //'name',
+                    //'safename',
+                    //'id_project',
+                    //'id_ota_template',
+                    //'proHash',
+                    'proAPIKey',
+                    'proAPIBuildKey',
+                    //'proBuildTypes',
+                    //'default_notify_email:email',
+                    //'proCreated',
+                    //'proModified',
+                    //'created_at:date',
+                    //'updated_at:date',
+                ],
+            ]) ?>
+        </div>
+    </div>
     <?php
         Modal::begin([
                 'header'=>'<h3>QA Status</h3>',
@@ -64,158 +65,159 @@ $this->params['breadcrumbs'][] = $this->title;
         echo "<div id='modalContent'></div>";
         Modal::end();
     ?>
-    <div class="builds_list" >
-        <h2><?= Yii::t('app', 'Builds') ?></h2>
-	<?php if ( User::getUserIdRole() != 11 ) { ?>
-            <div class="dropdown-list left">
-                <?=Html::beginForm(['builds/bulk'],'post');?>
-                <?=Html::dropDownList('action1','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
-                <?=Html::hiddenInput('buildId', $model->id);?>
-                <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>
-            </div>
-	<?php } ?>
+    <div class="box box-success">
+        <div class="box-header with-border">
+            <h3  class="box-title"><?php echo Yii::t('app', 'Builds'); ?></h3>
+        </div>
+
+        <div class="box-body">
+
+        <div class="dropdown-list left">
+            <?=Html::beginForm(['builds/bulk'],'post');?>
+            <?=Html::dropDownList('action1','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
+            <?=Html::hiddenInput('buildId', $model->id);?>
+            <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>           
+        </div>
         <div class="addbuild right">
             <?=  (User::getUserIdRole() == 10) ? Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']) : '' ?>
         </div>
         <div class="clear"></div>
-        <div class="wrap">
-            <div class="inner_table">
-                <?= GridView::widget([
-                    'dataProvider' => $dataProvider,
-                    'filterModel' => $searchBuilds,
-                    'pager' => [
-                        'maxButtonCount'=>3,    // Set maximum number of page buttons that can be displayed
-                    ],
-                    'columns' => [
-                        //['class' => 'yii\grid\SerialColumn'],
-                        ['class' => 'yii\grid\CheckboxColumn'],
-                        [
-                            'attribute' => 'buiType',
-                            'label' => 'BuiType',
-                            'filter'=>array("0"=>"iOS","1"=>"Android"),
-                            'format' => 'html',
-                            'value' => function($data) {
-                                $logo = (empty($data->buiType))?'/images/apple.png':'/images/android.png';
 
-                                return Html::img(Yii::getAlias('@web').$logo, ['width'=>'32']);
-                            },
-                        ],
-                        [
-                            'attribute'=>'buiName',
-                            'label'=>'Name',
-                            'format' => 'raw',
-                            'value'=>function ($data) {
-                                return ( User::getUserIdRole() == 11 ) ?
-                                    (Html::a($data->buiName, ['/builds/view/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>')
-                                    :
-                                    (Html::a($data->buiName, ['/builds/update/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>')
-                                    ;
-                            },
-                        ],
-                        [
-                            'attribute'=>'buiHash',
-                            'label'=>'Public URL',
-                            'format' => 'raw',
-                            'value'=>function ($data) {
-                                $frontend = Yii::$app->params['FRONTEND'];
-                                $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $data->buiFile;
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchBuilds,
+            'filterSelector' => '#' . Html::getInputId($searchBuilds, 'pagesize'),
+            'pager' => [
+                'maxButtonCount'=>3,    // Set maximum number of page buttons that can be displayed
+            ],
+            'columns' => [
+                //['class' => 'yii\grid\SerialColumn'],
+                ['class' => 'yii\grid\CheckboxColumn'],                
+                [
+                    'attribute' => 'buiType',
+                    'filter'=>array("0"=>"iOS","1"=>"Android"),
+                    'format' => 'html',
+                    'value' => function($data) {
+                        $logo = (empty($data->buiType))?'/images/apple.png':'/images/android.png';
 
-                                if (file_exists($path_file))
-                                    return Html::a($data->buiHash, Yii::$app->params["FRONTEND"].'/build/'.$data->buiHash.'/'.$data->buiSafename, ['target'=>'_blank', 'title'=>$data->buiName, 'alt'=>$data->buiName]);                            
-                                else
-                                    return 'Not available '.$path_file;
-                            },
-                        ],
-        		        'buiVersion',
-                        [
-                            'label' => Yii::t('app', 'Created by'),
-                            'attribute' => 'createdBy',
-                            'content'=>function($data){
-                                return ($data->createdBy->first_name.' '.$data->createdBy->last_name);
-                            }
+                        return Html::img(Yii::getAlias('@web').$logo, ['width'=>'24']);
+                    },
+                ],
+                [
+                    'attribute'=>'buiName',
+                    'label'=>'Name',
+                    'format' => 'raw',
+                    'value'=>function ($data) {
+                        return ( User::getUserIdRole() == 11 ) ?
+                            (Html::a($data->buiName, ['/builds/view/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>')
+                            :
+                            (Html::a($data->buiName, ['/builds/update/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>')
+                            ;
+                    },
+                ],
+                'buiVersion',
+                [
+                    'attribute'=>'buiHash',
+                    'label'=>'Public URL',
+                    'format' => 'raw',
+                    'value'=>function ($data) {
+                        $frontend = Yii::$app->params['FRONTEND'];
+                        $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $data->buiFile;
+                        //echo $path_file.'<br />';
 
-                        ],
-                        'updated_at:datetime',
-                        [
-                            'attribute'=>'buiFav',
-                            'filter'=>array("0"=>"No","1"=>"Yes"),
-                            'label'=>'Favorite',
-                            'format'=>'raw',
-                            'value' => function($data){
-                                if ($data->buiFav == 1) {
-                                    $fav = '<span><i class="fa fa-star fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
-                                    $url = '/builds/dislike/'.$data->buiId;
-                                    $text = Yii::t('app', 'Remove to Favorites');
-                                }
-                                else {
-                                    $fav = '<span><i class="fa fa-star-o fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
-                                    $url = '/builds/like/'.$data->buiId;
-                                    $text = Yii::t('app', 'Add to Favorites');
-                                }
+                        if (file_exists($path_file))
+                            return Html::a($data->buiHash, Yii::$app->params["FRONTEND"].'/build/'.$data->buiHash.'/'.$data->buiSafename, ['target'=>'_blank', 'title'=>$data->buiName, 'alt'=>$data->buiName]);                            
+                        else
+                            return 'Not available';
+                    },
+                ],
+                [
+                    'label' => Yii::t('app', 'Created by'),
+                    'attribute' => 'createdBy',
+                    'content'=>function($data){
+                        return ($data->createdBy->first_name.' '.$data->createdBy->last_name);
+                    }
+                ],
+                'updated_at:datetime',
+                [
+                    'attribute'=>'buiFav',
+                    'filter'=>array("0"=>"No","1"=>"Yes"),
+                    'label'=>'Favorite',
+                    'format'=>'raw',
+                    'value' => function($data){
+                        if ($data->buiFav == 1) {
+                            $fav = '<span id="buifavicon_'.$data->buiId.'"><i class="fa fa-star fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
+                            $text = Yii::t('app', 'Remove to Favorites');
+                            $type = 0;
+                        }
+                        else {
+                            $fav = '<span id="buifavicon_'.$data->buiId.'"><i class="fa fa-star-o fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
+                            $text = Yii::t('app', 'Add to Favorites');
+                            $type = 1;
+                        }
+                        return '<a href="javascript:void(0);" onclick="addFav('.$data->buiId. ');return false;" title="<?=$text;?>">'.$fav.'</a>';
+                        //return Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
+                    }
+                ],
+                [
+                    'attribute'=>'buiVisibleClient',
+                    'filter'=>array("0"=>"No","1"=>"Yes"),
+                    'label'=>'Visible',
+                    'format'=>'raw',
+                    'value' => function($data){
+                        if ($data->buiVisibleClient == 1) {
+                            $fav = '<span><i class="fa fa-eye fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
+                            $url = '/builds/hidden/'.$data->buiId;
+                            $text = Yii::t('app', 'Hidden to the client');
+                        }
+                        else {
+                            $fav = '<span><i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
+                            $url = '/builds/show/'.$data->buiId;
+                            $text = Yii::t('app', 'Visible to the client');
+                        }
+                        return Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
+                    }
+                ],
+                [
+                    'label' => Yii::t('app', 'D'),
+                    'attribute' => 'downloads',
+                    'content'=>function($data){
+                        return BuildsDownloaded::getDownloads($data->buiId);
+                    }
+                ],
+                [
+                    'attribute'=>'status',
+                    'filter'=>array("0"=>"-", "1"=>"Testing", "2"=>"With Errors", "3"=>"Correct"),
+                    'label'=>Yii::t('app', 'QA Status'),
+                    'format'=>'raw',
+                    'value' => function($data){
+                        $lastqa = 0;
+                        foreach ($data->lastBuildsQas as $qa) {
+                            $lastqa = $qa->status;
+                        }                        
+                        switch ($lastqa) {
+                            case 0:
+                                $color = 'grey';
+                                break;
+                            case 1:
+                                $color = '#f39c12';
+                                break;
+                            case 2:
+                                $color = '#dd4b39';
+                                break;
+                            case 3:
+                                $color = '#00a65a';
+                                break;           
+                        }
 
-                                return Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
-                            }
-                        ],
-                        [
-                            'attribute'=>'buiVisibleClient',
-                            'filter'=>array("0"=>"No","1"=>"Yes"),
-                            'label'=>'Visible',
-                            'format'=>'raw',
-                            'value' => function($data){
-                                if ($data->buiVisibleClient == 1) {
-                                    $fav = '<span><i class="fa fa-eye fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
-                                    $url = '/builds/hidden/'.$data->buiId;
-                                    $text = Yii::t('app', 'Hidden to the client');
-                                }
-                                else {
-                                    $fav = '<span><i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
-                                    $url = '/builds/show/'.$data->buiId;
-                                    $text = Yii::t('app', 'Visible to the client');
-                                }
+                        $text = Utils::getQAStatusById($lastqa);
+                        $icon = '<span><i class="fa fa-circle fa-x" style="color:'.$color.'"></i></span>';
+                        $url = '/buildsqa/qa/'.$data->buiId;
 
-                                return Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
-                            }
-                        ],
-                        [
-                            'label' => Yii::t('app', 'Downloads'),
-                            'attribute' => 'downloads',
-                            'content'=>function($data){
-                                return BuildsDownloaded::getDownloads($data->buiId);
-                            }
-                        ],
-                        [
-                            'attribute'=>'status',
-                            'filter'=>array("0"=>"-", "1"=>"Testing", "2"=>"With Errors", "3"=>"Correct"),
-                            'label'=>Yii::t('app', 'QA Status'),
-                            'format'=>'raw',
-                            'value' => function($data){
-                                $lastqa = 0;
-                                foreach ($data->lastBuildsQas as $qa) {
-                                    $lastqa = $qa->status;
-                                }
-                                switch ($lastqa) {
-                                    case 0:
-                                        $color = 'grey';
-                                        break;
-                                    case 1:
-                                        $color = '#f39c12';
-                                        break;
-                                    case 2:
-                                        $color = '#dd4b39';
-                                        break;
-                                    case 3:
-                                        $color = '#00a65a';
-                                        break;
-                                }
-
-                                $text = Utils::getQAStatusById($lastqa);
-                                $icon = '<span><i class="fa fa-circle fa-x" style="color:'.$color.'"></i></span>';
-                                $url = '/buildsqa/qa/'.$data->buiId;
-
-                                //return Html::a($icon, $url, ['title' => $text, 'data-method' => 'post']);
-                                return Html::button($icon, ['value'=>Url::to($url),'class' => 'modalButton', 'id'=>'modalButton'.$data->buiId, 'title' => $text]);
-                            }
-                        ],
+                        //return Html::a($icon, $url, ['title' => $text, 'data-method' => 'post']);
+                        return Html::button($icon, ['value'=>Url::to($url),'class' => 'modalButton', 'id'=>'modalButton'.$data->buiId, 'title' => $text]);
+                    }
+                ],
 
 
                         //['class' => 'yii\grid\ActionColumn'],
@@ -254,21 +256,28 @@ $this->params['breadcrumbs'][] = $this->title;
                                 */     
                             ],
                         ],
-
-                    ],
-                ]); ?>
+            ],
+            'pager' => [
+                'options'=>['class'=>'pagination'],   // set clas name used in ui list of pagination
+                'maxButtonCount'=>3,    // Set maximum number of page buttons that can be displayed
+            ],
+        ]); ?>
+            <div class="clear"></div>
+            <div id="otaviews" class="dropdown-list">
+                <?=Html::beginForm(['builds/bulk'],'post');?>
+                <?=Html::dropDownList('action2','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
+                <?=Html::submitButton('Apply', ['value' => '2', 'id' => 'submit2', 'name' => 'submit', 'class' => 'btn btn-warning']);?>
             </div>
-        </div>
-
-        <div class="dropdown-list">
-            <?=Html::beginForm(['builds/bulk'],'post');?>
-            <?=Html::dropDownList('action2','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
-            <?=Html::submitButton('Apply', ['value' => '2', 'id' => 'submit2', 'name' => 'submit', 'class' => 'btn btn-warning']);?>
-        </div>
+            <?= $this->render('/utils/_pagination', [
+                'dataProvider' => $dataProvider,
+                'searchModel' => $searchBuilds,
+            ]); ?>
 
         <?= Html::endForm();?>
     </div>
     <div class="clear"></div>
+    </div>
+</div>
 </div>
 
 <?php
@@ -304,7 +313,25 @@ $this->registerJs('
 
     });', \yii\web\View::POS_READY);
 ?>
+<script>
+    function addFav(buiId){
+        var parametros = {
+            "buiId" : buiId
+        };
 
+        $.ajax({
+            data: parametros,
+            url: '../builds/like/' + buiId,
+            type: 'post',
+            beforeSend: function () {
+                $("#buifavicon_" + buiId).html("Process...");
+            },
+            success: function (response) {
+                $("#buifavicon_" + buiId).html(response);
+            }
+        });
+    }
+</script>
 
 
 

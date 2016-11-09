@@ -17,7 +17,7 @@ return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'devicedetect'],
     'modules' => [
         'gridview' =>  [
             'class' => '\kartik\grid\Module',
@@ -57,6 +57,9 @@ return [
                 '<controller:\w+>' => '<controller>/index',
                 '' => 'site/index'
             ),
+        ],
+        'devicedetect' => [
+            'class' => 'alexandernst\devicedetect\DeviceDetect'
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

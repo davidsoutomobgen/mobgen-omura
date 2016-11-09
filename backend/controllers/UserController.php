@@ -6,6 +6,9 @@ use Yii;
 use common\models\User;
 use backend\models\UserSearch;
 use backend\models\SignupForm;
+use backend\models\PasswordForm;
+use backend\models\Mobgenners;
+use backend\models\Login;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -26,6 +29,45 @@ class UserController extends Controller
             ],
         ];
     }
+
+    public function beforeAction($action)
+    {
+
+        if (isset(Yii::$app->user->identity->id)) {
+            $roleId = User::getUserIdRole();
+
+            if ($roleId != 1 && $roleId != 12) {
+                if (($this->action->id == 'index')  || ($this->action->id == 'create') || ($this->action->id == 'delete')){
+                    $this->redirect('/site/logout');
+                }
+                else if (($this->action->id == 'view') || ($this->action->id == 'update') || ($this->action->id == 'profile')) {
+
+                    $mobgenner = Mobgenners::find()->where(['user'=>Yii::$app->user->identity->id])->one();
+                    //print_r($mobgenner->attributes);die;
+                    if ($_GET['id'] != $mobgenner->user) {
+                        $this->redirect('/user/profile/'.$mobgenner->user);
+                    }
+                    /*
+                    $permission = $this->action->controller->id . '_' . $this->action->id;
+                    $hasPermission = Permissions::find()->hasPermission($permission);
+
+                    if ($hasPermission == 0) {
+                        throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+                    }
+                    */
+                    if (!isset($_SESSION['skin-color'])) {
+                        $_SESSION['skin-color'] = 'skin-blue';
+                    }
+                }
+            }
+            return true;
+        }
+        else {
+            $this->redirect('/site/logout');
+        }
+
+    }
+
 
     /**
      * Lists all User models.
@@ -49,47 +91,165 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+        /*
+         * CHECK THAT OTHER USER DIDN'T SEE THIS
+        $model = new PasswordForm;
+        $modeluser = User::find()->where([
+            'username'=>Yii::$app->user->identity->username
+        ])->one();
+        return $this->render('changepassword',[
+            'model'=>$model
         ]);
+        */
+        $userid = Yii::$app->user->identity->id;
+        //echo $userid;die;
+        if ($userid == $id) {
+            $modelpass = new PasswordForm;
+            $modeluser = User::find()->where(['id' => $id])->one();
+
+            return $this->render('view', [
+                'modelpass' => $modelpass,
+                'model' => $this->findModel($id),
+                'user' => $modeluser,
+            ]);
+        }
+        else {
+            return $this->redirect(['/site']);
+        }
     }
 
     /**
      * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
-     */	
-/*
+     */
     public function actionCreate()
     {
-        $model = new User();
+        $model = new SignupForm();
+        //$authItems = AuthItem::find()->all();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            //echo '<pre>'; print_r($model->attributes); echo '</pre>'; die;
+
+            if ($user = $model->signup()) {
+                return $this->redirect(['/user']);
+                /*
+                if (Yii::$app->getUser()->login($user)) {
+                    //return $this->goHome();
+                    return $this->redirect(['/dashboard']);
+                }
+                */
+            }
         }
+
+        return $this->render('signup', [
+            'model' => $model,
+            //'authItems'=> $authItems,
+        ]);
     }
-*/
+
     /**
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('signup', [
-                'model' => $model,
-            ]);
+    public function actionUpdate($id){
+        $modelpass = new PasswordForm;
+        $user = User::find()->where(['id'=>$id])->one();
+        if($modelpass->load(Yii::$app->request->post())){
+            if($modelpass->validate()){
+                try{
+                    $user->setPassword($_POST['PasswordForm']['newpass']);
+                    $user->generateAuthKey();
+                    if($user->save()){
+                        Yii::$app->getSession()->setFlash(
+                            'success','Password changed'
+                        );
+                        return $this->redirect(['/user/' . $user->id]);
+                    }else{
+                        Yii::$app->getSession()->setFlash(
+                            'error','Password not changed'
+                        );
+                        return $this->redirect(['/user/' . $user->id]);
+                    }
+                }catch(Exception $e){
+                    Yii::$app->getSession()->setFlash(
+                        'error',"{$e->getMessage()}"
+                    );
+                    return $this->render('changepassword',[
+                        'modelpass'=>$modelpass,
+                        'model' => $this->findModel($id),
+                        'user'=>$user,
+                    ]);
+                }
+            }
+            /*
+            else {
+                echo '<pre>'; print_r($modelpass->getErrors()); echo '</pre>';
+                echo 'aki2'; die;
+            }
+            */
         }
+        //$model = new SignupForm();
+        $mobgenner = Mobgenners::find()->where(['user'=>$id])->one();
+
+        return $this->render('view',[
+            'modelpass'=>$modelpass,
+            'model' => $this->findModel($id),
+            'user'=>$user,
+            'mobgenner' => $mobgenner,
+        ]);
+
+    }
+
+
+    public function actionProfile($id){
+        $modelpass = new PasswordForm;
+        $user = User::find()->where(['id'=>$id])->one();
+        $mobgenner = Mobgenners::find()->where(['user'=>$id])->one();
+
+        if($modelpass->load(Yii::$app->request->post())){
+            if($modelpass->validate()){
+                try{
+                    $user->setPassword($_POST['PasswordForm']['newpass']);
+                    $user->generateAuthKey();
+                    if($user->save()){
+                        Yii::$app->getSession()->setFlash(
+                            'success','Password changed'
+                        );
+                        return $this->redirect(['/user/' . $user->id]);
+                    }else{
+                        Yii::$app->getSession()->setFlash(
+                            'error','Password not changed'
+                        );
+                        return $this->redirect(['/user/' . $user->id]);
+                    }
+                }catch(Exception $e){
+                    Yii::$app->getSession()->setFlash(
+                        'error',"{$e->getMessage()}"
+                    );
+                    return $this->render('changepassword',[
+                        'modelpass'=>$modelpass,
+                        'model' => $this->findModel($id),
+                        'user'=>$user,
+                    ]);
+                }
+            }
+            /*
+            else {
+                echo '<pre>'; print_r($modelpass->getErrors()); echo '</pre>';
+                echo 'aki2'; die;
+            }
+            */
+        }
+        return $this->render('view',[
+            'modelpass'=>$modelpass,
+            'user' => $user,
+            'model' => $this->findModel($id),
+            'mobgenner' => $mobgenner,
+        ]);
+
     }
 
     /**
@@ -134,26 +294,41 @@ class UserController extends Controller
         ]);
     }
 
-    public function actionCreate()
-    {
-        $model = new SignupForm();
-        //$authItems = AuthItem::find()->all();
 
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                return $this->redirect(['/user']);
-                /*
-                if (Yii::$app->getUser()->login($user)) {
-                    //return $this->goHome();
-                    return $this->redirect(['/dashboard']);
-                }
-                */
+    public function actionRequestPasswordReset()
+    {
+        $model = new PasswordResetRequestForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if ($model->sendEmail()) {
+                Yii::$app->getSession()->setFlash('success', 'Check your email for further instructions.');
+
+                return $this->goHome();
+            } else {
+                Yii::$app->getSession()->setFlash('error', 'Sorry, we are unable to reset password for email provided.');
             }
         }
 
-        return $this->render('signup', [
+        return $this->render('requestPasswordResetToken', [
             'model' => $model,
-            //'authItems'=> $authItems,
+        ]);
+    }
+
+    public function actionResetPassword($token)
+    {
+        try {
+            $model = new ResetPasswordForm($token);
+        } catch (InvalidParamException $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
+            Yii::$app->getSession()->setFlash('success', 'New password was saved.');
+
+            return $this->goHome();
+        }
+
+        return $this->render('resetPassword', [
+            'model' => $model,
         ]);
     }
 }

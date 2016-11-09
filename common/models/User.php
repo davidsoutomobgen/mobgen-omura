@@ -7,6 +7,8 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
+use backend\models\Mobgenners;
+
 
 /**
  * User model
@@ -26,7 +28,7 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
-    const STATUS_ACTIVE = 10;
+    const STATUS_ACTIVE = 1;
     const ROLE_USER = 10;
 
     //ADMIN = 10
@@ -36,6 +38,13 @@ class User extends ActiveRecord implements IdentityInterface
      * @var array EAuth attributes
      */
     public $profile;
+    public $job_title;
+    public $oldpass;
+    public $password;
+    public $newpass;
+    public $repeatnewpass;
+    public $image;
+    public $gender;
 
     /**
      * @inheritdoc
@@ -72,10 +81,34 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @inheritdoc
      */
+    public function attributeLabels()
+    {
+        return [
+            //'id' => Yii::t('app', 'ID'),
+            'send_email' => Yii::t('app', 'Send email'),
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+
     public static function findIdentity($id)
     {
         return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
     }
+
+    /*
+    public static function findIdentity($id) {
+        if (Yii::$app->getSession()->has('user-'.$id)) {
+            return new self(Yii::$app->getSession()->get('user-'.$id));
+        }
+        else {
+            return isset(self::$users[$id]) ? new self(self::$users[$id]) : null;
+        }
+    }
+    */
+
 
     /**
      * @inheritdoc
@@ -154,6 +187,47 @@ class User extends ActiveRecord implements IdentityInterface
         $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);   
         return $user->role_id;
     }
+
+    public static function getUserInfo($id_user = '')
+    {
+        if (empty($id_user))
+            $id_user = Yii::$app->user->getId();
+        
+        $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
+        //echo '<pre>'; print_r($user->attributes); echo '</pre>';//die;
+        if ($user->role_id != 99) {
+            $mobgenner = Mobgenners::findOne(['user' => $user->id, 'active' => '1']);
+
+            if (empty($mobgenner->image)) {
+                if ($mobgenner->gender == 'M') $user->image  = '/files/user2-128x128.png';
+                else $user->image  = '/files/user3-128x128.png';
+            }
+            else $user->image = '/files/mobgenners/' . $mobgenner->image;
+
+            $user->job_title = $mobgenner->job_title;
+        }
+        return $user;
+    }
+
+    public static function getImageUser($id_user = '')
+    {
+        if (empty($id_user))
+            $id_user = Yii::$app->user->getId();
+        
+        $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
+        //echo '<pre>'; print_r($user->attributes); echo '</pre>';//die;
+        if ($user->role_id != 99) {
+            $mobgenner = Mobgenners::findOne(['user' => $user->id, 'active' => '1']);
+
+            if (empty($mobgenner->image)) {
+                if ($mobgenner->gender == 'M') $user->image  = '/files/user2-128x128.png';
+                else $user->image  = '/files/user3-128x128.png';
+            }
+            else $user->image = '/files/mobgenners/' . $mobgenner->image;
+        }
+        return $user->image;
+    }
+
     /**
      * @inheritdoc
      */
@@ -191,11 +265,6 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
-    public function getPassword()
-    {
-        return '';
-    }
-
     /**
      * Generates "remember me" authentication key
      */
@@ -219,4 +288,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = null;
     }
+
+
+
+
 }

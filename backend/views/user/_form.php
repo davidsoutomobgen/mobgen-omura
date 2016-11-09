@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use common\models\User;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\User */
@@ -9,15 +10,19 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="user-form">
-
-    <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'status')->textInput() ?>
-
-    <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-    </div>
-
-    <?php ActiveForm::end(); ?>
+    <?php
+    //echo '<pre>';print_r($model);echo '</pre>';die;
+    ?>
+    <?= $form->field($model, 'first_name') ?>
+    <?= $form->field($model, 'last_name') ?>
+    <?= $form->field($model, 'username') ?>
+    <?= $form->field($model, 'email') ?>
+    <?php
+    echo $form->field($model, 'role_id')->dropDownList(
+        Utils::getRoles(),           // Flat array ('id'=>'label')
+        ['prompt'=>'']    // options
+    );
+    ?>
+    <?= $form->field($model, 'password')->passwordInput() ?>
 
 </div>

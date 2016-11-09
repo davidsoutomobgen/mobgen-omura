@@ -5,7 +5,9 @@ use yii\helpers\Url;
 //use yii\bootstrap\Nav;
 //use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
+use common\models\User;
 use backend\models\UserOptions;
+use backend\models\System;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -27,6 +29,10 @@ if (isset(Yii::$app->user->identity->id)) {
         else if ($opt['type'] == 'string')
             $session->set($opt['variable'], (string) $opt['value']);
     }
+
+    $user = User::getUserInfo();
+
+
 }
 else {
     //echo 'Session close'; die;
@@ -80,7 +86,7 @@ else {
     <div class="wrap wrapper">
         <header class="main-header">
             <!-- Logo -->
-            <a href="site" class="logo">
+            <a href="/site" class="logo">
                 <!-- mini logo for sidebar mini 50x50 pixels -->
                 <span class="logo-mini"><b><?= Yii::$app->params['projectNameShort'];?></b>s</span>
                 <!-- logo for regular state and mobile devices -->
@@ -98,13 +104,13 @@ else {
                         <!-- User Account: style can be found in dropdown.less -->
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <img src="/files/user2-128x128.png" class="user-image" alt="User Image">
+                                <img src="<?= $user->image;?>" class="user-image" alt="User Image">
                                 <span class="hidden-xs"><?php echo Yii::$app->user->identity->first_name.' '.Yii::$app->user->identity->last_name ; ?></span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header">
-                                    <img src="/files/user2-128x128.png" class="img-circle" alt="User Image">
+                                    <img src="<?= $user->image;?>" class="img-circle" alt="User Image">
                                     <p>
                                         <?php echo Yii::$app->user->identity->first_name.' '.Yii::$app->user->identity->last_name ; ?> <!-- - Backend Developer -->
                                         <!-- <small>Member since Nov. 2012</small> -->
@@ -127,7 +133,7 @@ else {
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
                                     <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                        <a href="/user/profile/<?= $userid;?>" class="btn btn-default btn-flat"><?= Yii::t('app', 'Profile'); ?></a>
                                     </div>
                                     <div class="pull-right">
                                         <a href="/site/logout" class="btn btn-default btn-flat"  data-method="post">Sign out</a>
@@ -150,7 +156,7 @@ else {
                 <!-- Sidebar user panel -->
                 <div class="user-panel">
                     <div class="pull-left image">
-                        <img src="/files/user2-128x128.png" class="img-circle" alt="User Image">
+                        <img src="<?=$user->image;?>" class="img-circle" alt="User Image">
                     </div>
                     <div class="pull-left info">
                         <p><?php echo Yii::$app->user->identity->first_name.' '.Yii::$app->user->identity->last_name ; ?></p>
@@ -173,17 +179,12 @@ else {
                 <?php $userId= \Yii::$app->user->identity->id; ?>
 
                 <ul class="sidebar-menu">
-                    <li class="header">MAIN NAVIGATION</li>
-                    <?php
-                    if ($userId == 1) {
-                    ?>
+                    <li class="header"><?= Yii::t('app', 'MAIN NAVIGATION'); ?></li>
                     <li class="<?=($this->context->id == 'site') ? 'active' : '' ?> treeview">
                         <a href="/site">
-                            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                            <i class="fa fa-dashboard"></i> <span><?= Yii::t('app', 'Dashboard'); ?></span>
                         </a>
                     </li>
-                    <?php } ?>
-
                     <li class="treeview <?=($this->context->id == 'otaprojects') ? 'active' : ' ' ?>">
                         <a href="/otaprojects">
                             <i class="fa fa-share-alt"></i> <span>OTA Share</span>
@@ -207,7 +208,19 @@ else {
                     <?php
                     if ($userId == 1) {
                     ?>
-                        <li class="treeview">
+                        <li class="treeview <?=($this->context->id == 'mobgenners') ? 'active' : ' ' ?>">
+                            <a href="/mobgenners">
+                                <i class="fa fa-circle-o"></i> <span><?= Yii::t('app', 'Mobgenners')?></span>
+                            </a>
+                        </li>
+
+                        <li class="<?=($this->context->id == 'useroptions') ||
+                                      ($this->context->id == 'options') ||
+                                      ($this->context->id == 'permissions') ||
+                                      ($this->context->id == 'user') ||
+                                      ($this->context->id == 'system')
+                                       ? 'active' : '' ?> treeview">
+
                             <a href="#">
                                 <i class="fa fa-cog"></i>
                                 <span>Administrator</span>
@@ -218,10 +231,11 @@ else {
                                 <li><a href="/groups"><i class="fa fa-cubes"></i>Groups</a></li>
                                 <li><a href="/groups/users"><i class="fa fa-cubes"></i>User Groups </a></li>
                                 -->
-                                <li><a href="/useroptions"><i class="fa fa-paint-brush"></i> Visual Options</a></li>
-                                <li><a href="/options"><i class="fa fa-plus-square-o"></i>Parameters Visual Options</a></li>
-                                <li><a href="/permissions"><i class="fa fa-shield"></i>Permissions</a></li>
-                                <li><a href="/user"><i class="fa fa-users"></i>Users</a></li>
+                                <li class="<?=($this->context->id == 'useroptions') ? 'active' : ' ' ?>"><a href="/useroptions"><i class="fa fa-paint-brush"></i> Visual Options</a></li>
+                                <li class="<?=($this->context->id == 'options') ? 'active' : ' ' ?>"><a href="/options"><i class="fa fa-plus-square-o"></i>Parameters Visual Options</a></li>
+                                <li class="<?=($this->context->id == 'permissions') ? 'active' : ' ' ?>"><a href="/permissions"><i class="fa fa-shield"></i>Permissions</a></li>
+                                <li class="<?=($this->context->id == 'user') ? 'active' : ' ' ?>"><a href="/user"><i class="fa fa-users"></i>Users</a></li>
+                                <li class="<?=($this->context->id == 'system') ? 'active' : ' ' ?>"><a href="/system"><i class="fa fa-copyright"></i>System</a></li>
                             </ul>
                         </li>
                     <?php } ?>
@@ -246,9 +260,9 @@ else {
         <div class="clear"></div>
         <footer class="main-footer">
             <div class="pull-right hidden-xs">
-                <b>Version</b> 0.1.2
+                <b><?= Yii::t('app', 'Version'); ?></b> <?=System::getVersion();?>
             </div>
-            <strong>Copyright &copy; 2015 <a href="http://www.mobgen.com">MOBGEN</a>.</strong> All rights reserved.
+            <strong>Copyright &copy; <?=date('Y'); ?> <a href="http://www.mobgen.com">MOBGEN</a>.</strong> All rights reserved.
         </footer>
 
         <aside class="control-sidebar control-sidebar-dark">
@@ -284,7 +298,7 @@ else {
                         </div>
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
-                                <input id="sidebar-collapse" type="checkbox" class="pull-right" data-layout="sidebar-collapse"> Toggle Sidebar</label>
+                                <input id="sidebar-collapse" type="checkbox" class="pull-right" data-layout="sidebar-collapse" <?=((isset($_SESSION['sidebar-collapse'])) && ($_SESSION['sidebar-collapse'] == 1 )) ? 'CHECKED' : '&bnsp;';?>> Toggle Sidebar</label>
                             <p>Toggle the left sidebar's state (open or collapse)</p>
                         </div>
                         <!--
@@ -292,7 +306,6 @@ else {
                             <label  class="control-sidebar-subheading"><input type="checkbox" class="pull-right" data-enable="expandOnHover" disabled="disabled"> Sidebar Expand on Hover</label>
                             <p>Let the sidebar mini expand on hover</p>
                         </div>
-                        -->
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
                                 <input id="control-sidebar-open" type="checkbox" class="pull-right" data-controlsidebar="control-sidebar-open">
@@ -300,6 +313,8 @@ else {
                             </label>
                             <p>Toggle between slide over content and push content effects</p>
                         </div>
+                        -->
+                        <!--
                         <h4 class="control-sidebar-heading">Skins</h4>
                         <ul id="skins" class="list-unstyled clearfix">
                             <li style="float:left; width: 33.33333%; padding: 5px;">
@@ -388,67 +403,9 @@ else {
                                 <p style="font-size: 12px;" class="text-center no-margin">Yellow Light</p>
                             </li>
                         </ul>
+                        -->
                     </div>
                 </div><!-- /.tab-pane -->
-
-                <!-- Settings tab content -->
-<!--                <div id="control-sidebar-settings-tab" class="tab-pane">-->
-<!--                    <form method="post">-->
-<!--                        <h3 class="control-sidebar-heading">General Settings</h3>-->
-<!--                        <div class="form-group">-->
-<!--                            <label class="control-sidebar-subheading">-->
-<!--                                Report panel usage-->
-<!--                                <input type="checkbox" checked="" class="pull-right">-->
-<!--                            </label>-->
-<!--                            <p>-->
-<!--                                Some information about this general settings option-->
-<!--                            </p>-->
-<!--                        </div><!-- /.form-group -->
-<!---->
-<!--                        <div class="form-group">-->
-<!--                            <label class="control-sidebar-subheading">-->
-<!--                                Allow mail redirect-->
-<!--                                <input type="checkbox" checked="" class="pull-right">-->
-<!--                            </label>-->
-<!--                            <p>-->
-<!--                                Other sets of options are available-->
-<!--                            </p>-->
-<!--                        </div><!-- /.form-group -->
-<!---->
-<!--                        <div class="form-group">-->
-<!--                            <label class="control-sidebar-subheading">-->
-<!--                                Expose author name in posts-->
-<!--                                <input type="checkbox" checked="" class="pull-right">-->
-<!--                            </label>-->
-<!--                            <p>-->
-<!--                                Allow the user to show his name in blog posts-->
-<!--                            </p>-->
-<!--                        </div><!-- /.form-group -->
-<!---->
-<!--                        <h3 class="control-sidebar-heading">Chat Settings</h3>-->
-<!---->
-<!--                        <div class="form-group">-->
-<!--                            <label class="control-sidebar-subheading">-->
-<!--                                Show me as online-->
-<!--                                <input type="checkbox" checked="" class="pull-right">-->
-<!--                            </label>-->
-<!--                        </div><!-- /.form-group -->
-<!---->
-<!--                        <div class="form-group">-->
-<!--                            <label class="control-sidebar-subheading">-->
-<!--                                Turn off notifications-->
-<!--                                <input type="checkbox" class="pull-right">-->
-<!--                            </label>-->
-<!--                        </div><!-- /.form-group -->
-<!---->
-<!--                        <div class="form-group">-->
-<!--                            <label class="control-sidebar-subheading">-->
-<!--                                Delete chat history-->
-<!--                                <a class="text-red pull-right" href="javascript::;"><i class="fa fa-trash-o"></i></a>-->
-<!--                            </label>-->
-<!--                        </div><!-- /.form-group -->
-<!--                    </form>-->
-<!--                </div><!-- /.tab-pane -->
                 <?php
 
                 $this->registerJs('
@@ -493,7 +450,7 @@ else {
 
                                     $.ajax({
                                         type: \'POST\',
-                                        url : \'/useroptions/updateajax/\',
+                                        url : \'/useroptions/updateajax\',
                                         data : {userid: id_user, option: option, value: value},
                                         success : function() {
                                           $(this).closest(\'tr\').remove(); //or whatever html you use for displaying rows

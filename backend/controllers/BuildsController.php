@@ -160,6 +160,8 @@ class BuildsController extends Controller
                     if ($model->buiSendEmail == 1)
                         $this->_sendEmail($model, Yii::$app->request->post()['BuildsNotification']['email']);
 
+                    $otaProject->updated_at = strtotime('today UTC');
+                    $otaProject->save();
                     //$this->redirect(['view', 'id' => $model->buiId]);
                     $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
                 } else {
@@ -214,7 +216,9 @@ class BuildsController extends Controller
         $model = $this->findModel($id);
 
         //Build Types
-        $otaBuildTypes = OtaProjectsBuildtypes::find()->with('idOtaBuildtypes')->where('id_ota_project = :id_ota_project',  [':id_ota_project' => $model->buiProIdFK])->all();
+        $otaBuildTypes = OtaProjectsBuildtypes::find()->with('idOtaBuildtypes')
+                                                      ->where('id_ota_project = :id_ota_project',  [':id_ota_project' => $model->buiProIdFK])
+                                                      ->all();
         $data = array();        
         foreach ($otaBuildTypes as $buildtypes) {
             $data[$buildtypes->id] =  $buildtypes->idOtaBuildtypes->name;
@@ -229,9 +233,12 @@ class BuildsController extends Controller
         //Template
         $templates = Templates::getTemplatesTemporaly();
 
-        if (!empty($_POST['Builds'])){ 
+        if (!empty(Yii::$app->request->post())) {
             $process = $this->_process($id, $model);
             if ($process) {                  
+                //return $this->redirect(['view', 'id' => $model->buiId]);
+                $otaProject->updated_at = strtotime('today UTC');
+                $otaProject->save();
                 return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
             }
             else {
@@ -269,7 +276,7 @@ class BuildsController extends Controller
                 //Update app
                 $timestamp = $post['time'];
                 $extension = strtolower(Builds::_GetExtension($model->buiFile));
-                $safe = Builds::_GenerateSafeFileName((string)$model->buiId . '_' . $timestamp);
+                $safe = Builds::_GenerateSafeFileName((string)$model->buiId . '_' . $model->buiProIdFK . '_' . $timestamp);
 
             } else {
                 //New app
@@ -277,12 +284,12 @@ class BuildsController extends Controller
                 $timestamp = $model->buiSafename;
                 $model->buiSafename = Builds::_RemoveExtension($model->buiFile);
                 $model->buiHash = Builds::_GenerateHash();
-                $safe = Builds::_GenerateSafeFileName((string)$id . '_' . $timestamp);
-
+                $safe = Builds::_GenerateSafeFileName((string)$id . '_' . $model->buiProIdFK . '_' . $timestamp);
                 $model->created_by = Yii::$app->user->identity->id;
             }
 
-            $temp_file = Yii::getAlias('@webroot') . Yii::$app->params['TEMP_BUILD_DIR'] . $safe . "." . $extension;
+            //$temp_file = Yii::getAlias('@webroot') . Yii::$app->params['TEMP_BUILD_DIR'] . $safe . "." . $extension;
+            $temp_file = Yii::$app->params['TEMP_BUILD_DIR'] . $safe . "." . $extension;
 
             if ($extension == "ipa") {
                 $model->buiType = 0; // iOS
@@ -293,22 +300,17 @@ class BuildsController extends Controller
             }
 
             if (file_exists($temp_file)) {
-
                 if ($model->save()) {
-
-                    $filename = $id . '-' . $timestamp . '.' . $extension;
-                    $path_file = Yii::getAlias('@webroot') . Yii::$app->params["TEMP_BUILD_DIR"] . $filename;
-
                     $new_filename = $model->buiId . "." . $extension;
                     $model->buiFile = $new_filename;
                     $model->save();
-                    $new_path_file = Yii::getAlias('@webroot') . Yii::$app->params["BUILD_DIR"] . $new_filename;
-
-                    rename($path_file, $new_path_file);
-                    return true; //$this->redirect(['view', 'id' => $model->buiId]);
+                    $new_path_file = Yii::$app->params["BUILD_DIR"] . $new_filename;
+                    rename($temp_file, $new_path_file);
+                    return true;
+                    //$this->redirect(['view', 'id' => $model->buiId]);
                 } else {
                     print_r($model->getErrors());
-                    echo 'error haciendo save ';
+                    echo 'Error doing SAVE';
                     die;
                     return false;
                     /*$this->render('create', [
@@ -320,12 +322,21 @@ class BuildsController extends Controller
                     */
                 }
             }
+            else {
+                $model->attributes = $post;
+                if ($model->save())
+                    $this->redirect(['view', 'id' => $model->buiId]);
+                else {
+                    print_r($model->getErrors());
+                    return false;
+                    //die;
+                }
+            }
         }
         else {
             $temp = $model->buiFile;
             $model->load(Yii::$app->request->post());
             $model->buiFile = $temp;
-            //echo '<pre>';print_r($model->attributes); echo '</pre>'; die;
             if ($model->save()) {
                 return true; //$this->redirect(['view', 'id' => $model->buiId]);
             } else {
@@ -415,24 +426,28 @@ class BuildsController extends Controller
         return $this->redirect(['/otaprojects/' . $buiProIdFK]);
     }
 
-    public function actionLike($id){
+    public function actionLike($id)
+    {
 
         $model = $this->findModel($id);
+        if ($model->buiFav == 1) {
+            $model->buiFav = 0;
+            $icon = '<i class="fa fa-star-o fa-x '.$_SESSION['skin-color'].'"></i>';
+        } else {
+            $model->buiFav = 1;
+            $icon = '<i class="fa fa-star fa-x '.$_SESSION['skin-color'].'"></i>';
+        }
+        $model->save(false);
 
-        $model->buiFav = 1;
-        $model->save();
-
-        return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
+        return $icon;
     }
 
     public function actionDislike($id){
 
         $model = $this->findModel($id);
-
         $model->buiFav = 0;
-        $model->save();
-
-        return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
+        $model->save(false);
+        return true;
     }
 
     public function actionShow($id){

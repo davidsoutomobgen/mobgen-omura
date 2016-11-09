@@ -10,6 +10,7 @@ use backend\models\BuildsSearch;
 use backend\models\OtaBuildTypes;
 use backend\models\OtaProjectsBuildtypes;
 use backend\models\Permissions;
+use backend\models\UserOptions;
 use yii\web\Controller;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
@@ -35,7 +36,6 @@ class OtaprojectsController extends Controller
 
     public function beforeAction($action)
     {
-
         if (isset(Yii::$app->user->identity->id)) {
             $permission = $this->action->controller->id.'_'.$this->action->id;
             $hasPermission = Permissions::find()->hasPermission($permission);
@@ -60,10 +60,22 @@ class OtaprojectsController extends Controller
      */
     public function actionIndex()
     {
+        $option = UserOptions::find()->getVariable(Yii::$app->user->id, 'pages_table_otaprojects');
+
+        if ((isset($_GET['OtaProjectsSearch']['pagesize'])) && ($_GET['OtaProjectsSearch']['pagesize'] != (int)$option['value'])) {
+            $useroption = UserOptions::find()->where('id = :id_option', [':id_option' => $option['id']])->one();
+            $useroption->value = $_GET['OtaProjectsSearch']['pagesize'];
+            $useroption->save();
+        }
         $searchModel = new OtaProjectsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
+        if (\Yii::$app->devicedetect->isMobile())
+            $view = 'indexmobile';
+        else
+            $view = 'index';
+
+        return $this->render($view, [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -76,6 +88,13 @@ class OtaprojectsController extends Controller
      */
     public function actionView($id)
     {
+        $option = UserOptions::find()->getVariable(Yii::$app->user->id, 'pages_table_otaviews');
+
+        if ((isset($_GET['BuildsSearch']['pagesize'])) && ($_GET['BuildsSearch']['pagesize'] != (int)$option['value'])) {
+            $useroption = UserOptions::find()->where('id = :id_option', [':id_option' => $option['id']])->one();
+            $useroption->value = $_GET['BuildsSearch']['pagesize'];
+            $useroption->save();
+        }
         $params = Yii::$app->request->queryParams;
         
         $params['BuildsSearch']['buiProIdFK'] =  $id;
@@ -87,8 +106,12 @@ class OtaprojectsController extends Controller
         //$dataProvider = $searchBuilds->search(Yii::$app->request->queryParams);
         //$builds = Builds::find()->with('buildsQas')->where('buiProIdFK = :id AND buiStatus = 0',  [':id' => $id])->all();
         //echo  '<pre>'; print_r($dataProvider); echo '</pre>';die;
-        
-        return $this->render('view', [
+        if (\Yii::$app->devicedetect->isMobile())
+            $view = 'viewmobile';
+        else
+            $view = 'view';
+
+        return $this->render($view, [
             'model' => $this->findModel($id),
             'searchBuilds' => $searchBuilds,
             'dataProvider' => $dataProvider,
@@ -118,50 +141,40 @@ class OtaprojectsController extends Controller
             $model->proHash = $this->_GenerateHash();
             $model->proAPIKey = $this->_GenerateHash();
             $model->proAPIBuildKey = $this->_GenerateSecureApiHash($model->name);
-            $post = Yii::$app->request->post();
-            //if (isset($post['proBuildType'])) {
-                if ($model->save()) {
-                    if (isset($post['proBuildType'])) {
-                        foreach ($post['proBuildType'] as $tt){
-                            if (empty(intval($tt))) {                           
-                                $exist = OtaBuildTypes::find()->where('name LIKE :name')->addParams([':name'=>$tt])->one();
-                                if (isset($exist)) {
-                                    $tt = $exist->id;
-                                } else {
-                                    $buildtypes = new OtaBuildTypes;
-                                    $buildtypes->name = $tt;
-                                    $buildtypes->save();                            
-                                    $tt = $buildtypes->id;
-                                }
+
+            if ($model->save()) {
+                $post = Yii::$app->request->post();
+                if (isset($post['proBuildType'])) {
+                    foreach ($post['proBuildType'] as $tt){
+                        if (empty(intval($tt))) {                           
+                            $exist = OtaBuildTypes::find()->where('name LIKE :name')->addParams([':name'=>$tt])->one();
+                            if (isset($exist)) {
+                                $tt = $exist->id;
+                            } else {
+                                $buildtypes = new OtaBuildTypes;
+                                $buildtypes->name = $tt;
+                                $buildtypes->save();                            
+                                $tt = $buildtypes->id;
                             }
-
-                            $aux = new OtaProjectsBuildtypes();
-                            $aux->id_ota_project = $model->id;
-                            $aux->id_ota_buildtypes = $tt;
-                            $aux->save();
                         }
-                    }
-                    return $this->redirect(['view', 'id' => $model->id]);
 
-                } else {
-                    return $this->render('create', [
-                        'model' => $model,
-                        'select_buildtype' => $selected,
-                        'value' => $value,
-                        'ota_buildtypes' => $data,
-                    ]);
+                        $aux = new OtaProjectsBuildtypes();
+                        $aux->id_ota_project = $model->id;
+                        $aux->id_ota_buildtypes = $tt;
+                        $aux->save();
+                    }
                 }
-            /*}
-            else {
-                //print_r($post['proBuildType']);die;
-                $value = -1;
+                return $this->redirect(['view', 'id' => $model->id]);
+
+            } else {
                 return $this->render('create', [
                     'model' => $model,
                     'select_buildtype' => $selected,
                     'value' => $value,
                     'ota_buildtypes' => $data,
                 ]);
-            }*/
+            }
+            
         } else {
             return $this->render('create', [
                 'model' => $model,
