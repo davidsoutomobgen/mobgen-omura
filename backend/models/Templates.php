@@ -59,13 +59,14 @@ class Templates extends \common\models\CActiveRecord
     public static function getTemplatesTemporaly() {
 
         return [
-            0 =>'default',
+            0 => 'default',
             1 => 'ABN AMRO',
             2 => 'Shell Innovation',
             3 => 'Redevco',
             4 => 'WhoIsWho (Ron)',
             5 => 'National Express',
             6 => 'James BETA-User',
+            7 => 'Classic Template',
         ];
     }
 

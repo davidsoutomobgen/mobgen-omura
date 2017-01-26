@@ -47,7 +47,7 @@ class Mobgenners extends \common\models\CActiveRecord
     public function rules()
     {
         return [
-            [['first_name', 'last_name', 'gender', 'email'], 'required'],
+            [['first_name', 'last_name', 'gender', 'email', 'role_id'], 'required'],
             [['active','created_at', 'updated_at', 'deleted'], 'integer'],
             [['first_name', 'last_name', 'email', 'phone', 'skype', 'job_title', 'image'], 'string', 'max' => 255],
             ['gender', 'string', 'max' => 1],

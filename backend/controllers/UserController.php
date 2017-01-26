@@ -35,10 +35,11 @@ class UserController extends Controller
 
         if (isset(Yii::$app->user->identity->id)) {
             $roleId = User::getUserIdRole();
-
-            if ($roleId != 1 && $roleId != 12) {
+//echo $roleId;die;
+            if ($roleId != 1) {
                 if (($this->action->id == 'index')  || ($this->action->id == 'create') || ($this->action->id == 'delete')){
-                    $this->redirect('/site/logout');
+                    //$this->redirect('/site/logout');
+                    throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
                 }
                 else if (($this->action->id == 'view') || ($this->action->id == 'update') || ($this->action->id == 'profile')) {
 
@@ -106,11 +107,13 @@ class UserController extends Controller
         if ($userid == $id) {
             $modelpass = new PasswordForm;
             $modeluser = User::find()->where(['id' => $id])->one();
+            $mobgenner = Mobgenners::find()->where(['user' => $id])->one();
 
             return $this->render('view', [
                 'modelpass' => $modelpass,
                 'model' => $this->findModel($id),
                 'user' => $modeluser,
+                'mobgenner' => $mobgenner,
             ]);
         }
         else {

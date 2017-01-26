@@ -196,8 +196,8 @@ class User extends ActiveRecord implements IdentityInterface
         $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
         //echo '<pre>'; print_r($user->attributes); echo '</pre>';//die;
         if ($user->role_id != 99) {
-            $mobgenner = Mobgenners::findOne(['user' => $user->id, 'active' => '1']);
-
+            //$mobgenner = Mobgenners::findOne(['user' => $user->id, 'active' => '1']);
+            $mobgenner = Mobgenners::findOne(['user' => $user->id]);
             if (empty($mobgenner->image)) {
                 if ($mobgenner->gender == 'M') $user->image  = '/files/user2-128x128.png';
                 else $user->image  = '/files/user3-128x128.png';
@@ -217,8 +217,8 @@ class User extends ActiveRecord implements IdentityInterface
         $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
         //echo '<pre>'; print_r($user->attributes); echo '</pre>';//die;
         if ($user->role_id != 99) {
-            $mobgenner = Mobgenners::findOne(['user' => $user->id, 'active' => '1']);
-
+            //$mobgenner = Mobgenners::findOne(['user' => $user->id, 'active' => '1']);
+            $mobgenner = Mobgenners::findOne(['user' => $user->id]);
             if (empty($mobgenner->image)) {
                 if ($mobgenner->gender == 'M') $user->image  = '/files/user2-128x128.png';
                 else $user->image  = '/files/user3-128x128.png';
@@ -288,8 +288,4 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = null;
     }
-
-
-
-
 }

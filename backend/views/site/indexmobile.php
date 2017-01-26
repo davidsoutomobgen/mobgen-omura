@@ -45,7 +45,7 @@ use backend\models\Utils;
 
 
             //LAST PROJECTS
-            echo $this->render('/otaprojects/_block', [
+            echo $this->render('/otaprojects/_block', [ 
                 'bordercolor' => 'danger',
                 'header' => true,
             ]);
@@ -61,6 +61,7 @@ use backend\models\Utils;
 
             //PROFILE
             echo $this->render('/user/_block', [
+                'model'=> $user,
                 'bordercolor' => 'danger',
                 'header' => true,
             ]);

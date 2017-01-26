@@ -30,11 +30,11 @@ class Emails extends \common\models\CActiveRecord
     public function rules()
     {
         return [
-            [['receiver_name', 'receiver_email', 'subject', 'content', 'attachment'], 'required'],
+            [['receiver_name', 'receiver_email', 'subject', 'content'], 'required'],
             [['content'], 'string'],
             [['receiver_name'], 'string', 'max' => 50],
             [['receiver_email'], 'string', 'max' => 200],
-            [['subject', 'attachment'], 'string', 'max' => 255]
+            [['subject'], 'string', 'max' => 255]
         ];
     }
 

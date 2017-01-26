@@ -4,6 +4,8 @@ use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\widgets\ListView;
 use yii\widgets\ActiveForm;
+use common\models\User;
+use backend\models\Builds;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\OtaProjectsSearch */
@@ -11,6 +13,7 @@ use yii\widgets\ActiveForm;
 
 $this->title = Yii::t('app', 'Ota Projects');
 $this->params['breadcrumbs'][] = $this->title;
+$userIdRole = User::getUserIdRole();
 ?>
 
 <?= $this->render('/utils/_alerts', []); ?>
@@ -39,13 +42,17 @@ if (isset($message) && ($message == 1)) {
 
     <h1><?= Html::encode($this->title) ?></h1>
     <div class="btn-header">
-        <?= $this->render('/utils/_buttonscreate', [
-            'titulo' => Yii::t('app', 'Ota Projects'),
-        ]); ?>
+        <?php
+        if ($userIdRole != 11) {
+            echo $this->render('/utils/_buttonscreate', [
+                'titulo' => Yii::t('app', 'Project'),
+            ]);
+        }
+        ?>
     </div>
     <div class="box box-primary">
         <div class="box-header with-border">
-            <h3  class="box-title"><?php echo Yii::t('app', 'List'); ?></h3>
+            <h3  class="box-title"><?php echo Yii::t('app', 'List of projects'); ?></h3>
         </div>
 
         <div class="box-body">
@@ -87,21 +94,60 @@ if (isset($message) && ($message == 1)) {
                     //'proAPIBuildKey',
                     // 'proBuildTypes',
                     // 'default_notify_email:email',
-                    // 'proDevUrl1:url',
-                    // 'proDevUrl2:url',
-                    // 'proDevUrl3:url',
-                    // 'proDevUrl4:url',
-                    // 'proAltUrl1:url',
-                    // 'proAltUrl2:url',
-                    // 'proAltUrl3:url',
-                    // 'proAltUrl4:url',
-                    // 'proProdUrl1:url',
-                    // 'proProdUrl2:url',
-                    // 'proProdUrl3:url',
-                    // 'proProdUrl4:url',
+                    //'numBuilds',
+                    [
+                        'attribute' => 'numBuilds',
+                        //'filter' => Builds::getA(),
+                        'filter'=>false,
+                    ],
+                    [
+                        'attribute' => 'numFavs',
+                        'filter'=>false,
+                    ],
                     //'created_at:date',
-                    'updated_at:date',
-                    ['class' => 'yii\grid\ActionColumn'],
+                    //'updated_at:date',
+                    [
+                        'attribute'=>'updated_at',
+                        'value' => function ($model, $index, $widget) {
+                            $date = date('Y-m-d H:i:s', $model->updated_at);
+                            return $date ;
+                        },
+                        'filter'=>false,
+                    ],
+                    //['class' => 'yii\grid\ActionColumn'],
+                    [
+                        'class' => 'yii\grid\ActionColumn',
+                        'template' => '{view} {update} {delete} ',
+                        'visibleButtons' => [
+                            'update' => function ($model, $key, $index) {
+                                return  User::getUserIdRole() == 11 ? false : true;
+                            },
+                            'delete' => function ($model, $key, $index) {
+                                return  User::getUserIdRole() == 11 ? false : true;
+                            }
+                        ],
+                        'buttons' => [
+                            'view' => function ($url,$model) {                                
+                                return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
+                                    'title' => Yii::t('app', 'View'), 'data-method' => 'post']);
+                            },
+                            'update' => function ($url,$model) {
+                                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                                    'title' => Yii::t('app', 'Update'), 'data-method' => 'post']);
+                            },
+                            'delete' => function($url, $model) {
+                                //$url = str_replace('otaprojects', 'builds', $url);
+                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+                                    'title' => Yii::t('app', 'Delete'), 'data-confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),'data-method' => 'post']);
+                            },
+                            /*
+                            'qa' => function($url, $model) {
+                                $url = str_replace('otaprojects', 'buildsqa', $url);
+                                return Html::button('<i class="fa fa-circle ></i>', ['value'=>Url::to($url),'class' => 'modalButton', 'id'=>'modalButton'.$model->buiId]);
+                            },
+                            */
+                        ],
+                    ],
                 ],
                 'pager' => [
                     'options'=>['class'=>'pagination'],   // set clas name used in ui list of pagination
@@ -118,9 +164,11 @@ if (isset($message) && ($message == 1)) {
     </div>
 </div>
 <div class="btn-footer">
-    <div class="btn-header">
-        <?= $this->render('/utils/_buttonscreate', [
-            'titulo' => Yii::t('app', 'Modalidad'),
-        ]); ?>
-    </div>
+    <?php
+    if ($userIdRole != 11) {
+        echo $this->render('/utils/_buttonscreate', [
+            'titulo' => Yii::t('app', 'Project'),
+        ]);
+    }
+    ?>
 </div>

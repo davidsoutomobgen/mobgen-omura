@@ -71,6 +71,7 @@ use backend\models\Utils;
                 <div class="info-box-content">
                     <span class="info-box-text"><?= Yii::t('app', 'Builds');?></span>
                     <span class="info-box-number"><?= Builds::find()->activeBuilds(); ?></span>
+                    <span class="small"><?= 'iOS: ' . Builds::find()->activeBuildsType(0) . ' / Android: ' . Builds::find()->activeBuildsType(1); ?></span>
                 </div>
                 <!-- /.info-box-content -->
             </div>

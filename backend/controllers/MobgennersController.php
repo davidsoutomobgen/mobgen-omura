@@ -39,10 +39,11 @@ class MobgennersController extends Controller
         if (isset(Yii::$app->user->identity->id)) {
             $roleId = User::getUserIdRole();
 
-            if ($roleId != 1 && $roleId != 12) {
-                //print_r($this->action->id);die;
+            if ($roleId == 1 || $roleId == 12)
+                return true;
+            else {
                 if (($this->action->id == 'index')  || ($this->action->id == 'create') || ($this->action->id == 'delete')){
-                    $this->redirect('/site/logout');
+                    throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
                 }
                 else if (($this->action->id == 'view') || ($this->action->id == 'update')) {
 
@@ -107,21 +108,10 @@ class MobgennersController extends Controller
     public function actionCreate()
     {
         $model = new Mobgenners();
-        //$user = new User();
         $user = new SignupForm();
         if ($model->load(Yii::$app->request->post()) && $user->load(Yii::$app->request->post())) {
-            //echo '<pre>'; print_r($_POST); echo '</pre>';die;
-
-
-            //$sufix = substr($model->email, strrpos($model->email, '@') + 1, strlen($model->email));
-            //echo $user->username.'<br>';
-            //echo $sufix.'<br>';
-
 
             if ($model->save()) {
-
-                //if ($user->signup()) {
-                //echo '<pre>'; print_r($user); echo '</pre>';
                 $user->first_name = $model->first_name;
                 $user->last_name = $model->last_name;
                 $user->username = substr($model->email, 0, strrpos($model->email, '@'));
@@ -129,19 +119,13 @@ class MobgennersController extends Controller
                 $user->password = $_POST['SignupForm']['password'];
                 $user->status = $_POST['SignupForm']['status'];
                 $user->role_id = $_POST['Mobgenners']['role_id'];
+                if ($newuser = $user->signup()) {
 
-                if ($user->signup()) {
-                    //if ($user->save()) {
-                        $model->user = $user->id;
-                        $model->save();
-                        Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Mobgenner and user created correctly.'));
-                    /*}
-                    else {
-                        echo 'USER<pre>'; print_r($user->getErrors()); echo '</pre>';die;
-                        Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Mobgenner created but user didn\'t create.'));
+                    $model->user = $newuser->id;
+                    $model->save();
 
-                    }
-                    */
+                    Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Mobgenner and user created correctly.'));
+
                     //Send email
                     if ($user->status == 1) {
                         $sendTo = 'david.souto@mobgen.com'; //$user->email;
@@ -167,12 +151,9 @@ class MobgennersController extends Controller
                     }
 
                     return $this->redirect(['view', 'id' => $model->id]);
-                    //}
-                    //echo '<pre>'; print_r($user); echo '</pre>';
-                    //die;
+
                 }
                 else {
-                    //echo 'USER<pre>'; print_r($user->getErrors()); echo '</pre>'; //die;
                     Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Mobgenner created but user didn\'t create.'));
                     return $this->render('update', [
                         'model' => $model,
@@ -181,18 +162,6 @@ class MobgennersController extends Controller
                 }
             }
         }
-        //echo '<pre>'; print_r($model->attributes); echo '</pre>';
-        //echo '<pre>'; print_r($user->attributes); echo '</pre>';
-       /* if (!empty($model->getErrors()) || !empty($user->getErrors())) {
-
-            echo 'MODEL<pre>';  print_r($model->getErrors()); echo '</pre>';
-            echo '<pre>'; print_r($model->attributes); echo '</pre>';
-            echo 'USER<pre>'; print_r($user->getErrors()); echo '</pre>';
-            echo '<pre>'; print_r($user->attributes); echo '</pre>';
-            die;
-        }
-       */
-        //getErrors
 
         return $this->render('create', [
             'model' => $model,
@@ -210,11 +179,9 @@ class MobgennersController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $user = new SignupForm();
-        //$model = new PasswordForm;
+        //$user = new SignupForm();
         $user = User::find()->where(['id'=>$model->user])->one();
-       // print_r($user->attributes);die;
-        
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {

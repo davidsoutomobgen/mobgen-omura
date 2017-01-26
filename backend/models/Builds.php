@@ -439,6 +439,17 @@ class Builds extends \common\models\CActiveRecord
         return false;
     }
 
+    /*
+    public static function getA(){
+        //echo 'aki'; die;
+        $id = 1035;
+        $count = Builds::find()
+            ->select(['COUNT(*) AS cnt'])
+            ->where('buiProIdFK = '.$id)
+            ->one();
 
+        return 35; //$count->cnt;
+    }
+    */
 
 }

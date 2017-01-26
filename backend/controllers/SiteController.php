@@ -4,6 +4,8 @@ namespace backend\controllers;
 use backend\models\UserOptions;
 use backend\models\UserOptionsSearch;
 use backend\models\UserOptionsQuery;
+use backend\models\PasswordResetRequestForm;
+use backend\models\ResetPasswordForm;
 use common\models\User;
 use Yii;
 use yii\filters\AccessControl;
@@ -11,6 +13,9 @@ use yii\web\Controller;
 use common\models\LoginForm;
 use yii\filters\VerbFilter;
 use yii\web\Session;
+use yii\web\BadRequestHttpException;
+
+use yii\web\NotFoundHttpException;
 
 
 /**
@@ -28,7 +33,7 @@ class SiteController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['login', 'error', 'forgotpassword', 'resetpassword'],
                         'allow' => true,
                     ],
                     [
@@ -38,13 +43,7 @@ class SiteController extends Controller
                     ],
                 ],
             ],
-            /*
-            'eauth' => [
-                // required to disable csrf validation on OpenID requests
-                'class' => \nodge\eauth\openid\ControllerBehavior::className(),
-                'only' => array('login'),
-            ],
-            */
+
             /*'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -101,7 +100,7 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            return $this->redirect('/site');
         } else {
             return $this->render('login', [
                 'model' => $model,
@@ -125,4 +124,79 @@ class SiteController extends Controller
     {
         return $this->render('index', ['response' => date('Y-M-d')]);
     }
+
+
+    public function actionForgotpassword()
+    {
+        $this->layout = 'loginLayout';
+
+        $model = new LoginForm();
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $modelReset = new PasswordResetRequestForm();
+            $user = $model->getUser();
+
+            if (isset($user->email) && ($_POST['LoginForm']['username'] != $user->email))
+                $modelReset->email = $user->email;
+            else
+                $modelReset->email = $_POST['LoginForm']['username'];
+
+            if ($modelReset->validate()) {
+                if ($modelReset->sendEmail()) {
+                    Yii::$app->getSession()->setFlash('success', 'Check your email for further instructions.');
+                    return $this->goHome();
+                } else {
+                    Yii::$app->getSession()->setFlash('error', 'Sorry, we are unable to reset password for email provided.');
+                }
+            }
+            else{
+                //print_r($modelReset->getErrors());die;
+                return $this->render('forgotpassword', [
+                    'model' => $model,
+                ]);
+            }
+        }
+        else {
+            //echo 'e2e';die;
+
+            return $this->render('forgotpassword', [
+                'model' => $model,
+            ]);
+        }
+    }
+
+    /**
+     * Resets password.
+     *
+     * @param string $token
+     * @return mixed
+     * @throws BadRequestHttpException
+     */
+    public function actionResetpassword($token)
+    {
+        $this->layout = 'loginLayout';
+
+        try {
+            $model = new ResetPasswordForm($token);
+
+        } catch (InvalidParamException $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+
+        //$model = new ResetPasswordForm($token);
+        //print_r($model->attributes);//die;
+
+
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
+            Yii::$app->session->setFlash('success', 'New password was saved.');
+            return $this->goHome();
+        }
+
+        return $this->render('resetpassword', [
+            'model' => $model,
+        ]);
+    }
+
 }

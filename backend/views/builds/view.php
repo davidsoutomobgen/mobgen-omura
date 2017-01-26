@@ -3,39 +3,31 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use backend\models\Utils;
-//use common\models\User;
+use common\models\User;
 /* @var $this yii\web\View */
 /* @var $model backend\models\Builds */
 
 $this->title = $model->buiName;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Builds'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ota Projects'), 'url' => ['/otaprojects']];
+$this->params['breadcrumbs'][] = ['label' => $model->buiProIdFK0->name, 'url' => ['/otaprojects/'.$model->buiProIdFK]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="builds-view">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <!--
-    <p>
-        <?= (User::getUserIdRole() == 10) ? Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->buiId], ['class' => 'btn btn-primary']) : '' ?>
-        <?= (User::getUserIdRole() == 10) ? Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->buiId], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
-            ],
-        ]) : '' ?>
-  	<?= Html::a( Yii::t('app', 'Back'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);?>
-    </p>
-    -->
-    <div class="btn-header">
-        <?= $this->render('/utils/_buttonsupdate', [
-            'id' => $model->buiId,
-            'titulo' => Yii::t('app', 'Ota Project'),
-        ]); ?>
+    <div class="title-header">
+        <h1><?= Html::encode($this->title) ?></h1>
     </div>
 
-    <div class="box box-primary">
+    
+    <div class="btn-header">
+        <p>
+            <?php if (User::getUserIdRole() < 11) { ?>
+                <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->buiId], ['class' => 'btn btn-primary']) ?>
+            <?php } ?>
+            <?= Html::a( Yii::t('app', 'Back'), '/otaprojects/'.$model->buiProIdFK, ['class' => 'btn btn-warning']);?>
+        </p>
+    </div>
+
+    <div class="box box-primary clear">
         <div class="box-header with-border">
             <h3  class="box-title"><?php echo Yii::t('app', 'Listado'); ?></h3>
         </div>
@@ -94,12 +86,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </div>
     </div>
-    <div class="btn-footer">
-        <?= $this->render('/utils/_buttonsupdate', [
-            'id' => $model->buiId,
-            'titulo' => Yii::t('app', 'Ota Project'),
-        ]); ?>
-    </div>
+    <?php if (User::getUserIdRole() < 11) { ?>
+        <div class="btn-footer">
+            <?= $this->render('/utils/_buttonsupdate', [
+                'id' => $model->buiId,
+                'titulo' => Yii::t('app', 'Build'),
+            ]); ?>
+        </div>
+    <?php } ?>
+
 </div>
 
 

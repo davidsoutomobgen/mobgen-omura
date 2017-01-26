@@ -1,5 +1,9 @@
 <?php
 use yii\helpers\Html;
+
+use common\models\User;
+
+$userIdRole = User::getUserIdRole();
 ?>
 <div class="box box-<?=$bordercolor;?>">
     <div class="box-header with-border">
@@ -33,9 +37,16 @@ use yii\helpers\Html;
                         <tr>
                             <!-- <td><?= $build->buiId; ?></td> -->
                             <td>
-                                <?= Html::a($build->buiName,
-                                    Yii::$app->params["BACKEND"].'/builds/update/'.$build->buiId,
-                                    ['target'=>'_blank', 'title'=>$build->buiName, 'alt'=>$build->buiName]); ?>
+                                <?php
+                                if ($userIdRole != 11)
+                                    echo Html::a($build->buiName,
+                                        Yii::$app->params["BACKEND"].'/builds/update/'.$build->buiId,
+                                        ['target'=>'_blank', 'title'=>$build->buiName, 'alt'=>$build->buiName]);
+                                else
+                                    echo Html::a($build->buiName,
+                                        Yii::$app->params["BACKEND"].'/otaprojects/'.$build->buiProIdFK,
+                                        ['target'=>'_blank', 'title'=>$build->buiName, 'alt'=>$build->buiName]);
+                                ?>
                             </td>
                             <td>
                                 <?php
