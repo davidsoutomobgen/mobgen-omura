@@ -50,22 +50,15 @@ use backend\models\Utils;
 
             $path = Yii::$app->params["BUILD_DIR"];
             $file = $path . $model->buiFile;
-
             if (file_exists($file2)) {
                 echo $form->field($model, 'buiFile')->hiddenInput(['value' => $model->buiFile])->label(false);
                 //echo '<label for="buiFile">File (<a href="'.$file.'">download</a>)</label>';
                 echo '<label class="control-label" for="buiFile">File (<a href="/builds/download/'.$model->buiId.'">download</a>)</label>';
 
-                $size = Utils::formatSizeUnits(filesize($file2));
-
-                if ($model->buiType == 0) {
-
-                }
-                else {
-
-                }
-
-                //$title = 'Android APP';
+                $size = filesize($file2);
+                // Now plugin create format of the size.
+                //$size = Utils::formatSizeUnits(filesize($file2));
+                
                 $title = (empty($model->buiType)) ? Yii::t('app', 'iOS APP') : Yii::t('app', 'Android APP');
                 $logo = (empty($model->buiType)) ? '/images/apple_logo.png' : '/images/android_logo.png';
 
@@ -79,27 +72,8 @@ use backend\models\Utils;
 
             }
         }
-        ?>
-
-
-
-        <?php
-
-        //echo '<pre>'; print_r($model); echo '</pre>';die;
-        /*
-        // Usage without a model
-        echo '<label class="control-label">Upload Document</label>';
-        echo FileInput::widget([
-            'name' => 'attachment_3',
-        ]);
-        */
-        //echo '<pre>'; print_r($model->buiProIdFK0->id);echo '</pre>';die;
-        //echo '<pre>'; print_r($model->attributes);echo '</pre>';die;
 
         $time = strtotime(date('Y-m-d H:i:s'));
-       // echo $file . '<br />';
-
-
 
         echo FileInput::widget([
             'name' => 'buiFile[]',

@@ -61,21 +61,12 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= ListView::widget([
                 'dataProvider' => $dataProvider,
                 'itemOptions' => ['class' => 'item '],
-                /*'itemView' => function ($model, $key, $index, $widget) {
-                    return Html::a(Html::encode($model->buiName), ['view', 'id' => $model->buiId]);
-                },
-                */
-                    /*
-                'itemView' => function ($model, $key, $index, $widget) {
-                    return $this->render('_list_item',['model' => $model]);
-                },
-                */
                 'itemView' => '_list_item',
                 //'pager' => ['class' => \kop\y2sp\ScrollPager::className()]
                 'pager' => [
                     'class' => \kop\y2sp\ScrollPager::className(),
                     'negativeMargin' => '200',
-                    'triggerText' => Yii::t('app', 'Load More news'),
+                    'triggerText' => Yii::t('app', 'Load More Builds'),
                     'triggerOffset' => 3,
                     'noneLeftText' => '',
                 ],

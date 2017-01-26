@@ -13,6 +13,7 @@ use backend\models\OtaProjectsBuildtypes;
 use backend\models\Templates;
 use backend\models\Utils;
 use backend\models\Permissions;
+use common\models\User;
 
 
 use yii\web\Controller;
@@ -45,11 +46,12 @@ class BuildsController extends Controller
     {
 
         if (isset(Yii::$app->user->identity->id)) {
-            if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'upload') || ($this->action->id == 'delete')) {
+            if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'update') || ($this->action->id == 'delete')) {
                 $permission = $this->action->controller->id.'_'.$this->action->id;
                 $hasPermission = Permissions::find()->hasPermission($permission);
-
-                if ($hasPermission == 0) {
+                $userIdRole = User::getUserIdRole();
+                //echo $permission;die;
+                if (($hasPermission == 0) || (($permission == 'builds_update') && ($userIdRole == 11))) {
                     throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
                 }
                 if (!isset($_SESSION['skin-color'])) {
@@ -215,33 +217,49 @@ class BuildsController extends Controller
 
         $model = $this->findModel($id);
 
-        //Build Types
-        $otaBuildTypes = OtaProjectsBuildtypes::find()->with('idOtaBuildtypes')
-                                                      ->where('id_ota_project = :id_ota_project',  [':id_ota_project' => $model->buiProIdFK])
-                                                      ->all();
-        $data = array();        
-        foreach ($otaBuildTypes as $buildtypes) {
-            $data[$buildtypes->id] =  $buildtypes->idOtaBuildtypes->name;
+        if ($model->buiStatus == 9) {
+            throw new MethodNotAllowedHttpException('This content doesn\'t exist.');
         }
-        $selectedBuildTypes = $model->buiBuildType;
+        else {
 
-        //Mails notifications
-        $otaProject = OtaProjects::find()->where('id = :id_ota_project',  [':id_ota_project' =>  $model->buiProIdFK])->one();
-        $modelNotification = new BuildsNotification();
-        $modelNotification->email = $otaProject->default_notify_email;
-
-        //Template
-        $templates = Templates::getTemplatesTemporaly();
-
-        if (!empty(Yii::$app->request->post())) {
-            $process = $this->_process($id, $model);
-            if ($process) {                  
-                //return $this->redirect(['view', 'id' => $model->buiId]);
-                $otaProject->updated_at = strtotime('today UTC');
-                $otaProject->save();
-                return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
+            //Build Types
+            $otaBuildTypes = OtaProjectsBuildtypes::find()->with('idOtaBuildtypes')
+                ->where('id_ota_project = :id_ota_project', [':id_ota_project' => $model->buiProIdFK])
+                ->all();
+            $data = array();
+            foreach ($otaBuildTypes as $buildtypes) {
+                $data[$buildtypes->id] = $buildtypes->idOtaBuildtypes->name;
             }
-            else {
+            $selectedBuildTypes = $model->buiBuildType;
+
+            //Mails notifications
+            $otaProject = OtaProjects::find()->where('id = :id_ota_project', [':id_ota_project' => $model->buiProIdFK])->one();
+            $modelNotification = new BuildsNotification();
+            $modelNotification->email = $otaProject->default_notify_email;
+
+            //Template
+            $templates = Templates::getTemplatesTemporaly();
+
+            if (!empty(Yii::$app->request->post())) {
+                $process = $this->_process($id, $model);
+
+                if ($process) {
+                    //return $this->redirect(['view', 'id' => $model->buiId]);
+                    $otaProject->updated_at = strtotime('today UTC');
+                    $otaProject->save();
+                    return $this->redirect(['/otaprojects/' . $model->buiProIdFK]);
+                } else {
+                    return $this->render('update', [
+                        'model' => $model,
+                        'ota_buildtypes' => $data,
+                        'selected_buildtypes' => $selectedBuildTypes,
+                        'templates' => $templates,
+                        'modelNotification' => $modelNotification,
+                        'searchBuildsNotification' => $searchBuildsNotification,
+                        'dataProvider' => $dataProvider,
+                    ]);
+                }
+            } else {
                 return $this->render('update', [
                     'model' => $model,
                     'ota_buildtypes' => $data,
@@ -252,16 +270,6 @@ class BuildsController extends Controller
                     'dataProvider' => $dataProvider,
                 ]);
             }
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-                'ota_buildtypes' => $data,
-                'selected_buildtypes' => $selectedBuildTypes,
-                'templates' => $templates,
-                'modelNotification' => $modelNotification,
-                'searchBuildsNotification' => $searchBuildsNotification,
-                'dataProvider' => $dataProvider,
-            ]);
         }
     }
 
@@ -269,18 +277,15 @@ class BuildsController extends Controller
     private function _process($id, $model){
 
         $post = Yii::$app->request->post('Builds');
-        
-        if (($model->buiFile != $post['buiFile']) && ($post['buiFile'] != '')) {
 
+        if (($model->buiFile != $post['buiFile']) && ($post['buiFile'] != '')) {
             if ($post['time'] != $post['buiSafename']) {
                 //Update app
                 $timestamp = $post['time'];
                 $extension = strtolower(Builds::_GetExtension($model->buiFile));
                 $safe = Builds::_GenerateSafeFileName((string)$model->buiId . '_' . $model->buiProIdFK . '_' . $timestamp);
-
             } else {
                 //New app
-                //echo 'new';
                 $timestamp = $model->buiSafename;
                 $model->buiSafename = Builds::_RemoveExtension($model->buiFile);
                 $model->buiHash = Builds::_GenerateHash();
@@ -300,6 +305,8 @@ class BuildsController extends Controller
             }
 
             if (file_exists($temp_file)) {
+                $model->load(Yii::$app->request->post());
+
                 if ($model->save()) {
                     $new_filename = $model->buiId . "." . $extension;
                     $model->buiFile = $new_filename;
@@ -307,7 +314,6 @@ class BuildsController extends Controller
                     $new_path_file = Yii::$app->params["BUILD_DIR"] . $new_filename;
                     rename($temp_file, $new_path_file);
                     return true;
-                    //$this->redirect(['view', 'id' => $model->buiId]);
                 } else {
                     print_r($model->getErrors());
                     echo 'Error doing SAVE';
@@ -323,13 +329,16 @@ class BuildsController extends Controller
                 }
             }
             else {
+                $buiFileOriginal = $model->buiFile;
                 $model->attributes = $post;
-                if ($model->save())
-                    $this->redirect(['view', 'id' => $model->buiId]);
+                $model->buiFile = $buiFileOriginal;
+                if ($model->save()){
+                    return true;
+                }
                 else {
                     print_r($model->getErrors());
+                    die;
                     return false;
-                    //die;
                 }
             }
         }
@@ -338,7 +347,7 @@ class BuildsController extends Controller
             $model->load(Yii::$app->request->post());
             $model->buiFile = $temp;
             if ($model->save()) {
-                return true; //$this->redirect(['view', 'id' => $model->buiId]);
+                return true;
             } else {
                 print_r($model->getErrors());
                 echo 'error haciendo save ';die;
@@ -556,13 +565,25 @@ class BuildsController extends Controller
             $sendTo [] = trim($email);
         }
 
-        $sendEmail = Yii::$app->mailer->compose()
-            //->setFrom(['david.souto@mobgen.com' => 'David Souto - MOBGEN'])
+        $sendEmail = Yii::$app->mailer->compose('newBuildAvailable', ['model' => $model])
             ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
             ->setTo($sendTo)
             ->setSubject('OTA Share: ' . $model->buiName)
-            ->setHtmlBody('Body of the email. BuiHash: ' . $model->buiHash)
             ->send();
+
+        //->setHtmlBody('Body of the email. BuiHash: ' . $model->buiHash)
+
+
+        /*
+         $sendEmail = Yii::$app->mailer->compose('passwordResetToken', ['user' => $user])
+            //$sendEmail = Yii::$app->mailer->compose()
+            //->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
+            ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
+            ->setTo($user->email)
+            ->setSubject('Password reset for ' . Yii::$app->name)
+            ->send();
+        */
+
 
         $modelNotification = new BuildsNotification();
         $modelNotification->buiId = $model->buiId;
@@ -586,7 +607,7 @@ class BuildsController extends Controller
         $ota = OtaProjects::find()->all();
         //echo '<pre>'; print_r($ota);echo '</pre>';die;
         $old = 0;
-        $news =0;
+        $news = 0;
         foreach ($ota as $ot) {
             //$builds = Builds::find()->where('buiProIdFK = :buiProIdFK',  [':buiProIdFK' => $ot->id])->all();
             //echo '<pre>'; print_r($ot);echo '</pre>';die;

@@ -100,12 +100,11 @@ class OtaprojectsController extends Controller
         $params['BuildsSearch']['buiProIdFK'] =  $id;
         $params['BuildsSearch']['buiStatus'] = 0;
 
+
         $searchBuilds = new BuildsSearch();
         $dataProvider = $searchBuilds->search($params);
 
-        //$dataProvider = $searchBuilds->search(Yii::$app->request->queryParams);
-        //$builds = Builds::find()->with('buildsQas')->where('buiProIdFK = :id AND buiStatus = 0',  [':id' => $id])->all();
-        //echo  '<pre>'; print_r($dataProvider); echo '</pre>';die;
+        print_r($params);
         if (\Yii::$app->devicedetect->isMobile())
             $view = 'viewmobile';
         else
@@ -208,11 +207,7 @@ class OtaprojectsController extends Controller
         }
         else $value = array();
 
-        //$value = array();
-
-        //if ($model->load(Yii::$app->request->post()) && $model->save()) {
         if ($model->load(Yii::$app->request->post())) {
-
             $this->_process($model);
 
             return $this->redirect(['view', 'id' => $model->id]);
@@ -230,18 +225,16 @@ class OtaprojectsController extends Controller
     private function _process($model) {
 
         $post = Yii::$app->request->post();
-        //echo '<pre>';var_dump($post);echo '</pre>';die;
 
         if(isset($post['OtaProjects']))
         {
             $model->attributes=$_POST['OtaProjects'];
+            $model->updated_at = strtotime('today UTC');
             if($model->save()){
-                //echo 'aki';die;
                 OtaProjectsBuildtypes::deleteAll(['id_ota_project' => $model->id ]);
 
                 //OtaProjectsBuildTypes
                 if (isset($post['proBuildType'])) {
-                    //echo '<pre>';var_dump($post);echo '</pre>';die;
                     foreach ($post['proBuildType'] as $tt){
 
                         if (empty(intval($tt))) {

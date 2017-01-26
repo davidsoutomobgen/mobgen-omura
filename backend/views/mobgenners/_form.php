@@ -12,6 +12,8 @@ use backend\models\Utils;
 /* @var $this yii\web\View */
 /* @var $model backend\models\Mobgenners */
 /* @var $form yii\widgets\ActiveForm */
+
+$userIdRole = User::getUserIdRole();
 ?>
 
 <?php $form = ActiveForm::begin(['id'=>$model->formName(), 'options' => ['enctype' => 'multipart/form-data']]); ?>
@@ -103,7 +105,7 @@ if (Yii::$app->getSession()->hasFlash('error')) {
         ?>
 
         <?= $form->field($model, 'time')->hiddenInput(['value'=> $time])->label(false); ?>
-        <?//= $form->field($model, 'buiSafename')->hiddenInput(['value'=> $model->isNewRecord ? $time : $model->buiSafename])->label(false); ?>
+        <?php //= $form->field($model, 'buiSafename')->hiddenInput(['value'=> $model->isNewRecord ? $time : $model->buiSafename])->label(false); ?>
     </div>
     <br/>
     <div class="col-xs-6">
@@ -116,10 +118,16 @@ if (Yii::$app->getSession()->hasFlash('error')) {
         <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
     </div>
     <div class="col-xs-3">
-        <?= $form->field($model, 'active')->widget(SwitchInput::classname(), [ 'pluginOptions' => [
-            'handleWidth'=>60,
-            'onText'=>'Yes',
-            'offText'=>'No'
+
+        <?php
+
+        if ($userIdRole == 1) $disabled = false;
+        else $disabled = true;
+
+        echo $form->field($model, 'active')->widget(SwitchInput::classname(), ['disabled' => $disabled, 'pluginOptions' => [
+            'handleWidth' => 60,
+            'onText' => 'Yes',
+            'offText' => 'No',
         ]]);
         ?>
     </div>
@@ -222,16 +230,14 @@ if (($role == 1) || ($role == 12)) {
 <?php
 $script = "
     $('#mobgenners-email').change(function(){ 
-        //console.log($('#mobgenners-email').val());
+        console.log($('#mobgenners-email').val());
         var emailAddress = $('#mobgenners-email').val();
         $('#mobgenners-email').val(emailAddress);
         //$('#signupform-email').val(emailAddress);
         $('#mobgenners-user').val(emailAddress.substring(0, emailAddress.indexOf(\"@\")));       
-        //console.log(emailAddress.substring(0, emailAddress.indexOf(\"@\")));
+        console.log(emailAddress.substring(0, emailAddress.indexOf(\"@\")));
     });
  
 ";
 $this->registerJs($script);
 ?>
-
-

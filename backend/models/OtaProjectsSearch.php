@@ -14,6 +14,8 @@ use backend\models\UserOptions;
 class OtaProjectsSearch extends OtaProjects
 {
     public $pagesize;
+    public $numBuilds;
+    public $numFavs;
 
     /**
      * @inheritdoc
@@ -21,8 +23,8 @@ class OtaProjectsSearch extends OtaProjects
     public function rules()
     {
         return [
-            [['id', 'id_project', 'id_ota_template', 'created_at', 'updated_at'], 'integer'],
-            [['name', 'safename', 'proCreated', 'proModified', 'proHash', 'proAPIKey', 'proAPIBuildKey', 'proBuildTypes', 'default_notify_email', 'proDevUrl1', 'proDevUrl2', 'proDevUrl3', 'proDevUrl4', 'proAltUrl1', 'proAltUrl2', 'proAltUrl3', 'proAltUrl4', 'proProdUrl1', 'proProdUrl2', 'proProdUrl3', 'proProdUrl4'], 'safe'],
+            [['id', 'id_project', 'id_ota_template', 'created_at', 'updated_at', 'numBuilds', 'numFavs'], 'integer'],
+            [['name', 'safename', 'numBuilds', 'numFavs', 'proCreated', 'proModified', 'proHash', 'proAPIKey', 'proAPIBuildKey', 'proBuildTypes', 'default_notify_email'], 'safe'],
         ];
     }
 
@@ -65,6 +67,21 @@ class OtaProjectsSearch extends OtaProjects
                 'pageSize' => $pagesize,
             ],
         ]);
+/*
+        $dataProvider->setSort([
+            'attributes' => [
+                'name',
+                'proHash',
+                'proAPIKey',
+                'numBuilds' => [
+                    'asc' => ['numBuilds' => SORT_ASC],
+                    'desc' => ['numBuilds' => SORT_DESC],
+                    'label' => 'numBuilds',
+                    'default' => SORT_ASC
+                ],
+            ]
+        ]);
+        */
 
         $this->load($params);
 
@@ -83,7 +100,12 @@ class OtaProjectsSearch extends OtaProjects
             'id_ota_template' => $this->id_ota_template,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            //'numBuilds' => $this->numBuilds,
+            //'numFavs' => $this->numFavs,
         ]);
+
+        //$query->andFilterWhere(['=', 'numBuilds', Builds::getA());
+
 
         $query->andFilterWhere(['like', 'LOWER(name)', strtolower($this->name)])
             ->andFilterWhere(['like', 'LOWER(safename)', strtolower($this->safename)])
@@ -91,19 +113,7 @@ class OtaProjectsSearch extends OtaProjects
             ->andFilterWhere(['like', 'proAPIKey', $this->proAPIKey])
             ->andFilterWhere(['like', 'proAPIBuildKey', $this->proAPIBuildKey])
             ->andFilterWhere(['like', 'proBuildTypes', $this->proBuildTypes])
-            ->andFilterWhere(['like', 'default_notify_email', $this->default_notify_email])
-            ->andFilterWhere(['like', 'proDevUrl1', $this->proDevUrl1])
-            ->andFilterWhere(['like', 'proDevUrl2', $this->proDevUrl2])
-            ->andFilterWhere(['like', 'proDevUrl3', $this->proDevUrl3])
-            ->andFilterWhere(['like', 'proDevUrl4', $this->proDevUrl4])
-            ->andFilterWhere(['like', 'proAltUrl1', $this->proAltUrl1])
-            ->andFilterWhere(['like', 'proAltUrl2', $this->proAltUrl2])
-            ->andFilterWhere(['like', 'proAltUrl3', $this->proAltUrl3])
-            ->andFilterWhere(['like', 'proAltUrl4', $this->proAltUrl4])
-            ->andFilterWhere(['like', 'proProdUrl1', $this->proProdUrl1])
-            ->andFilterWhere(['like', 'proProdUrl2', $this->proProdUrl2])
-            ->andFilterWhere(['like', 'proProdUrl3', $this->proProdUrl3])
-            ->andFilterWhere(['like', 'proProdUrl4', $this->proProdUrl4]);
+            ->andFilterWhere(['like', 'default_notify_email', $this->default_notify_email]);
 
         return $dataProvider;
     }

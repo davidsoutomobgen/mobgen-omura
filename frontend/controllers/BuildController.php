@@ -13,6 +13,8 @@ use yii\web\Controller;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
+use dosamigos\qrcode\QrCode;
 
 /**
  * BuildsController implements the CRUD actions for Builds model.
@@ -47,7 +49,6 @@ class BuildController extends Controller
 
         if (!empty($model)) {
             $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $model->buiFile;
-            //echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';
             //CHANGE THIS WHEN TEMPLATES WILL BE ADMiNISTRABLES FROM BACKEND
             switch ($model->buiTemplate) {
                 case 0:
@@ -71,9 +72,10 @@ class BuildController extends Controller
                 case 6:
                     $build = Yii::$app->params["TEMPLATES"] . 'james-beta-user/build.php';
                     break;
+                case 7:
+                    $build = Yii::$app->params["TEMPLATES"] . 'classic-template/build.php';
+                    break;
             }
-
-
             if ($model->buiVisibleClient == 1 && file_exists($path_file)) {
                 return $this->renderFile($build, [
                     'buildata' => $model,
@@ -81,20 +83,16 @@ class BuildController extends Controller
                 ]);
             }
             else {
-                //echo $path_file . '  ----  ' . $model->buiVisibleClient . '<br>';
                 if ($model->buiVisibleClient == 0) {
-                    echo "This build is not available for public users.";
-                    //return $this->render('error');
+                    $message = "This build is not available for public users.";
+                    return $this->render('error', ['message' => $message]);
                 } else {
-                    echo "Sorry but this build doesn't exist (anymore.) If you think this is an error, please contact us.";
-                    //return $this->render('error');
+                    $message = "Sorry but this build doesn't exist (anymore).";
+                    return $this->render('error', ['message' => $message]);
                 }
-                die;
             }
         }
         else {
-            echo 'Error 404. Are you trying aleatory links?!';
-            die;
             return $this->render('error');
         }
 
@@ -102,68 +100,91 @@ class BuildController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
-        
-        return false;
-        
+    }
+
+    public function actionQrcode($hash) {
+
+        $model = Builds::find()->where("buiHash = '$hash'")->one();
+
+        if (!empty($model)) {
+
+            if ($model->buiType == 0)
+                $url = Yii::$app->params["FRONTEND"] . '/build/' . $hash;
+            else
+                $url = Yii::$app->params["FRONTEND"] . '/build/download/' . $hash;
+
+            return QrCode::jpg($url);
+        }
+        else {
+                //echo 'Error 404. Are you trying aleatory links?!';             
+                return $this->render('error');
+            }
     }
 
     public function actionIpa ($hash, $safename, $plist) {
 
         $model = Builds::find()->where("buiHash = '$hash' AND buiSafename = '$safename' ")->one();
-        $path_file = Yii::$app->params["FRONTEND"] . '/build/download/' . $model->buiHash;
-        //http://omura-david-front.mobgendev105.com/build/download/13245';
 
-        $filename2 = $model->buiId . ".ipa";
-        $path_file2 = Yii::$app->params["BUILD_DIR"] . $filename2;
-        $info = Builds::_getPlist($path_file2);
-        //echo '<pre>'; print_r($info); echo '</pre>';
+        if (!empty($model)) {
+            $path_file = Yii::$app->params["FRONTEND"] . '/build/download/' . $model->buiHash;
+            //http://omura-david-front.mobgendev105.com/build/download/13245';
 
-        $plist = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"/>');
-        $dict = $plist->addChild('dict');
-        $dict->addChild('key', 'items');
-        $array = $dict->addChild('array');
+            $filename2 = $model->buiId . ".ipa";
+            $path_file2 = Yii::$app->params["BUILD_DIR"] . $filename2;
+            $info = Builds::_getPlist($path_file2);
+            //echo '<pre>'; print_r($path_file2); echo '</pre>';die;
+            //echo '<pre>'; print_r($info); echo '</pre>';
+
+            $plist = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"/>');
+            $dict = $plist->addChild('dict');
+            $dict->addChild('key', 'items');
+            $array = $dict->addChild('array');
             $dict2 = $array->addChild('dict');
-                
-                $dict2->addChild('key', 'assets');
-                $array2 = $dict2->addChild('array');
-                    $dict3 = $array2->addChild('dict');
-                    $dict3->addChild('key', 'kind');
-                    $dict3->addChild('string', 'software-package');
-                    $dict3->addChild('key', 'url');
-                    $dict3->addChild('string', $path_file);
-                    
-                    $dict3 = $array2->addChild('dict');
-                    $dict3->addChild('key', 'kind');
-                    $dict3->addChild('string', 'display-image');
-                    $dict3->addChild('key', 'needs-shine');
-                    $dict3->addChild('true');
-                    $dict3->addChild('key', 'url');
-                    $dict3->addChild('string', 'https://otashare-front.mobgen.com/images/ios_57x57.png');
-                    
-                    $dict3 = $array2->addChild('dict');
-                    $dict3->addChild('key', 'kind');
-                    $dict3->addChild('string', 'full-size-image');
-                    $dict3->addChild('key', 'needs-shine');
-                    $dict3->addChild('true');
-                    $dict3->addChild('key', 'url');
-                    $dict3->addChild('string', 'https://otashare-front.mobgen.com/images/ios_512x512.jpg');
 
-                $dict2->addChild('key', 'metadata');
+            $dict2->addChild('key', 'assets');
+            $array2 = $dict2->addChild('array');
+            $dict3 = $array2->addChild('dict');
+            $dict3->addChild('key', 'kind');
+            $dict3->addChild('string', 'software-package');
+            $dict3->addChild('key', 'url');
+            $dict3->addChild('string', $path_file);
 
-                $dict4 = $dict2->addChild('dict');
-                $dict4->addChild('key', 'bundle-identifier');
-                $dict4->addChild('string', $info['identifier']);
-                $dict4->addChild('key', 'bundle-version');
-                $dict4->addChild('string', $info['aps-environment']);
-                $dict4->addChild('key', 'kind');
-                $dict4->addChild('string', 'software');
-                $dict4->addChild('key', 'title');
-                //Choose $model->buiSafename or $info['appName']
-                $dict4->addChild('string', $info['appName']);
+            $dict3 = $array2->addChild('dict');
+            $dict3->addChild('key', 'kind');
+            $dict3->addChild('string', 'display-image');
+            $dict3->addChild('key', 'needs-shine');
+            $dict3->addChild('true');
+            $dict3->addChild('key', 'url');
+            $dict3->addChild('string', 'https://otashare-front.mobgen.com/images/ios_57x57.png');
 
-        Header('Content-type: text/xml');
-        print($plist->asXML());
-        die;
+            $dict3 = $array2->addChild('dict');
+            $dict3->addChild('key', 'kind');
+            $dict3->addChild('string', 'full-size-image');
+            $dict3->addChild('key', 'needs-shine');
+            $dict3->addChild('true');
+            $dict3->addChild('key', 'url');
+            $dict3->addChild('string', 'https://otashare-front.mobgen.com/images/ios_512x512.jpg');
+
+            $dict2->addChild('key', 'metadata');
+
+            $dict4 = $dict2->addChild('dict');
+            $dict4->addChild('key', 'bundle-identifier');
+            $dict4->addChild('string', $info['identifier']);
+            $dict4->addChild('key', 'bundle-version');
+            $dict4->addChild('string', $info['aps-environment']);
+            $dict4->addChild('key', 'kind');
+            $dict4->addChild('string', 'software');
+            $dict4->addChild('key', 'title');
+            //Choose $model->buiSafename or $info['appName']
+            $dict4->addChild('string', $info['appName']);
+
+            Header('Content-type: text/xml');
+            print($plist->asXML());
+            die;
+        }
+        else {
+            return $this->render('error');
+        }
     }
 
     public function actionDownload($hash) {
@@ -185,18 +206,16 @@ class BuildController extends Controller
             }
             else {
                 if ($model->buiVisibleClient == 0) {
-                    echo "This build is not available for public users.";
-                    //return $this->render('error');
+                    $message = "This build is not available for public users.";
+                    return $this->render('error', ['message' => $message]);
                 } else {
-
-                    echo "Sorry but this build doesn't exist (anymore.) If you think this is an error, please contact us.";
-                    //return $this->render('error');
+                    $message = "Sorry but this build doesn't exist (anymore).";
+                    return $this->render('error', ['message' => $message]);
                 }
             }
         }
         else {
-            echo 'Error 404. Are you trying aleatory links?';
-            //return $this->render('error');
+            return $this->render('error');
         }
     }
 

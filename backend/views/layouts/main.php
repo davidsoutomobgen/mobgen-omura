@@ -8,6 +8,7 @@ use yii\widgets\Breadcrumbs;
 use common\models\User;
 use backend\models\UserOptions;
 use backend\models\System;
+use backend\models\Utils;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -22,8 +23,6 @@ if (isset(Yii::$app->user->identity->id)) {
     $options = UserOptions::find()->getUserOptionsByUserId((int) $userid);
     $session = Yii::$app->session;
     foreach ($options as $opt) {
-        //var_dump($opt);
-        //echo '<br>';
         if ($opt['type'] == 'integer')
             $session->set($opt['variable'], (int) $opt['value']);
         else if ($opt['type'] == 'string')
@@ -31,22 +30,11 @@ if (isset(Yii::$app->user->identity->id)) {
     }
 
     $user = User::getUserInfo();
-
-
 }
 else {
-    //echo 'Session close'; die;
     return Yii::$app->response->redirect(Url::to(['/site/logout']));
 }
 
-//$variable = 'fixed-header';
-//$model = UserOptions::find()->getVariable($userid, 'fixed_header');
-
-
-
-//echo '<pre>'; print_r($this->context->id); echo '</pre>'; die;
-//var_dump($_SESSION);die;
-//AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -112,24 +100,10 @@ else {
                                 <li class="user-header">
                                     <img src="<?= $user->image;?>" class="img-circle" alt="User Image">
                                     <p>
-                                        <?php echo Yii::$app->user->identity->first_name.' '.Yii::$app->user->identity->last_name ; ?> <!-- - Backend Developer -->
-                                        <!-- <small>Member since Nov. 2012</small> -->
+                                        <?php echo Yii::$app->user->identity->first_name.' '.Yii::$app->user->identity->last_name ; ?>
+                                        <small><?= Utils::getRolById($user->role_id);?></small>
                                     </p>
                                 </li>
-                                <!-- Menu Body -->
-                                <!--
-                                <li class="user-body">
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Projects </a>
-                                    </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Sales</a>
-                                    </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Friends</a>
-                                    </div>
-                                </li>
-                                -->
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
                                     <div class="pull-left">
@@ -163,19 +137,6 @@ else {
                         <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                     </div>
                 </div>
-                <!-- search form -->
-                <!--
-                <form action="search" method="get" class="sidebar-form">
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Search...">
-                        <span class="input-group-btn">
-                        <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-                        </span>
-                    </div>
-                </form>
-                -->
-                <!-- /.search form -->
-                <!-- sidebar menu: : style can be found in sidebar.less -->
                 <?php $userId= \Yii::$app->user->identity->id; ?>
 
                 <ul class="sidebar-menu">
@@ -190,6 +151,9 @@ else {
                             <i class="fa fa-share-alt"></i> <span>OTA Share</span>
                         </a>
                     </li>
+                    <?php
+                    if ($user->role_id < 11) {
+                    ?>
                     <li class="treeview <?=($this->context->id == 'otabuildtypes') ? 'active' : ' ' ?>">
                         <a href="#">
                             <i class="fa fa-cog"></i>
@@ -200,20 +164,24 @@ else {
                             <li class="<?=($this->context->id == 'otabuildtypes') ? 'active' : ' ' ?>"><a href="/otabuildtypes"><i class="fa fa-ellipsis-h"></i> Build Types</a></li>
                         </ul>
                     </li>
-                    <li class="treeview <?=($this->context->id == 'devices') ? 'active' : ' ' ?>">
-                        <a href="/devices">
-                            <i class="fa fa-tablet"></i> <span>Test Devices</span>
-                        </a>
-                    </li>
+                    <?php } ?>
                     <?php
-                    if ($userId == 1) {
-                    ?>
+                    if ($user->role_id  == 1) { ?>
+                        <li class="treeview <?=($this->context->id == 'devices') ? 'active' : ' ' ?>">
+                            <a href="/devices">
+                                <i class="fa fa-tablet"></i> <span>Test Devices</span>
+                            </a>
+                        </li>
+                    <?php } ?>
+                    <?php  if ($user->role_id == 1 || $user->role_id== 12) { ?>
                         <li class="treeview <?=($this->context->id == 'mobgenners') ? 'active' : ' ' ?>">
                             <a href="/mobgenners">
                                 <i class="fa fa-circle-o"></i> <span><?= Yii::t('app', 'Mobgenners')?></span>
                             </a>
                         </li>
-
+                    <?php
+                    }
+                    if ($user->role_id  == 1) { ?>
                         <li class="<?=($this->context->id == 'useroptions') ||
                                       ($this->context->id == 'options') ||
                                       ($this->context->id == 'permissions') ||

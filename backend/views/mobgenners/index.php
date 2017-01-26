@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use backend\models\Utils;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\MobgennersSearch */
@@ -34,6 +35,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'label' => Yii::t('app', 'Usename'),
                         'value' => 'user0.username',
+                    ],
+                    [
+                        'label' => Yii::t('app', 'Role'),
+                        'value' => function($data){
+                            return Utils::getRolById($data->user0->role_id);
+                        }
                     ],
                     'phone',
                     //'skype',

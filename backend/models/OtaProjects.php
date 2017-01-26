@@ -3,7 +3,6 @@
 namespace backend\models;
 
 use Yii;
-
 /**
  * This is the model class for table "ota_projects".
  *
@@ -52,13 +51,16 @@ class OtaProjects extends \common\models\CActiveRecord
     public function rules()
     {
         return [
-            [['name', 'id_ota_template', 'default_notify_email'], 'required'],
+            [['name', 'id_ota_template'], 'required'],
             //[['proCreated', 'proModified'], 'safe'],
-            [['id_project', 'id_ota_template', 'created_at', 'updated_at'], 'integer'],
-            [['name', 'safename', 'proDevUrl1', 'proDevUrl2', 'proDevUrl3', 'proDevUrl4', 'proAltUrl1', 'proAltUrl2', 'proAltUrl3', 'proAltUrl4', 'proProdUrl1', 'proProdUrl2', 'proProdUrl3', 'proProdUrl4'], 'string', 'max' => 64],
+            [['id_project', 'id_ota_template', 'created_at', 'updated_at', 'numBuilds', 'numFavs'], 'integer'],
+            [['default_notify_email'], 'email'],
+            [['name', 'safename'], 'string', 'max' => 64],
             [['proHash', 'proAPIKey'], 'string', 'max' => 16],
             [['proAPIBuildKey', 'proBuildTypes', 'default_notify_email'], 'string', 'max' => 255],
             [['proHash'], 'unique'],
+            //[['numBuilds'], 'value'=>$this->getNumBuilds()],
+            //[['numFavs'], 'value'=>$this->getNumFavs()],
         ];
     }
 
@@ -94,7 +96,28 @@ class OtaProjects extends \common\models\CActiveRecord
             'proProdUrl4' => Yii::t('app', 'Pro Prod Url4'),
             'created_at' => Yii::t('app', 'Created date'),
             'updated_at' => Yii::t('app', 'Modified date'),
+            'numBuilds' => Yii::t('app', 'Total Builds'),
+            'numFavs' => Yii::t('app', 'Builds Fav'),
         ];
+    }
+
+
+    public function setNumBuilds() {
+        $this->numBuilds = Builds::find()->activeBuildsByProject($this->id);
+    }
+
+    public function getNumBuilds()
+    {
+        return Builds::find()->activeBuildsByProject($this->id);
+    }
+
+
+    public function setNumFavs() {
+        $this->numFavs = Builds::find()->favBuildsByProject($this->id);
+    }
+
+    public function getNumFavs() {
+        return Builds::find()->favBuildsByProject($this->id);
     }
 
     /**

@@ -23,16 +23,6 @@ use yii\widgets\ActiveForm;
     ])->textInput(['placeholder' => 'Search']);
     ?>
 
-    <?//= $form->field($model, 'buiId') ?>
-
-    <?//= $form->field($model, 'buiName') ?>
-
-    <?//= $form->field($model, 'buiSafename') ?>
-
-    <?//= $form->field($model, 'buiCreated') ?>
-
-    <?//= $form->field($model, 'buiModified') ?>
-
     <?php ActiveForm::end(); ?>
 
 </div>

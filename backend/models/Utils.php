@@ -66,7 +66,7 @@ class Utils
 
 
     public static function getRoles() {
-
+        $roles[1] = 'ADMIN';
         $roles[10] = 'DEVELOPER';
         $roles[11] = 'QA';
         $roles[12] = 'LEAD';
@@ -78,6 +78,9 @@ class Utils
 
     public static function getRolById($id) {
         switch ($id) {
+            case 1:
+                $role = 'ADMIN';
+                break;
             case 10:
                 $role = 'DEVELOPER';
                 break;
@@ -104,6 +107,8 @@ class Utils
             3 => "Redevco",
             4 => "WhoIsWho (Ron)",
             5 => "National Express",
+            6 => 'James BETA-User',
+            7 => 'Classic Template',
         );
     }
 
@@ -128,6 +133,12 @@ class Utils
                 break;
             case 5:
                 $template = 'National Express';
+                break;
+            case 6:
+                $template = 'James BETA-User';
+                break;
+            case 7:
+                $template = 'Classic Template';
                 break;
             default:
                 $template = 'default';

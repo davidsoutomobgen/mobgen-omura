@@ -71,13 +71,16 @@ class EmailsController extends Controller
             if ( $model->attachment ) 
             {    
                 $time = time();
-                $model->attachment->saveAs('attachments/' .$time. '.' . $model->attachment->extension);
+                $model->attachment->saveAs('/home/davidsouto/www/mobgen-omura/backend/web/attachments/' .$time. '.' . $model->attachment->extension);
                 $model->attachment='attachments/' .$time. '.' . $model->attachment->extension;
+            }
+            else{
+                $model->attachment= '';
             }
             if( $model->attachment )
             {
                 $value = Yii::$app->mailer->compose()
-                ->setFrom([ 'uiheenatigala@gmail.com' => 'DoingITeasyChannel' ])
+                ->setFrom([ 'david.souto@mobgen.com' => 'David Souto' ])
                 ->setTo($model->receiver_email)
                 ->setSubject($model->subject)
                 ->setHtmlBody($model->content )
@@ -86,7 +89,7 @@ class EmailsController extends Controller
             }else
             {
                 $value = Yii::$app->mailer->compose()
-                ->setFrom([ 'uiheenatigala@gmail.com' => 'DoingITeasyChannel' ])
+                ->setFrom([ 'david.souto@mobgen.com' => 'David Souto' ])
                 ->setTo($model->receiver_email)
                 ->setSubject($model->subject)
                 ->setHtmlBody($model->content)

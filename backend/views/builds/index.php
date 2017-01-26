@@ -13,11 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="builds-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?php //=Html::a(Yii::t('app', 'Create Builds'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -38,7 +33,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value'=>function ($data) {
                     $frontend = Yii::$app->params['FRONTEND'];
                     $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $data->buiFile;
-echo $path_file.'<br />';
                     if (file_exists($path_file))
                         return Html::a($data->buiHash, Yii::$app->params["FRONTEND"].'/build/'.$data->buiHash.'/'.$data->buiSafename, ['target'=>'_blank', 'title'=>$data->buiName, 'alt'=>$data->buiName]);
                     else

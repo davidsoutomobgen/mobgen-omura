@@ -17,6 +17,8 @@ use common\models\User;
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ota Projects'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+$userIdRole = User::getUserIdRole();
 ?>
 <?= $this->render('/utils/_alerts', []); ?>
 
@@ -57,13 +59,13 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
     <?php
-        Modal::begin([
-                'header'=>'<h3>QA Status</h3>',
-                'id' => 'modal',
-                'size'=>'modal-lg',
-            ]);
-        echo "<div id='modalContent'></div>";
-        Modal::end();
+    Modal::begin([
+        'header'=>'<h3>QA Status</h3>',
+        'id' => 'modal',
+        'size'=>'modal-lg',
+    ]);
+    echo "<div id='modalContent'></div>";
+    Modal::end();
     ?>
     <div class="box box-success">
         <div class="box-header with-border">
@@ -76,10 +78,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <?=Html::beginForm(['builds/bulk'],'post');?>
             <?=Html::dropDownList('action1','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
             <?=Html::hiddenInput('buildId', $model->id);?>
-            <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>           
+            <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>
         </div>
         <div class="addbuild right">
-            <?=  (User::getUserIdRole() == 10) ? Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']) : '' ?>
+            <?=  ($userIdRole != 11) ? Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']) : '' ?>
         </div>
         <div class="clear"></div>
 
@@ -92,7 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'columns' => [
                 //['class' => 'yii\grid\SerialColumn'],
-                ['class' => 'yii\grid\CheckboxColumn'],                
+                ['class' => 'yii\grid\CheckboxColumn'],
                 [
                     'attribute' => 'buiType',
                     'filter'=>array("0"=>"iOS","1"=>"Android"),
@@ -116,6 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     },
                 ],
                 'buiVersion',
+                'buiBuildNum',
                 [
                     'attribute'=>'buiHash',
                     'label'=>'Public URL',
@@ -126,7 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         //echo $path_file.'<br />';
 
                         if (file_exists($path_file))
-                            return Html::a($data->buiHash, Yii::$app->params["FRONTEND"].'/build/'.$data->buiHash.'/'.$data->buiSafename, ['target'=>'_blank', 'title'=>$data->buiName, 'alt'=>$data->buiName]);                            
+                            return Html::a($data->buiHash, Yii::$app->params["FRONTEND"].'/build/'.$data->buiHash.'/'.$data->buiSafename, ['target'=>'_blank', 'title'=>$data->buiName, 'alt'=>$data->buiName]);
                         else
                             return 'Not available';
                     },
@@ -138,7 +141,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         return ($data->createdBy->first_name.' '.$data->createdBy->last_name);
                     }
                 ],
-                'updated_at:datetime',
+                //'updated_at:datetime',
+                [
+                    'attribute'=>'updated_at',
+                    'value' => function ($model, $index, $widget) {
+                        $date = date('Y-m-d H:i:s', $model->updated_at);
+                        return $date ;
+                    },
+                    'filter'=>false,
+                ],
                 [
                     'attribute'=>'buiFav',
                     'filter'=>array("0"=>"No","1"=>"Yes"),
@@ -155,8 +166,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             $text = Yii::t('app', 'Add to Favorites');
                             $type = 1;
                         }
-                        return '<a href="javascript:void(0);" onclick="addFav('.$data->buiId. ');return false;" title="<?=$text;?>">'.$fav.'</a>';
-                        //return Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
+
+                        if (User::getUserIdRole() >= 11)
+                            $exit = $fav;
+                        else
+                            $exit = '<a href="javascript:void(0);" onclick="addFav('.$data->buiId. ');return false;" title="$text">'.$fav.'</a>';
+
+                        return $exit;
                     }
                 ],
                 [
@@ -175,7 +191,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             $url = '/builds/show/'.$data->buiId;
                             $text = Yii::t('app', 'Visible to the client');
                         }
-                        return Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
+
+
+                        if (User::getUserIdRole() >= 11)
+                            $exit = $fav;
+                        else
+                            $exit = Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
+
+                        return $exit;
+                        //return Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
                     }
                 ],
                 [
@@ -194,7 +218,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $lastqa = 0;
                         foreach ($data->lastBuildsQas as $qa) {
                             $lastqa = $qa->status;
-                        }                        
+                        }
                         switch ($lastqa) {
                             case 0:
                                 $color = 'grey';
@@ -207,7 +231,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 break;
                             case 3:
                                 $color = '#00a65a';
-                                break;           
+                                break;
                         }
 
                         $text = Utils::getQAStatusById($lastqa);
@@ -253,7 +277,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     $url = str_replace('otaprojects', 'buildsqa', $url);
                                     return Html::button('<i class="fa fa-circle ></i>', ['value'=>Url::to($url),'class' => 'modalButton', 'id'=>'modalButton'.$model->buiId]);
                                 },
-                                */     
+                                */
                             ],
                         ],
             ],
@@ -278,7 +302,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="clear"></div>
     </div>
 </div>
-</div>
+
 
 <?php
 $this->registerJs('
@@ -309,6 +333,10 @@ $this->registerJs('
                     return false;
             }
             
+        });
+        
+        $(\'.user-menu\').on(\'click\', function(e){
+            $(\'.user-menu\').addClass(\'open\');
         });
 
     });', \yii\web\View::POS_READY);

@@ -639,12 +639,12 @@ article.item .lateral_item.icons {
 }
 
 .callout.callout-danger, .alert-danger, .alert-error, .label-danger, .modal-danger .modal-body {
-    background-color: #FFBAD3 !important;
+    background-color: #DD4B38 !important;
     border: 1px solid #DD4B38;
 }
 
 .callout.callout-danger h4, .alert-danger h4, .alert-error h4, .label-danger h4, .modal-danger .modal-body  h4{
-    color: #dd4b38;
+    color: #fff;
 }
 
 .builds-create i.glyphicon.glyphicon-file.kv-caption-icon,

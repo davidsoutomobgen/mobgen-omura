@@ -22,6 +22,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="box box-primary">
         <div class="box-header with-border">
             <h3  class="box-title"><?= Yii::t('app', 'General Information'); ?></h3>
+            <div class="right">
+                <?= Html::a(Yii::t('app', 'Remove Old Builds'), ['removebuilds'], ['class' => 'btn btn-success']) ?>
+            </div>
+
         </div>
         <div class="box-body">
             <?= DetailView::widget([

@@ -39,7 +39,7 @@ $url = 'test';
                 // 'password_hash',
                 // 'password_reset_token',
                  'email:email',
-                // 'role_id',
+                 'role_id',
                  'status',
                 // 'created_at',
                 // 'updated_at',

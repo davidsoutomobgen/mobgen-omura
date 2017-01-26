@@ -37,20 +37,20 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Remove Builds');
         </div>
         <?php
         $i = 3;
+        $date = date("d.m.Y");
         for ($i=3; $i >0; $i--) {
         ?>
             <div class="col-xs-4">
                 <div class="radio">
                     <label>
-                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="<?= $i ?>" >
+                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="<?= $i ?>" />
                         <?= $i ?> months old
                         <?php
-                            $date = date("d.m.Y");
                             $date_remove = strtotime( $date . ' - ' . $i . ' month');
-                            //echo $date_remove. ' - ';
                             echo '[' . date('d.m.Y', $date_remove). ' - ';
                             echo 'Delete <span class="text-red">'. Builds::find()->countRemoveBuilds($date_remove) . '</span>' . Yii::t('app', ' builds'). ']';
                         ?>
+                        <input type="hidden" name="date_<?= $i ?>" id="date_<?= $i ?>" value="<?= $date_remove ?>" />
                     </label>
                 </div>
             </div>

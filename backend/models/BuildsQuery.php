@@ -99,18 +99,54 @@ class BuildsQuery extends \yii\db\ActiveQuery
         return ($data[0]['total']);
     }
 
+    public function activeBuildsType($id = 0)
+    {
+        $query = new Query;
+        $query -> select(['count(*) as total'])
+            -> from('builds')
+            -> where('buiStatus = :status AND buiType = :type', [':status' => 0, ':type' => $id])
+            -> all();
+
+        $command = $query->createCommand();
+        $data = $command->queryAll();
+        return ($data[0]['total']);
+    }
+
     public function countRemoveBuilds($date)
     {
         $query = new Query;
         $query -> select(['count(*) as total'])
             -> from('builds')
-            -> where('updated_at < :date AND buiFav = :fav', [':date' => $date, ':fav' => 0])
-            //-> where('updated_at < :date', [':date' => $date])
+            -> where('updated_at < :date AND buiFav = :fav AND buiStatus = :status', [':date' => $date, ':fav' => 0, ':status' => 0])
             -> all();
 
         $command = $query->createCommand();
         $data = $command->queryAll();
         //print_r($data[0]['total']);//die;
+        return ($data[0]['total']);
+    }
+
+    public function activeBuildsByProject($buiProIdFK)
+    {
+        $query = new Query;
+        $query -> select(['count(*) as total'])
+            -> from('builds')
+            -> where('buiStatus = :status AND buiProIdFK = :buiProIdFK', [':status' => 0, ':buiProIdFK' => $buiProIdFK] )
+            -> all();
+        $command = $query->createCommand();
+        $data = $command->queryAll();
+        return ($data[0]['total']);
+    }
+
+    public function favBuildsByProject($buiProIdFK)
+    {
+        $query = new Query;
+        $query -> select(['count(*) as total'])
+            -> from('builds')
+            -> where('buiStatus = :status  AND buiProIdFK = :buiProIdFK AND buiFav = :fav', [ ':status' => 0, ':buiProIdFK' => $buiProIdFK, ':fav' => 1] )
+            -> all();
+        $command = $query->createCommand();
+        $data = $command->queryAll();
         return ($data[0]['total']);
     }
 }
