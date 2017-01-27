@@ -11,6 +11,9 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
+
+use backend\models\Builds;
+
 /**
  * MobgennersController implements the CRUD actions for Mobgenners model.
  */
@@ -180,10 +183,18 @@ class MobgennersController extends Controller
     {
         $model = $this->findModel($id);
         //$user = new SignupForm();
-        $user = User::find()->where(['id'=>$model->user])->one();
+        $user = User::findOne($model->user);
+
+        if (isset($_POST['User'])) {
+            $_POST['User']['first_name'] = $_POST['Mobgenners']['first_name'];
+            $_POST['User']['last_name'] = $_POST['Mobgenners']['last_name'];
+            $user->attributes = $_POST['User'];
+            $user->save();
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -220,4 +231,70 @@ class MobgennersController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+
+    public function actionFileupload()
+    {
+        $mobgennerId = Yii::$app->request->post('mobgennerId');
+        $timestamp = Yii::$app->request->post('timestamp');
+
+        $model = $this->findModel($mobgennerId);
+
+        if ($model) {
+            //echo '<pre>'; print_r($_FILES);echo '</pre>';//die;
+            if (!empty($_FILES)) {
+                if ($_FILES['mobgennerFile']['error'][0] === UPLOAD_ERR_OK) {
+
+                    // Device OS
+                    $extension = strtolower(Builds::_GetExtension($_FILES['mobgennerFile']['name'][0]));
+
+                    if ($extension == "jpg" || $extension == "png" || $extension == "gif") {
+                        $validExtexsion = true;
+                    } elseif ($extension == "png") {
+                        $validExtexsion = false;
+                    }
+
+                    if ($validExtexsion) {
+                        //Temporal name
+                            $safe = Builds::_GenerateSafeFileName($mobgennerId);
+                            //$filename = Yii::getAlias('@webroot') . Yii::$app->params["TEMP_BUILD_DIR"] . $safe . "." . $extension;
+                            $filename = Yii::$app->params["BACKEND_WEB"] . "files/mobgenners/" . $safe . "." . $extension;
+                        //echo $filename; die;
+
+                        if (move_uploaded_file($_FILES['mobgennerFile']['tmp_name'][0], $filename)) {
+                            $model->image = $safe . "." . $extension;
+                            $model->save();
+                            $data = array('1' => 'Done');
+                            return json_encode($data);
+                        }
+                        //echo '<pre>'; print_r($safe);echo '</pre>';//die;
+                    } else {
+                        $error = "File extension not recognized as valid extension.";
+                    }
+                } else {
+                    $error = "Error with uploading file.";// . $_FILES['mobgennerFile']['error'];
+                }
+            }
+            else {
+                $data = array('1' => 'Nothing to do.');
+                return json_encode($data);
+            }
+        }
+    }
+
+    public function actionFileremove()
+    {
+        $mobgennerId = (int)\Yii::$app->request->post('key');
+
+            $model = $this->findModel($mobgennerId);
+            if ($model) {
+                $filename = Yii::$app->params["BACKEND_WEB"] . "files/mobgenners/" . $model->image;
+                unlink($filename);
+                $model->image = '';
+                $model->save();
+                $data = array('1' => 'Done');
+                return json_encode($data);
+            }
+    }
+
 }

@@ -42,15 +42,15 @@ class OtaprojectsController extends Controller
             //echo $permission.'<br>';die;
             if ($hasPermission == 0) {
                 throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
-            }                 
+            }
             if (!isset($_SESSION['skin-color'])) {
                 $_SESSION['skin-color'] = 'skin-blue';
-            }                        
-            return true;         
-        } 
+            }
+            return true;
+        }
         else {
             $this->redirect('/site/logout');
-        }       
+        }
     }
 
 
@@ -96,7 +96,7 @@ class OtaprojectsController extends Controller
             $useroption->save();
         }
         $params = Yii::$app->request->queryParams;
-        
+
         $params['BuildsSearch']['buiProIdFK'] =  $id;
         $params['BuildsSearch']['buiStatus'] = 0;
 
@@ -144,14 +144,14 @@ class OtaprojectsController extends Controller
                 $post = Yii::$app->request->post();
                 if (isset($post['proBuildType'])) {
                     foreach ($post['proBuildType'] as $tt){
-                        if (empty(intval($tt))) {                           
+                        if (empty(intval($tt))) {
                             $exist = OtaBuildTypes::find()->where('name LIKE :name')->addParams([':name'=>$tt])->one();
                             if (isset($exist)) {
                                 $tt = $exist->id;
                             } else {
                                 $buildtypes = new OtaBuildTypes;
                                 $buildtypes->name = $tt;
-                                $buildtypes->save();                            
+                                $buildtypes->save();
                                 $tt = $buildtypes->id;
                             }
                         }
@@ -172,7 +172,7 @@ class OtaprojectsController extends Controller
                     'ota_buildtypes' => $data,
                 ]);
             }
-            
+
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -243,7 +243,7 @@ class OtaprojectsController extends Controller
                             } else {
                                 $buildtypes = new OtaBuildTypes;
                                 $buildtypes->name = $tt;
-                                $buildtypes->save();                            
+                                $buildtypes->save();
                                 $tt = $buildtypes->id;
                             }
                         }
@@ -271,9 +271,9 @@ class OtaprojectsController extends Controller
 
         if (empty($builds)){
             $this->findModel($id)->delete();
-            $message = 1;            
+            $message = 1;
         }
-        else 
+        else
             $message = 2;
 
 

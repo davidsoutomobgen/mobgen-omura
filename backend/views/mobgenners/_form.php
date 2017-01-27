@@ -70,14 +70,14 @@ if (Yii::$app->getSession()->hasFlash('error')) {
         $time = strtotime(date('Y-m-d H:i:s'));
 
         echo FileInput::widget([
-            'name' => 'buiFile[]',
+            'name' => 'mobgennerFile[]',
             'options'=>[
                 'multiple'=>false,
             ],
             'pluginOptions' => [
-                'uploadUrl' => Url::to(['/builds/fileupload']),
+                'uploadUrl' => Url::to(['/mobgenners/fileupload']),
                 'uploadExtraData' => [
-                    'buiId' => $model->id,
+                    'mobgennerId' => $model->id,
                     //'otaProjectId' => $model->buiProIdFK,
                     'timestamp' => $time,
                 ],
@@ -88,7 +88,12 @@ if (Yii::$app->getSession()->hasFlash('error')) {
                     $image,
                 ],
                 'initialPreviewConfig' => [
-                    ['caption' =>$title, 'size' => $size],
+                    [
+                        'caption' => $title,
+                        'size' => $size,
+                        'url' => Url::to(['/mobgenners/fileremove']),
+                        'key' => $model->id
+                    ],
                 ],
                 'overwriteInitial'=>true,
                 //'maxFileSize'=>2800
@@ -97,7 +102,7 @@ if (Yii::$app->getSession()->hasFlash('error')) {
                 'filebatchuploadcomplete' => "function(event, files, extra) {
                     console.log('File batch upload complete');
                     $('.uploadfirst').hide();
-                    $('.btn.btn-success').removeAttr('disabled');  //Enable createbutton 
+                    $('.btn.btn-success').removeAttr('disabled');  //Enable createbutton
                 }",
             ]
         ]);
@@ -180,7 +185,7 @@ if (($role == 1) || ($role == 12)) {
             if (isset($model->user0->role_id))
                 $model->role_id = $model->user0->role_id;
 
-            echo $form->field($model, 'role_id')->dropDownList(
+            echo $form->field($user, 'role_id')->dropDownList(
                 $items,
                 ['prompt'=>'']
             );
@@ -188,7 +193,7 @@ if (($role == 1) || ($role == 12)) {
         </div>
         <div class="col-xs-4">
             <?php //= $form->field($model, 'user')->textInput(['value' => (isset($model->user0->role_id)) ? $model->user0->username : '', 'readonly' => true,  'disabled' => true]) ?>
-            <?= $form->field($user, 'user')->textInput(['value' => (isset($model->user0->role_id)) ? $model->user0->username : '']) ?>
+            <?= $form->field($user, 'user')->textInput(['value' => (isset($model->user0->role_id)) ? $model->user0->username : '', 'readonly' => true,  'disabled' => true]) ?>
             <?php
             $user_error = $user->getErrors();
             if (isset($user_error['username'])) {
@@ -216,7 +221,7 @@ if (($role == 1) || ($role == 12)) {
             </div>
         <?php } ?>
         <div class="clear"></div>
-        
+
     </div>
 <?php } ?>
 
@@ -229,15 +234,15 @@ if (($role == 1) || ($role == 12)) {
 
 <?php
 $script = "
-    $('#mobgenners-email').change(function(){ 
+    $('#mobgenners-email').change(function(){
         console.log($('#mobgenners-email').val());
         var emailAddress = $('#mobgenners-email').val();
         $('#mobgenners-email').val(emailAddress);
         //$('#signupform-email').val(emailAddress);
-        $('#mobgenners-user').val(emailAddress.substring(0, emailAddress.indexOf(\"@\")));       
+        $('#mobgenners-user').val(emailAddress.substring(0, emailAddress.indexOf(\"@\")));
         console.log(emailAddress.substring(0, emailAddress.indexOf(\"@\")));
     });
- 
+
 ";
 $this->registerJs($script);
 ?>
