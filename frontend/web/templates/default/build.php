@@ -57,10 +57,12 @@ setTimeout(function () {
 					?>
 
 				</div>
-		<hr />
-		<div id="qrImage">
-			<img src="/build/qrcode/<?php echo $buildata->buiHash;?>" />
-		</div>
+				<?php if ($mobile) { ?>
+					<hr />
+					<div id="qrImage">
+						<img src="/build/qrcode/<?php echo $buildata->buiHash;?>" />
+					</div>
+				<?php } ?>
 			</section>
 		</div>
 	</div>

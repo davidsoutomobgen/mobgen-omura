@@ -104,7 +104,6 @@ class OtaprojectsController extends Controller
         $searchBuilds = new BuildsSearch();
         $dataProvider = $searchBuilds->search($params);
 
-        print_r($params);
         if (\Yii::$app->devicedetect->isMobile())
             $view = 'viewmobile';
         else
