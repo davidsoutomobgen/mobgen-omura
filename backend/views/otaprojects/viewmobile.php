@@ -82,6 +82,10 @@ $this->registerJs("
         var full_path = '" . Yii::$app->params["FRONTEND"]  . "/build/' + $(this).data('key');
         $(location).attr('href',full_path);
     });
+                
+    $('.user-menu').on('click', function(e){
+        $('.user-menu').addClass('open');
+    });
 ");
 ?>
 

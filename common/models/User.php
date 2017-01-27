@@ -188,7 +188,7 @@ class User extends ActiveRecord implements IdentityInterface
         $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
         return $user->role_id;
     }
-
+    
     public static function getUserInfo($id_user = '')
     {
         if (empty($id_user))

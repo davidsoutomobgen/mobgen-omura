@@ -35,7 +35,7 @@ class UserController extends Controller
 
         if (isset(Yii::$app->user->identity->id)) {
             $roleId = User::getUserIdRole();
-//echo $roleId;die;
+
             if ($roleId != 1) {
                 if (($this->action->id == 'index')  || ($this->action->id == 'create') || ($this->action->id == 'delete')){
                     //$this->redirect('/site/logout');
@@ -76,6 +76,8 @@ class UserController extends Controller
      */
     public function actionIndex()
     {
+        return $this->redirect(['/mobgenners']);
+        /*
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -83,6 +85,7 @@ class UserController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+        */
     }
 
     /**

@@ -45,9 +45,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <br />
         <div class="row">
             <div class="col-xs-12">
-                <div class="text-center"><p>- OR -</p></div>
-                <a href="/site/forgotpassword">I forgot my password</a><br>
-                <!-- a href="register.html" class="text-center">Register a new membership</a -->
+                <div class="text-center">
+                    <p>- OR -</p>
+                    <a href="/site/forgotpassword">I forgot my password</a>
+                    <!-- a href="register.html" class="text-center">Register a new membership</a -->
+                </div>
+
             </div>
         </div>
     </div>

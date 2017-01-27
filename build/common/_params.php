@@ -13,5 +13,6 @@ return [
     'TEMPLATES' => '${env.projects_folder}/${env.project_folder}/frontend/web/templates/',
     'CERTIFICATE_DIR' => '${env.projects_folder}/${env.project_folder}/data/certificates/',
     'SITE_ROOT' => realpath(dirname(__FILE__)),
+    'BACKEND' => 'http://${apache.url}',
     'FRONTEND' => 'http://${apache.url}',
 ];

@@ -116,29 +116,18 @@ else {
                             </ul>
                         </li>
                         <!-- Control Sidebar Toggle Button -->
-                        <li>
-                            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-                        </li>
+                        <?php if (!\Yii::$app->devicedetect->isMobile()) { ?>
+                            <li>
+                                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                            </li>
+                        <?php } ?>
                     </ul>
                 </div>
             </nav>
         </header>
         <!-- Left side column. contains the logo and sidebar -->
         <aside class="main-sidebar">
-            <!-- sidebar: style can be found in sidebar.less -->
             <section class="sidebar">
-                <!-- Sidebar user panel -->
-                <!--
-                <div class="user-panel">
-                    <div class="pull-left image">
-                        <img src="<?=$user->image;?>" class="img-circle" alt="User Image">
-                    </div>
-                    <div class="pull-left info">
-                        <p><?php echo Yii::$app->user->identity->first_name.' '.Yii::$app->user->identity->last_name ; ?></p>
-                        <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
-                    </div>
-                </div>
-                -->
                 <?php $userId= \Yii::$app->user->identity->id; ?>
 
                 <ul class="sidebar-menu">
@@ -182,31 +171,34 @@ else {
                         </li>
                     <?php
                     }
-                    if ($user->role_id  == 1) { ?>
-                        <li class="<?=($this->context->id == 'useroptions') ||
-                                      ($this->context->id == 'options') ||
-                                      ($this->context->id == 'permissions') ||
-                                      ($this->context->id == 'user') ||
-                                      ($this->context->id == 'system')
-                                       ? 'active' : '' ?> treeview">
 
-                            <a href="#">
-                                <i class="fa fa-cog"></i>
-                                <span>Administrator</span>
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </a>
-                            <ul class="treeview-menu">
-                                <!--
-                                <li><a href="/groups"><i class="fa fa-cubes"></i>Groups</a></li>
-                                <li><a href="/groups/users"><i class="fa fa-cubes"></i>User Groups </a></li>
-                                -->
-                                <li class="<?=($this->context->id == 'useroptions') ? 'active' : ' ' ?>"><a href="/useroptions"><i class="fa fa-paint-brush"></i> Visual Options</a></li>
-                                <li class="<?=($this->context->id == 'options') ? 'active' : ' ' ?>"><a href="/options"><i class="fa fa-plus-square-o"></i>Parameters Visual Options</a></li>
-                                <li class="<?=($this->context->id == 'permissions') ? 'active' : ' ' ?>"><a href="/permissions"><i class="fa fa-shield"></i>Permissions</a></li>
-                                <li class="<?=($this->context->id == 'user') ? 'active' : ' ' ?>"><a href="/user"><i class="fa fa-users"></i>Users</a></li>
-                                <li class="<?=($this->context->id == 'system') ? 'active' : ' ' ?>"><a href="/system"><i class="fa fa-copyright"></i>System</a></li>
-                            </ul>
-                        </li>
+                    if (!\Yii::$app->devicedetect->isMobile()) {
+                        if ($user->role_id  == 1) { ?>
+                            <li class="<?=($this->context->id == 'useroptions') ||
+                                          ($this->context->id == 'options') ||
+                                          ($this->context->id == 'permissions') ||
+                                          ($this->context->id == 'user') ||
+                                          ($this->context->id == 'system')
+                                           ? 'active' : '' ?> treeview">
+
+                                <a href="#">
+                                    <i class="fa fa-cog"></i>
+                                    <span>Administrator</span>
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <!--
+                                    <li><a href="/groups"><i class="fa fa-cubes"></i>Groups</a></li>
+                                    <li><a href="/groups/users"><i class="fa fa-cubes"></i>User Groups </a></li>
+                                    -->
+                                    <li class="<?=($this->context->id == 'useroptions') ? 'active' : ' ' ?>"><a href="/useroptions"><i class="fa fa-paint-brush"></i> Visual Options</a></li>
+                                    <li class="<?=($this->context->id == 'options') ? 'active' : ' ' ?>"><a href="/options"><i class="fa fa-plus-square-o"></i>Parameters Visual Options</a></li>
+                                    <li class="<?=($this->context->id == 'permissions') ? 'active' : ' ' ?>"><a href="/permissions"><i class="fa fa-shield"></i>Permissions</a></li>
+                                    <li class="<?=($this->context->id == 'user') ? 'active' : ' ' ?>"><a href="/user"><i class="fa fa-users"></i>Users</a></li>
+                                    <li class="<?=($this->context->id == 'system') ? 'active' : ' ' ?>"><a href="/system"><i class="fa fa-copyright"></i>System</a></li>
+                                </ul>
+                            </li>
+                        <?php } ?>
                     <?php } ?>
                 </ul>
             </section>
@@ -233,221 +225,110 @@ else {
             </div>
             <strong>Copyright &copy; <?=date('Y'); ?> <a href="http://www.mobgen.com">MOBGEN</a>.</strong> All rights reserved.
         </footer>
+        <?php if (!\Yii::$app->devicedetect->isMobile()) { ?>
+            <aside class="control-sidebar control-sidebar-dark">
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <!-- Layout option tab content -->
+                    <div id="control-sidebar-theme-demo-options-tab" class="tab-pane active">
+                        <div>
+                            <h4 class="control-sidebar-heading">Layout Options</h4>
 
-        <aside class="control-sidebar control-sidebar-dark">
-            <!-- Create the tabs -->
-            <!--
-            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-                <li class="active"><a data-toggle="tab" href="#control-sidebar-theme-demo-options-tab"><i class="fa fa-wrench"></i></a></li>
-                <li><a data-toggle="tab" href="#control-sidebar-home-tab"><i class="fa fa-home"></i></a></li>
-                <li><a data-toggle="tab" href="#control-sidebar-settings-tab"><i class="fa fa-gears"></i></a></li>
-            </ul>
-            -->
-            <!-- Tab panes -->
-            <div class="tab-content">
-                <!-- Layout option tab content -->
-                <div id="control-sidebar-theme-demo-options-tab" class="tab-pane active">
-                    <div>
-                        <h4 class="control-sidebar-heading">Layout Options</h4>
+                            <div class="form-group">
+                                <label class="control-sidebar-subheading">
+                                    <input id="fixed-header" type="checkbox" class="pull-right" data-layout="fixed" <?=((isset($_SESSION['fixed-header'])) && ($_SESSION['fixed-header'] == 1 )) ? 'CHECKED' : '&bnsp;';?> >
+                                    Fixed layout
+                                </label>
+                                <p>Activate the fixed layout. You can't use fixed and boxed layouts together</p>
+                            </div>
 
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                <input id="fixed-header" type="checkbox" class="pull-right" data-layout="fixed" <?=((isset($_SESSION['fixed-header'])) && ($_SESSION['fixed-header'] == 1 )) ? 'CHECKED' : '&bnsp;';?> >
-                                Fixed layout
-                            </label>
-                            <p>Activate the fixed layout. You can't use fixed and boxed layouts together</p>
+                            <div class="form-group">
+                                <label class="control-sidebar-subheading">
+                                    <input id="layout-boxed" type="checkbox" class="pull-right" data-layout="layout-boxed"  <?=((isset($_SESSION['layout-boxed'])) && ($_SESSION['layout-boxed'] == 1 )) ? 'CHECKED' : '&bnsp;';?>>
+                                    Boxed Layout
+                                </label>
+                                <p>Activate the boxed layout</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-sidebar-subheading">
+                                    <input id="sidebar-collapse" type="checkbox" class="pull-right" data-layout="sidebar-collapse" <?=((isset($_SESSION['sidebar-collapse'])) && ($_SESSION['sidebar-collapse'] == 1 )) ? 'CHECKED' : '&bnsp;';?>> Toggle Sidebar</label>
+                                <p>Toggle the left sidebar's state (open or collapse)</p>
+                            </div>
                         </div>
+                    </div><!-- /.tab-pane -->
+                    <?php
 
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                <input id="layout-boxed" type="checkbox" class="pull-right" data-layout="layout-boxed"  <?=((isset($_SESSION['layout-boxed'])) && ($_SESSION['layout-boxed'] == 1 )) ? 'CHECKED' : '&bnsp;';?>>
-                                Boxed Layout
-                            </label>
-                            <p>Activate the boxed layout</p>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                <input id="sidebar-collapse" type="checkbox" class="pull-right" data-layout="sidebar-collapse" <?=((isset($_SESSION['sidebar-collapse'])) && ($_SESSION['sidebar-collapse'] == 1 )) ? 'CHECKED' : '&bnsp;';?>> Toggle Sidebar</label>
-                            <p>Toggle the left sidebar's state (open or collapse)</p>
-                        </div>
-                        <!--
-                        <div class="form-group">
-                            <label  class="control-sidebar-subheading"><input type="checkbox" class="pull-right" data-enable="expandOnHover" disabled="disabled"> Sidebar Expand on Hover</label>
-                            <p>Let the sidebar mini expand on hover</p>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                <input id="control-sidebar-open" type="checkbox" class="pull-right" data-controlsidebar="control-sidebar-open">
-                                Toggle Right Sidebar Slide
-                            </label>
-                            <p>Toggle between slide over content and push content effects</p>
-                        </div>
-                        -->
-                        <!--
-                        <h4 class="control-sidebar-heading">Skins</h4>
-                        <ul id="skins" class="list-unstyled clearfix">
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-blue" href="javascript:void(0);">
-                                    <div><span style="display:block; width: 20%; float: left; height: 7px; background: #367fa9;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-light-blue"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p class="text-center no-margin">Blue</p>
-                            </li>
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-black" href="javascript:void(0);">
-                                    <div class="clearfix" style="box-shadow: 0 0 2px rgba(0,0,0,0.1)"><span style="display:block; width: 20%; float: left; height: 7px; background: #fefefe;"></span><span style="display:block; width: 80%; float: left; height: 7px; background: #fefefe;"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #222;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p class="text-center no-margin">Black</p>
-                            </li>
-
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-purple" href="javascript:void(0);">
-                                    <div><span class="bg-purple-active" style="display:block; width: 20%; float: left; height: 7px;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-purple"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p class="text-center no-margin">Purple</p>
-                            </li>
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-green" href="javascript:void(0);">
-                                    <div><span class="bg-green-active" style="display:block; width: 20%; float: left; height: 7px;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-green"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p class="text-center no-margin">Green</p>
-                            </li>
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-red" href="javascript:void(0);">
-                                    <div><span class="bg-red-active" style="display:block; width: 20%; float: left; height: 7px;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-red"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p class="text-center no-margin">Red</p>
-                            </li>
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-yellow" href="javascript:void(0);">
-                                    <div><span class="bg-yellow-active" style="display:block; width: 20%; float: left; height: 7px;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-yellow"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p class="text-center no-margin">Yellow</p>
-                            </li>
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-blue-light" href="javascript:void(0);">
-                                    <div><span style="display:block; width: 20%; float: left; height: 7px; background: #367fa9;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-light-blue"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p style="font-size: 12px" class="text-center no-margin">Blue Light</p>
-                            </li>
-
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-black-light" href="javascript:void(0);">
-                                    <div class="clearfix" style="box-shadow: 0 0 2px rgba(0,0,0,0.1)"><span style="display:block; width: 20%; float: left; height: 7px; background: #fefefe;"></span><span style="display:block; width: 80%; float: left; height: 7px; background: #fefefe;"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p style="font-size: 12px" class="text-center no-margin">Black Light</p>
-                            </li>
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-purple-light" href="javascript:void(0);">
-                                    <div><span class="bg-purple-active" style="display:block; width: 20%; float: left; height: 7px;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-purple"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a>
-                                <p style="font-size: 12px" class="text-center no-margin">Purple Light</p>
-                            </li>
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-green-light" href="javascript:void(0);">
-                                    <div><span class="bg-green-active" style="display:block; width: 20%; float: left; height: 7px;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-green"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p style="font-size: 12px" class="text-center no-margin">Green Light</p>
-                            </li>
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-red-light" href="javascript:void(0);">
-                                    <div><span class="bg-red-active" style="display:block; width: 20%; float: left; height: 7px;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-red"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p style="font-size: 12px" class="text-center no-margin">Red Light</p>
-                            </li>
-                            <li style="float:left; width: 33.33333%; padding: 5px;">
-                                <a class="clearfix full-opacity-hover" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" data-skin="skin-yellow-light" href="javascript:void(0);">
-                                    <div><span class="bg-yellow-active" style="display:block; width: 20%; float: left; height: 7px;"></span><span style="display:block; width: 80%; float: left; height: 7px;" class="bg-yellow"></span></div>
-                                    <div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div>
-                                </a>
-                                <p style="font-size: 12px;" class="text-center no-margin">Yellow Light</p>
-                            </li>
-                        </ul>
-                        -->
-                    </div>
-                </div><!-- /.tab-pane -->
-                <?php
-
-                $this->registerJs('
-
-                            $(document).ready(function(){
-                                var id_user = ' . \Yii::$app->user->identity->id . ';
-
-                                $(\'.control-sidebar input:checkbox\').click(function(){
-
-                                    var option =  $(this).attr("id");
-                                    var value = 0;
-                                    if ($(this).is(":checked"))
-                                        var value = 1;
-
-                                   // alert ($(this).attr("id")+" -- "+value);
-
-                                    /* Fixed-header */
-                                    if ((option == \'fixed-header\') && (value == 1))
-                                        $(\'body\').addClass(\'fixed\');
-                                    else if ((option == \'fixed-header\') && (value == 0))
-                                        $(\'body\').removeClass(\'fixed\');
-
-                                    /* Layout-boxed */
-                                    if ((option == \'layout-boxed\') && (value == 1))
-                                        $(\'body\').addClass(\'layout-boxed\');
-                                    else if ((option == \'layout-boxed\') && (value == 0))
-                                        $(\'body\').removeClass(\'layout-boxed\');
-
-                                    /* Sidebar-collapse */
-                                    if ((option == \'sidebar-collapse\') && (value == 1))
-                                        $(\'body\').addClass(\'sidebar-collapse\');
-                                    else if ((option == \'sidebar-collapse\') && (value == 0))
-                                        $(\'body\').removeClass(\'sidebar-collapse\');
-
-                                    /* control-sidebar-open */
-                                    if ((option == \'control-sidebar-open\') && (value == 1))
-                                        $(\'body\').addClass(\'control-sidebar-open\');
-                                    else if ((option == \'control-sidebar-open\') && (value == 0))
-                                        $(\'body\').removeClass(\'control-sidebar-open\');
-
-                                    //console.log("dddd " + option + " --- " + value);
-
-                                    $.ajax({
-                                        type: \'POST\',
-                                        url : \'/useroptions/updateajax\',
-                                        data : {userid: id_user, option: option, value: value},
-                                        success : function() {
-                                          $(this).closest(\'tr\').remove(); //or whatever html you use for displaying rows
-                                        }
+                    $this->registerJs('
+    
+                                $(document).ready(function(){
+                                    var id_user = ' . \Yii::$app->user->identity->id . ';
+    
+                                    $(\'.control-sidebar input:checkbox\').click(function(){
+    
+                                        var option =  $(this).attr("id");
+                                        var value = 0;
+                                        if ($(this).is(":checked"))
+                                            var value = 1;
+    
+                                       // alert ($(this).attr("id")+" -- "+value);
+    
+                                        /* Fixed-header */
+                                        if ((option == \'fixed-header\') && (value == 1))
+                                            $(\'body\').addClass(\'fixed\');
+                                        else if ((option == \'fixed-header\') && (value == 0))
+                                            $(\'body\').removeClass(\'fixed\');
+    
+                                        /* Layout-boxed */
+                                        if ((option == \'layout-boxed\') && (value == 1))
+                                            $(\'body\').addClass(\'layout-boxed\');
+                                        else if ((option == \'layout-boxed\') && (value == 0))
+                                            $(\'body\').removeClass(\'layout-boxed\');
+    
+                                        /* Sidebar-collapse */
+                                        if ((option == \'sidebar-collapse\') && (value == 1))
+                                            $(\'body\').addClass(\'sidebar-collapse\');
+                                        else if ((option == \'sidebar-collapse\') && (value == 0))
+                                            $(\'body\').removeClass(\'sidebar-collapse\');
+    
+                                        /* control-sidebar-open */
+                                        if ((option == \'control-sidebar-open\') && (value == 1))
+                                            $(\'body\').addClass(\'control-sidebar-open\');
+                                        else if ((option == \'control-sidebar-open\') && (value == 0))
+                                            $(\'body\').removeClass(\'control-sidebar-open\');
+    
+                                        //console.log("dddd " + option + " --- " + value);
+    
+                                        $.ajax({
+                                            type: \'POST\',
+                                            url : \'/useroptions/updateajax\',
+                                            data : {userid: id_user, option: option, value: value},
+                                            success : function() {
+                                              $(this).closest(\'tr\').remove(); //or whatever html you use for displaying rows
+                                            }
+                                        });
                                     });
-                                });
-
-                                $(\'ul#skins li a\').click(function(){
-                                    var option = \'skin-color\';
-                                    var value = $(this).attr("data-skin");
-                                    //Added jquery.alterclasss.js
-                                    $(\'body\').alterClass(\'skin-*\', value);
-
-                                    $.ajax({
-                                        type: \'POST\',
-                                        url : \'/useroptions/updateajax/\',
-                                        data : {userid: id_user, option: option, value: value},
-                                        success : function() {
-                                          $(this).closest(\'tr\').remove(); //or whatever html you use for displaying rows
-                                        }
+    
+                                    $(\'ul#skins li a\').click(function(){
+                                        var option = \'skin-color\';
+                                        var value = $(this).attr("data-skin");
+                                        //Added jquery.alterclasss.js
+                                        $(\'body\').alterClass(\'skin-*\', value);
+    
+                                        $.ajax({
+                                            type: \'POST\',
+                                            url : \'/useroptions/updateajax/\',
+                                            data : {userid: id_user, option: option, value: value},
+                                            success : function() {
+                                              $(this).closest(\'tr\').remove(); //or whatever html you use for displaying rows
+                                            }
+                                        });
                                     });
-                                });
-                            });', \yii\web\View::POS_READY);
+                                });', \yii\web\View::POS_READY);
 
-                ?>
-            </div>
-        </aside>
-
+                    ?>
+                </div>
+            </aside>
+        <?php } ?>
     </div>
         <?php $this->endBody() ?>
 </body>

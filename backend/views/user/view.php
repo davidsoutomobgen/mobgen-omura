@@ -56,9 +56,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="tab-content">
                         <div class="tab-pane <?= $user_tab;?>" id="activity">
                             <h3 class="left"><?= Yii::t('app', 'User');?></h3>
-                            <p class="right">
-                                <?= Html::a(Yii::t('app', 'Edit'), ['/mobgenners/update/', 'id' => $mobgenner->id] , ['class' => 'btn btn-primary']) ?>
-                            </p>
+                            <?php if (!\Yii::$app->devicedetect->isMobile()) { ?>
+                                <p class="right">
+                                    <?= Html::a(Yii::t('app', 'Edit'), ['/mobgenners/update/', 'id' => $mobgenner->id] , ['class' => 'btn btn-primary']) ?>
+                                </p>
+                            <?php } ?>
                             <?php
                             echo DetailView::widget([
                                 'model' => $model,
