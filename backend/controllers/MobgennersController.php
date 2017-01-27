@@ -124,10 +124,10 @@ class MobgennersController extends Controller
                     $model->user = $newuser->id;
                     $model->save();
 
-                    Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Mobgenner and user created correctly.'));
-
                     //Send email
                     if ($user->status == 1) {
+                        Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Mobgenner and user created correctly.'));
+
                         $sendTo = 'david.souto@mobgen.com'; //$user->email;
                         $subject = Yii::t('app', 'New user OTAShare - MOBGEN');
                         $mail = Yii::t('app', 'Hello, {name}! <br />', [

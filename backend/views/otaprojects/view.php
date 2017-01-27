@@ -40,20 +40,10 @@ $userIdRole = User::getUserIdRole();
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
-                    //'id',
-                    //'name',
-                    //'safename',
-                    //'id_project',
-                    //'id_ota_template',
-                    //'proHash',
+                    'id',
                     'proAPIKey',
                     'proAPIBuildKey',
-                    //'proBuildTypes',
-                    //'default_notify_email:email',
-                    //'proCreated',
-                    //'proModified',
-                    //'created_at:date',
-                    //'updated_at:date',
+                    'updated_at:date',
                 ],
             ]) ?>
         </div>
@@ -105,6 +95,7 @@ $userIdRole = User::getUserIdRole();
                         return Html::img(Yii::getAlias('@web').$logo, ['width'=>'24']);
                     },
                 ],
+                //'buiStatus',
                 [
                     'attribute'=>'buiName',
                     'label'=>'Name',
@@ -145,7 +136,7 @@ $userIdRole = User::getUserIdRole();
                 [
                     'attribute'=>'updated_at',
                     'value' => function ($model, $index, $widget) {
-                        $date = date('Y-m-d H:i:s', $model->updated_at);
+                        $date = date('Y-m-d H:i', $model->updated_at);
                         return $date ;
                     },
                     'filter'=>false,
@@ -203,7 +194,8 @@ $userIdRole = User::getUserIdRole();
                     }
                 ],
                 [
-                    'label' => Yii::t('app', 'D'),
+                    'label' => '<i class="fa fa-download"></i>',
+                    'encodeLabel' => false,
                     'attribute' => 'downloads',
                     'content'=>function($data){
                         return BuildsDownloaded::getDownloads($data->buiId);
