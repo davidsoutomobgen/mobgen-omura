@@ -72,6 +72,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            [['role_id', 'username', 'first_name', 'last_name'], 'safe'],
 
             //['role_id', 'default', 'value' => self::ROLE_USER],
             //['role_id', 'in', 'range' => [self::ROLE_USER]],
@@ -177,14 +178,14 @@ class User extends ActiveRecord implements IdentityInterface
 
     public static function getUser()
     {
-        $id_user = Yii::$app->user->getId(); 
-        return static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);        
+        $id_user = Yii::$app->user->getId();
+        return static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
     }
 
     public static function getUserIdRole()
     {
-        $id_user = Yii::$app->user->getId(); 
-        $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);   
+        $id_user = Yii::$app->user->getId();
+        $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
         return $user->role_id;
     }
 
@@ -192,7 +193,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         if (empty($id_user))
             $id_user = Yii::$app->user->getId();
-        
+
         $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
         //echo '<pre>'; print_r($user->attributes); echo '</pre>';//die;
         if ($user->role_id != 99) {
@@ -213,7 +214,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         if (empty($id_user))
             $id_user = Yii::$app->user->getId();
-        
+
         $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
         //echo '<pre>'; print_r($user->attributes); echo '</pre>';//die;
         if ($user->role_id != 99) {
