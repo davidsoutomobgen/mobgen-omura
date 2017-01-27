@@ -52,7 +52,12 @@ class OtabuildtypesController extends Controller
         $searchModel = new OtaBuildTypesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
+        if (\Yii::$app->devicedetect->isMobile())
+            $view = 'indexmobile';
+        else
+            $view = 'index';
+
+        return $this->render($view, [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

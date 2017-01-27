@@ -85,7 +85,12 @@ class MobgennersController extends Controller
         $searchModel = new MobgennersSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
+        if (\Yii::$app->devicedetect->isMobile())
+            $view = 'indexmobile';
+        else
+            $view = 'index';
+
+        return $this->render($view, [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

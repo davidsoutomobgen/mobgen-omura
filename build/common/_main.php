@@ -1,6 +1,7 @@
 <?php
 return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
+    'bootstrap' => ['devicedetect'],
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
@@ -19,6 +20,9 @@ return [
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
             'useFileTransport' => true,
+        ],
+        'devicedetect' => [
+            'class' => 'alexandernst\devicedetect\DeviceDetect'
         ],
     ],
 ];
