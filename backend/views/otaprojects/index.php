@@ -104,12 +104,10 @@ if (isset($message) && ($message == 1)) {
                         'attribute' => 'numFavs',
                         'filter'=>false,
                     ],
-                    //'created_at:date',
-                    //'updated_at:date',
                     [
                         'attribute'=>'updated_at',
                         'value' => function ($model, $index, $widget) {
-                            $date = date('Y-m-d H:i:s', $model->updated_at);
+                            $date = date('Y-m-d H:i', $model->updated_at);
                             return $date ;
                         },
                         'filter'=>false,

@@ -128,6 +128,7 @@ else {
             <!-- sidebar: style can be found in sidebar.less -->
             <section class="sidebar">
                 <!-- Sidebar user panel -->
+                <!--
                 <div class="user-panel">
                     <div class="pull-left image">
                         <img src="<?=$user->image;?>" class="img-circle" alt="User Image">
@@ -137,6 +138,7 @@ else {
                         <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                     </div>
                 </div>
+                -->
                 <?php $userId= \Yii::$app->user->identity->id; ?>
 
                 <ul class="sidebar-menu">
@@ -165,14 +167,13 @@ else {
                         </ul>
                     </li>
                     <?php } ?>
-                    <?php
-                    if ($user->role_id  == 1) { ?>
+                    <?php /* if ($user->role_id  == 1) { ?>
                         <li class="treeview <?=($this->context->id == 'devices') ? 'active' : ' ' ?>">
                             <a href="/devices">
                                 <i class="fa fa-tablet"></i> <span>Test Devices</span>
                             </a>
                         </li>
-                    <?php } ?>
+                    <?php } */ ?>
                     <?php  if ($user->role_id == 1 || $user->role_id== 12) { ?>
                         <li class="treeview <?=($this->context->id == 'mobgenners') ? 'active' : ' ' ?>">
                             <a href="/mobgenners">

@@ -97,7 +97,7 @@ class Builds extends \common\models\CActiveRecord
             'buiChangeLog' => Yii::t('app', 'Changelog'),
             'buiProIdFK' => Yii::t('app', 'Bui Pro Id Fk'),
             'buiCerIdFK' => Yii::t('app', 'Certificate - iOS only'),
-            'buiType' => Yii::t('app', 'Bui Type'),
+            'buiType' => Yii::t('app', 'OS'),
             'buiBuildType' => Yii::t('app', 'Bui Build Type'),
             'buiApple' => Yii::t('app', 'Apple account'),
             'buiSVN' => Yii::t('app', 'Feed version'),

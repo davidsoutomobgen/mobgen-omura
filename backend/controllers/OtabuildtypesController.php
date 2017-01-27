@@ -2,10 +2,13 @@
 
 namespace backend\controllers;
 
+use backend\models\OtaProjects;
+use backend\models\OtaProjectsBuildtypes;
 use Yii;
 use backend\models\OtaBuildTypes;
 use backend\models\OtaBuildTypesSearch;
 use backend\models\Permissions;
+use common\models\User;
 use yii\web\Controller;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
@@ -32,12 +35,12 @@ class OtabuildtypesController extends Controller
     {
         $permission = $this->action->controller->id.'_'.$this->action->id;
         $hasPermission = Permissions::find()->hasPermission($permission);
-        //echo $permission.'<br>';die;
-        if ($hasPermission == 0) {
+        $userIdRole = User::getUserIdRole();
+        if ($hasPermission == 1 || $userIdRole != 11 )
+            return true;
+        else
             throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
-        }
 
-        return true;
     }
 
     /**
@@ -112,7 +115,14 @@ class OtabuildtypesController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $used = OtaProjectsBuildtypes::find()->where('id_ota_buildtypes = :id', ['id'=>$id])->one();
+        if (!empty($used)) {
+            Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Build Type didn\'t remove because is used in projects.'));
+        }
+        else {
+            $this->findModel($id)->delete();
+            Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Build Type removed correctly.'));
+        }
 
         return $this->redirect(['index']);
     }

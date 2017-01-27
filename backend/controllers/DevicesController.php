@@ -6,6 +6,7 @@ use Yii;
 use backend\models\Devices;
 use backend\models\DevicesSearch;
 use yii\web\Controller;
+use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -24,6 +25,11 @@ class DevicesController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function beforeAction($action)
+    {
+            throw new MethodNotAllowedHttpException('This content doesn\'t exist.');
     }
 
     /**

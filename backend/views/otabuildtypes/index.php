@@ -13,24 +13,44 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="ota-build-types-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <div class="btn-header">
+        <?= $this->render('/utils/_buttonscreate', [
+            'titulo' => Yii::t('app', 'Build Type'),
+        ]); ?>
+    </div>
+    <?php
+    if (Yii::$app->getSession()->hasFlash('success')) {
+        echo '<div class="alert alert-success">'.Yii::$app->getSession()->getFlash('success').'</div>';
+    }
+    if (Yii::$app->getSession()->hasFlash('error')) {
+        echo '<div class="alert alert-danger">'.Yii::$app->getSession()->getFlash('error').'</div>';
+    }
+    ?>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Create Ota Build Types'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3  class="box-title"><?php echo Yii::t('app', 'List'); ?></h3>
+        </div>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            //'id',
-            'name',
-            'created_at:date',
-            'updated_at:date',
+        <div class="box-body">
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    //'id',
+                    'name',
+                    'created_at:date',
+                    'updated_at:date',
 
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
-
+                    ['class' => 'yii\grid\ActionColumn'],
+                ],
+            ]); ?>
+        </div>
+    </div>
+    <div class="btn-footer">
+        <?= $this->render('/utils/_buttonscreate', [
+            'titulo' => Yii::t('app', 'Build Type'),
+        ]); ?>
+    </div>
 </div>
