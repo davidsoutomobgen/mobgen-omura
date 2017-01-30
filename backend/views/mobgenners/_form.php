@@ -175,7 +175,9 @@ if (($role == 1) || ($role == 12)) {
         </div>
         <div class="col-xs-5">
             <?php
-            $items[1] = 'ADMIN';
+            if ($role == 1) {
+                $items[1] = 'ADMIN';
+            }
             $items[10] = 'DEVELOPER';
             $items[11] = 'QA';
             $items[12] = 'LEAD';
@@ -183,9 +185,10 @@ if (($role == 1) || ($role == 12)) {
             if (isset($model->user0->role_id))
                 $model->role_id = $model->user0->role_id;
 
+            $selected = $user->role_id ? $user->role_id : 10;
             echo $form->field($user, 'role_id')->dropDownList($items, array(
                 'options' => array(
-                    10 => array('selected'=>'selected')
+                    $selected => array('selected'=>'selected')
                 )
             ));
             ?>
