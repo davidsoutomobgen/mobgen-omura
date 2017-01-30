@@ -191,10 +191,12 @@ else {
                                     <li><a href="/groups"><i class="fa fa-cubes"></i>Groups</a></li>
                                     <li><a href="/groups/users"><i class="fa fa-cubes"></i>User Groups </a></li>
                                     -->
+                                    <!--
                                     <li class="<?=($this->context->id == 'useroptions') ? 'active' : ' ' ?>"><a href="/useroptions"><i class="fa fa-paint-brush"></i> Visual Options</a></li>
                                     <li class="<?=($this->context->id == 'options') ? 'active' : ' ' ?>"><a href="/options"><i class="fa fa-plus-square-o"></i>Parameters Visual Options</a></li>
                                     <li class="<?=($this->context->id == 'permissions') ? 'active' : ' ' ?>"><a href="/permissions"><i class="fa fa-shield"></i>Permissions</a></li>
                                     <li class="<?=($this->context->id == 'user') ? 'active' : ' ' ?>"><a href="/user"><i class="fa fa-users"></i>Users</a></li>
+                                    -->
                                     <li class="<?=($this->context->id == 'system') ? 'active' : ' ' ?>"><a href="/system"><i class="fa fa-copyright"></i>System</a></li>
                                 </ul>
                             </li>
