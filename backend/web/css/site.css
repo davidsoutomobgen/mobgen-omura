@@ -667,6 +667,12 @@ ul.products-list li.item ul li {
     line-height: 1.6em;
 }
 
+.ios {
+    color: #a6b1b7;
+}
+.android {
+    color: #a4c639;
+}
 
 
 /**
