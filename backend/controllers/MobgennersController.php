@@ -253,13 +253,13 @@ class MobgennersController extends Controller
                     // Device OS
                     $extension = strtolower(Builds::_GetExtension($_FILES['mobgennerFile']['name'][0]));
 
-                    if ($extension == "jpg" || $extension == "png" || $extension == "gif") {
-                        $validExtexsion = true;
-                    } elseif ($extension == "png") {
-                        $validExtexsion = false;
+                    if ($extension == "jpg" || $extension == "jpeg" || $extension == "png" || $extension == "gif") {
+                        $validExtension = true;
+                    } else {
+                        $validExtension = false;
                     }
 
-                    if ($validExtexsion) {
+                    if ($validExtension) {
                         //Temporal name
                             $safe = Builds::_GenerateSafeFileName($mobgennerId);
                             //$filename = Yii::getAlias('@webroot') . Yii::$app->params["TEMP_BUILD_DIR"] . $safe . "." . $extension;
@@ -300,7 +300,7 @@ class MobgennersController extends Controller
                     $model->save();
                     $data = array('1' => 'Done');
                     return json_encode($data);
-                } else {                    
+                } else {
                     $data = array('1' => 'Nothing to do.');
                     return json_encode($data);
                 }
