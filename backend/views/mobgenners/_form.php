@@ -61,9 +61,6 @@ if (Yii::$app->getSession()->hasFlash('error')) {
                 $size = Utils::formatSizeUnits(filesize($file2));
                 $image = '/files/mobgenners/' . $model->image;
             }
-            else {
-                $image = User::getImageUser($model->user);
-            }
         }
 
         //echo '<pre>'; print_r($model); echo '</pre>';die;
@@ -75,6 +72,7 @@ if (Yii::$app->getSession()->hasFlash('error')) {
                 'multiple'=>false,
             ],
             'pluginOptions' => [
+                'showRemove' => false,
                 'uploadUrl' => Url::to(['/mobgenners/fileupload']),
                 'uploadExtraData' => [
                     'mobgennerId' => $model->id,

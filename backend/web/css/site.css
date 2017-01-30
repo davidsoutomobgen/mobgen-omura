@@ -579,7 +579,7 @@ div#pagesize {
     width: 154px;
     float: right;
     text-align: right;
-    
+
     z-index: 999;
 }
 div#textpagesize {
@@ -665,4 +665,14 @@ ul.products-list li.item ul {
 
 ul.products-list li.item ul li {
     line-height: 1.6em;
+}
+
+
+
+/**
+ * FileUpload
+ */
+
+.file-preview-success .kv-file-remove {
+    display: none;
 }
