@@ -64,7 +64,7 @@ class OtaProjectsSearch extends OtaProjects
             'query' => $query,
             'sort'=> ['defaultOrder' => ['updated_at'=>SORT_DESC]],
 	    'pagination' => [
-            'pageSize' => $pagesize,
+                'pageSize' => $pagesize,
             ],
         ]);
 /*
@@ -113,8 +113,7 @@ class OtaProjectsSearch extends OtaProjects
             ->andFilterWhere(['like', 'proAPIKey', $this->proAPIKey])
             ->andFilterWhere(['like', 'proAPIBuildKey', $this->proAPIBuildKey])
             ->andFilterWhere(['like', 'proBuildTypes', $this->proBuildTypes])
-            ->andFilterWhere(['like', 'default_notify_email', $this->default_notify_email])
-            ->andFilterWhere(['=', 'deleted', 0]);
+            ->andFilterWhere(['like', 'default_notify_email', $this->default_notify_email]);
 
         return $dataProvider;
     }

@@ -267,16 +267,14 @@ class OtaprojectsController extends Controller
      */
     public function actionDelete($id)
     {
-        $builds = Builds::find()->where('buiProIdFK = :build_id AND buiStatus != 9',  [':build_id' => $id])->all();
+        $builds = Builds::find()->where('buiProIdFK = :build_id',  [':build_id' => $id])->all();
 
         if (empty($builds)){
-            $otaProjects = $this->findModel($id);
-            $otaProjects->deleted = 1;
-            $otaProjects->save();
+            $this->findModel($id)->delete();
             $message = 1;
-        } else {
-            $message = 2;
         }
+        else
+            $message = 2;
 
 
         $searchModel = new OtaProjectsSearch();

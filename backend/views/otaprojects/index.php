@@ -20,7 +20,7 @@ $userIdRole = User::getUserIdRole();
 <?php
 if (isset($message) && ($message == 1)) {
 ?>
-
+    
         <div class="alert alert-success alert-dismissible">
           <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
           <h4><i class="icon fa fa-check"></i>Project deleted!</h4>
@@ -32,7 +32,7 @@ if (isset($message) && ($message == 1)) {
         <div class="alert alert-danger alert-dismissible">
           <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
           <h4><i class="icon fa fa-warning"></i>Warning!</h4>
-          <p class="alignleft">This project has builds, contact with admin to remove the project or remove all builds and try again.</p>
+          <p class="alignleft">This project proHash builds, contact with admin to remove the project.</p>
         </div>
 <?php
 }
@@ -125,7 +125,7 @@ if (isset($message) && ($message == 1)) {
                             }
                         ],
                         'buttons' => [
-                            'view' => function ($url,$model) {
+                            'view' => function ($url,$model) {                                
                                 return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
                                     'title' => Yii::t('app', 'View'), 'data-method' => 'post']);
                             },
