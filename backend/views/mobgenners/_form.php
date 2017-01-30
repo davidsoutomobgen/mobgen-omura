@@ -185,10 +185,11 @@ if (($role == 1) || ($role == 12)) {
             if (isset($model->user0->role_id))
                 $model->role_id = $model->user0->role_id;
 
-            echo $form->field($user, 'role_id')->dropDownList(
-                $items,
-                ['prompt'=>'']
-            );
+            echo $form->field($user, 'role_id')->dropDownList($items, array(
+                'options' => array(
+                    10 => array('selected'=>'selected')
+                )
+            ));
             ?>
         </div>
         <div class="col-xs-4">

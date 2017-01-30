@@ -126,7 +126,7 @@ class MobgennersController extends Controller
                 $user->email = $model->email;
                 $user->password = $_POST['SignupForm']['password'];
                 $user->status = $_POST['SignupForm']['status'];
-                $user->role_id = $_POST['Mobgenners']['role_id'];
+                $user->role_id = $_POST['SignupForm']['role_id'];
                 if ($newuser = $user->signup()) {
 
                     $model->user = $newuser->id;
