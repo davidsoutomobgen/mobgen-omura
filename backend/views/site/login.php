@@ -26,13 +26,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
             <div class="form-group has-feedback">
                 <?php echo $form->field($model, 'username', [
-                                            'inputOptions' => ['autofocus' => 'autofocus', 'class' => 'form-control transparent']
+                                            'inputOptions' => ['class' => 'form-control transparent']
                                         ])->textInput()->input('username', ['placeholder' => "Username"])->label(false); ?>
                 <span class="glyphicon glyphicon-user form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                <?php echo $form->field($model, 'password', [
-                                            'inputOptions' => ['autofocus' => 'autofocus', 'class' => 'form-control transparent']
+                                            'inputOptions' => ['class' => 'form-control transparent']
                                         ])->textInput()->input('password', ['placeholder' => "Password"])->label(false); ?>
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>

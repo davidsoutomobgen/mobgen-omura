@@ -77,9 +77,16 @@ class BuildController extends Controller
                     break;
             }
             if ($model->buiVisibleClient == 1 && file_exists($path_file)) {
+
+                if (\Yii::$app->devicedetect->isMobile())
+                    $mobile = false;
+                else
+                    $mobile = true;
+
                 return $this->renderFile($build, [
                     'buildata' => $model,
                     'url' => $path_file,
+                    'mobile' => $mobile,
                 ]);
             }
             else {
