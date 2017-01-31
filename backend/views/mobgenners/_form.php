@@ -45,10 +45,7 @@ if (Yii::$app->getSession()->hasFlash('error')) {
         $image = '';
 
 
-        if ($model->isNewRecord) {
-            echo $form->field($model, 'image')->hiddenInput(['value' => '']);
-        }
-        else {
+        if (!$model->isNewRecord) {
             //$path_file = Yii::getAlias('@webroot') . Yii::$app->params["BUILD_DIR"];
             $path_file = Yii::$app->params["BACKEND_WEB"];
             $file2 = $path_file . 'files/mobgenners/' . $model->image;
@@ -57,7 +54,6 @@ if (Yii::$app->getSession()->hasFlash('error')) {
             $file = $path . $model->image;
 
             if ((!empty($model->image)) && (file_exists($file2))) {
-                echo $form->field($model, 'image')->hiddenInput(['value' => $model->image])->label(false);
                 $size = Utils::formatSizeUnits(filesize($file2));
                 $image = '/files/mobgenners/' . $model->image;
             }
