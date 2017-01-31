@@ -42,6 +42,7 @@ return [
                     'controller' => [
                         'v1/country',
                         'v1/builds',
+                        'v1/otaprojects',
                     ],
                     'tokens' => [
                         '{id}' => '<id:\\w+>',
