@@ -3,6 +3,8 @@
 namespace api\modules\v1\controllers;
 
 use Yii;
+use yii\web\Response;
+use yii\helpers\ArrayHelper;
 use backend\models\Builds;
 use backend\models\OtaProjects;
 use backend\models\OtaProjectsBuildtypes;
@@ -23,7 +25,20 @@ class BuildsController extends ActiveController
     public $modelClass = 'api\modules\v1\models\Builds';
     public $prepareDataProvider;
 
-
+    public function behaviors()
+    {
+        return ArrayHelper::merge(parent::behaviors(), [
+            [
+                'class' => 'yii\filters\ContentNegotiator',
+                //'only' => ['view', 'index'],  // in a controller
+                // if in a module, use the following IDs for user actions
+                // 'only' => ['user/view', 'user/index']
+                'formats' => [
+                    'application/json' => Response::FORMAT_JSON,
+                ],
+            ],
+        ]);
+    }
 
     /**
      * Last Builds by ota_project->APIKey.
