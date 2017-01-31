@@ -1,7 +1,85 @@
-body{margin:0;padding:582px 0 0 550px;height:110px;background-image:url(/templates/abnamro/images/install_landscape.jpg);background-repeat:no-repeat;}
-#install a{display:block;width:242px;height:78px;}
-#install a span{display:none;}
-@media only screen and (orientation:portrait) { 
-body{height:109px;background-image:url(/templates/abnamro/images/install_portrait.jpg);padding:833px 0 0 296px;}
+@CHARSET "ISO-8859-1";
+
+html {
+    height: 100%;
 }
-.preload{display:none;background-image:url(/templates/abnamro/images/install_portrait.jpg);}
+body {
+    background-color: #e8e8e8;
+    padding: 0px;
+    margin: 0px;
+    font-family: Serif, Verdana;
+    color:#636466;
+    font-size:15px;
+}
+a {
+    font-weight: bold;
+    color: #FFF;
+    text-decoration: none;
+}
+.bltxt {
+    color:#000;
+    font-weight:bold;
+}
+#container {
+    margin: 0 auto;
+    width: 240px;
+}
+#header {
+    width:240px;
+    margin:0 auto;
+    margin-top:40px;
+    text-align:center;
+}
+#content {
+    color: #636466;
+    width: 240px;
+    margin: 0 auto;
+}
+#content h1 {
+    font-size:22px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 0px;
+    margin-top:20px;
+    margin-bottom:20px;
+    text-align: center;
+}
+#dots {
+    margin-top:40px;
+}
+#content > div {
+    width: 100%;
+}
+
+#content div.lbl {
+    display:inline-block;
+    width:75px;
+}
+
+#content > div > p {
+    margin: 0px;
+}
+#installBox {
+    margin-top:20px;
+    margin-bottom:20px;
+}
+#install a {
+    text-align: center;
+    color:#fff;
+    background-color:#00405C;
+    font-size:22px;
+    font-weight:bold;
+    line-height:60px;
+    display:block;
+}
+#install img {
+    width: 100%;
+    margin: auto;
+}
+#udids {
+    font-size: x-small;
+}
+#footer {
+    width: 100%;
+    height: 50px;
+}
