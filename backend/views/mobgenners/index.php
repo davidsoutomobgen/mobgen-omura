@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'label' => Yii::t('app', 'Role'),
                         'value' => function($data){
-                            return Utils::getRolById($data->user0->role_id);
+                            return Utils::getRolById($data->role_id);
                         }
                     ],
                     'phone',
