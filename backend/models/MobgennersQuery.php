@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use yii\db\Query;
+use common\models\User;
 
 /**
  * This is the ActiveQuery class for [[Options]].
@@ -17,7 +18,21 @@ class MobgennersQuery extends \yii\db\ActiveQuery
      */
     public function all($db = null)
     {
-        return parent::all($db);
+        $query = new Query;
+        $query->select('mobgenners.*, user.role_id, user.username')
+            ->from('mobgenners')
+            ->innerJoin('user', 'user.id = mobgenners.user')
+            ->where('active = :active', [':active' => 1]);
+
+        $roleId = User::getUserIdRole();
+
+        if ($roleId != 1) {
+            $query->where('user.role_id != 1');
+        }
+
+        $command = $query->createCommand();
+        $rows = $command->queryAll();
+        return $this->populate($rows);
     }
 
     /**
@@ -32,10 +47,12 @@ class MobgennersQuery extends \yii\db\ActiveQuery
     public function activeMobgenners()
     {
         $query = new Query;
-        $query -> select(['count(*) as total'])
-            -> from('mobgenners')
-            -> where('active = :active', [':active' => 1])
-            -> all();
+        $query->select(['count(*) as total'])
+            ->from('mobgenners')
+            ->innerJoin('user', 'user.id = mobgenners.user')
+            ->where('active = :active', [':active' => 1])
+            ->where('user.role_id = 1')
+            ->all();
 
         $command = $query->createCommand();
         $data = $command->queryAll();
