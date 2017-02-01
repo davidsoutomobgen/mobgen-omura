@@ -56,14 +56,14 @@ class BuildsController extends Controller
                 }
                 if (!isset($_SESSION['skin-color'])) {
                     $_SESSION['skin-color'] = 'skin-blue';
-                }    
+                }
             }
             return true;
         }
         else {
             $this->redirect('/site/logout');
-        } 
-        
+        }
+
     }
 
     /**
@@ -565,8 +565,22 @@ class BuildsController extends Controller
             $sendTo [] = trim($email);
         }
 
-        $sendEmail = Yii::$app->mailer->compose('newBuildAvailable', ['model' => $model])
-            ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
+        $project = OtaProjects::findOne($model->buiProIdFK);
+
+        //var_dump($tmpcont);die;
+        if ($model['buiDeviceOS'] == 0) {
+            $subject = '[MG-OTA iOS] '. $project->name . " - " . $model->buiBuildType . ' - ' . $model->buiVersion;
+            $appType = 'iOS';
+        } else {
+            $subject = '[MG-OTA Android] '. $project->name . " - " . $model->buiBuildType . ' - ' . $model->buiVersion;
+            $appType = 'Android';
+        }
+
+        $sendEmail = Yii::$app->mailer->compose('newBuildAvailableExtraInformation', [
+            'model' => $model,
+            'project' => $project,
+            'appType' => $appType])
+            ->setFrom(['otashare@mobgen.com' => $subject])
             ->setTo($sendTo)
             ->setSubject('OTA Share: ' . $model->buiName)
             ->send();
@@ -656,7 +670,7 @@ class BuildsController extends Controller
             if (file_exists($path_file)) {
                 return  Yii::$app->response->sendFile($path_file, $filename);
             }
-            else {                
+            else {
                 echo "Sorry but this build doesn't exist (anymore.) If you think this is an error, please contact us.";
                 //return $this->render('error');
             }
@@ -675,7 +689,7 @@ class BuildsController extends Controller
             $ext = pathinfo($f, PATHINFO_EXTENSION);
             //echo $ext.'<br>';
             if ($ext == 'apk' || $ext == 'ipa'){
-                
+
                 $build = Builds::find()->where(" buiFile = '/$f' ")->one();
                 //print_r($build);
 
@@ -689,7 +703,7 @@ class BuildsController extends Controller
                     echo $build->buiId . ' - ' . $build->buiName . ' - ' . $f . ' <br>';
                 }
                 */
-            }            
+            }
         }
     }
 

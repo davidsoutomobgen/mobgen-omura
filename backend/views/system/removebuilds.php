@@ -15,8 +15,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Remove Builds');
 <div class="system-update">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['id' => 'removeForm']); ?>
     <div class="btn-header">
         <p id="submit_form" >
             <?= Html::submitButton(Yii::t('app', 'Remove Builds'), ['class' => 'btn btn-danger']) ?>
@@ -59,9 +58,16 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Remove Builds');
     </div>
     <div class="btn-footer">
         <p id="submit_form" >
+            <a class="btn btn-danger" href="/otaprojects/delete/2731" data-confirm="Are you sure you want to delete this item?" data-method="post">Delete</a>
             <?= Html::submitButton(Yii::t('app', 'Remove Builds'), ['class' => 'btn btn-danger']) ?>
             <?= Html::a( Yii::t('app', 'Back'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);?>
         </p>
     </div>
     <?php ActiveForm::end(); ?>
 </div>
+
+<script type="text/javascript">
+    document.getElementById('removeForm').onsubmit = function(){
+        return confirm('Do you really want to remove old builds?');
+    };
+</script>
