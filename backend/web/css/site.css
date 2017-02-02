@@ -682,3 +682,8 @@ ul.products-list li.item ul li {
 .file-preview-success .kv-file-remove {
     display: none;
 }
+
+.load {
+    pointer-events: none;
+    opacity: 0.4;
+}

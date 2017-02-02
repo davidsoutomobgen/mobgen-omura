@@ -15,14 +15,16 @@ use backend\models\Utils;
 /* @var $model backend\models\Builds */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-<?php $form = ActiveForm::begin(['id'=>$model->formName()]); ?>
+<?php $form = ActiveForm::begin(['id' => $model->formName()]); ?>
 <div class="btn-header">
     <?= $this->render('_buttonsform', [
         'model' => $model,
     ]); ?>
 </div>
 <div class="clear"></div>
-<?php echo $this->render('_infoapi', ['model'=>$model, 'otaProject'=>$otaProject]); ?>
+<?php if (!$model->isNewRecord) {
+    echo $this->render('_infoapi', ['model' => $model, 'otaProject' => $otaProject]);
+} ?>
 <div class="box box-primary">
     <div class="box-header with-border">
         <h3 class="box-title"><?php echo Yii::t('app', 'General information');?></h3>
@@ -56,7 +58,7 @@ use backend\models\Utils;
                 $size = filesize($file2);
                 // Now plugin create format of the size.
                 //$size = Utils::formatSizeUnits(filesize($file2));
-                
+
                 $title = (empty($model->buiType)) ? Yii::t('app', 'iOS APP') : Yii::t('app', 'Android APP');
                 $logo = (empty($model->buiType)) ? '/images/apple_logo.png' : '/images/android_logo.png';
 
@@ -101,7 +103,7 @@ use backend\models\Utils;
                 'filebatchuploadcomplete' => "function(event, files, extra) {
                     console.log('File batch upload complete');
                     $('.uploadfirst').hide();
-                    $('.btn.btn-success').removeAttr('disabled');  //Enable createbutton 
+                    $('.btn.btn-success').removeAttr('disabled');  //Enable createbutton
                 }",
             ]
         ]);
@@ -221,16 +223,24 @@ use backend\models\Utils;
         if (!$model->isNewRecord) {
             echo '<div class="reload">' . Html::a('<span><i class="fa fa-share fa-2x"></i></span>', '/builds/notification/' . $model->buiId, [
                     'title' => Yii::t('yii', 'Send notification?'),
-                    'onclick' => "var email = $('#buildsnotification-email').val();
-                         $.ajax({
-                            type     :'POST',
-                            cache    : false,
-                            data : {email: email},
-                            url  : '/builds/notification/$model->buiId',
-                            success  : function(response) {
-                                $('#listNotifications').html(response);
-                            }
-                         });return false;",
+                    'onclick' => "
+                         var email = $('#buildsnotification-email').val();
+                         var button = $(this);
+                         if (!button.hasClass('load')) {
+                             button.addClass('load');   
+                             $.ajax({
+                                type     :'POST',
+                                cache    : false,
+                                data : {email: email},
+                                url  : '/builds/notification/$model->buiId',
+                                success  : function(response) {
+                                    console.log(button);
+                                    button.removeClass('load');
+                                    $('#listNotifications').html(response);
+                                }
+                             })
+                         }
+                         return false;",
                 ]) . '</div>';
         }
         ?>
@@ -303,7 +313,7 @@ $('.file-caption-name').bind('DOMSubtreeModified',function(){
 
 function unloadPage(){
     if(unsaved){
-        return '". Yii::t('app', 'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?') ."' 
+        return '". Yii::t('app', 'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?') ."'
     }
 }
 window.onbeforeunload = unloadPage;
@@ -339,4 +349,3 @@ $('form#{$model->formName()}').on('beforeSubmit', function(e)
 ";
 $this->registerJs($script);
 ?>
-
