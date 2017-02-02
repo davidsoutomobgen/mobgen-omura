@@ -243,13 +243,11 @@ class Builds extends \common\models\CActiveRecord
             $plist->parse($data);
             $plist = $plist->toArray();
 
-            if (isset($plist['ProvisionedDevices'])) {
-                $udids = $plist['ProvisionedDevices'];
-            }
-            else {
-                $udids = array();
-            }
-            //echo '<pre>';print_r($udids);echo'</pre>';die;
+            if (isset($plist['ProvisionedDevices'])) 
+                $udids = $plist['ProvisionedDevices'];            
+            else 
+                $udids = array();            
+
             return $udids;
         } else {
             throw new \Exception("IPA could not get opened\n");
@@ -344,90 +342,41 @@ class Builds extends \common\models\CActiveRecord
 
     public static function _SendMail($to, $template, $domain, $project, $build, $userid) {
 
-        //$projpath =  Yii::$app->params["TEMP_BUILD_DIR"]; 
+        $emails = explode(',', $to);
 
-        $buildhash = $build->buiHash;
-        $safename = $build->buiSafename;
 
-        $url = $domain ."/build/". $buildhash ."/". $safename;
-        /*
-        $data = file_get_contents('https://chart.googleapis.com/chart?chs=320x320&cht=qr&chl='. urlencode($url));
-        
-        if (false !== $data) {
-            $qrfile = $projpath ."/html/images/qrcode/$buildhash.jpg";
-            //echo "creating QR code: $qrfile<br />\n";
-            if ($fh = fopen($qrfile, "w+")) {
-                fwrite($fh, $data);
-                fclose($fh);
-                $qrcode = $domain ."/images/qrcode/". $buildhash .".jpg";
-                $smarty->assign("qrcode", $qrcode);
-            }
-        }
-        */        
-        $mailtemplate = $template . Utils::getTemplateById($build->buiTemplate) . "/email.html";
-        //echo $mailtemplate."\n";die;
-        if (!is_file($mailtemplate)) {
-            $mailtemplate = $template. "default/email.html";
-        }
+        $project = OtaProjects::findOne($model->buiProIdFK);
 
-        $tmpcont = @file_get_contents($mailtemplate);
-        if ($tmpcont === false) {
-            echo "Error reading content file: $mailtemplate\n";
-            return false;
-        }
+        if ($model->buiDeviceOS == 1) {
+            $subject = '[MOBGEN] (OTAShare) '. $project->name;
+            if (!empty($model->buiBuildType))
+                $subject .=   " - " . $model->buiBuildType;
+            if (!empty($model->buiVersion))
+                $subject .=   " - " . $model->buiVersion;
 
-        //var_dump($tmpcont);die;
-        if ($build['buiDeviceOS'] == 0) {
-            $subject = '[MG-OTA iOS] '. $project->name . " - " . $build->buiBuildType . ' - ' . $build->buiVersion;
             $appType = 'iOS';
         } else {
-            $subject = '[MG-OTA Android] '. $project->name . " - " . $build->buiBuildType . ' - ' . $build->buiVersion;
+            $subject = '[MOBGEN] (OTAShare) '. $project->name;
+            if (!empty($model->buiBuildType))
+                $subject .=   " - " . $model->buiBuildType;
+            if (!empty($model->buiVersion))
+                $subject .=   " - " . $model->buiVersion;
+
             $appType = 'Android';
         }
-
-        // Set the mail vars we need in the email
-        $mail = str_replace('{{$subject}}', $subject, $tmpcont);
-        //str_replace('{{app}}', $project->name ." - ". $build->buiBuildType, $mail);          
-        $mail = str_replace('{{$appType}}', $appType, $mail);
-        $mail = str_replace('{{$build.buiName}}', $build->buiName, $mail);
-        $mail = str_replace('{{$build.buiBuildNum}}', $build->buiBuildNum, $mail);
-        $mail = str_replace('{{$build.buiBuildType}}', $build->buiBuildType, $mail);
-        $mail = str_replace('{{$build.buiVersion}}', $build->buiVersion, $mail);
-        $mail = str_replace('{{$build.changelog}}', $build->buiChangeLog, $mail);
-        $mail = str_replace('{{$url}}', $url, $mail);
-        $mail = str_replace('{{$project.proName}}', $project->name, $mail);
-        //str_replace('{{build}}', $build, $tmpcont);
-/*
-        $mail = Utils::remove_extra_crs($mail);  // Must do this: replaces returns.
-        //echo "mail: $mail<br />\n";die;
-
-        // To send HTML mail, the Content-type header must be set
-        $headers  = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-        //$headers .= 'To: '. $to . "\r\n"; // Additional headers
-
-//      echo "to: $to<br />\n";
-        mail($to, $subject, $mail, $headers);
-
-*/
-
-        $emails = explode(',', $to);
 
         $sendTo = '';
         foreach ($emails as $email){
             $sendTo [] = trim($email);
         }
-
-        //$sendTo = 'david.souto@mobgen.com';
-
-        $sendEmail = Yii::$app->mailer->compose()
-            ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
+        $sendEmail = Yii::$app->mailer->compose('newBuildAvailable', [
+            'model' => $build,
+            'project' => $project,
+            'appType' => $appType])
+            ->setFrom(['otashare@mobgen.com' => '[MOBGEN] (OTAShare)'])
             ->setTo($sendTo)
             ->setSubject($subject)
-            ->setHtmlBody($mail)
             ->send();
-
-        //print_r($sendEmail);
 
         $modelNotification = new BuildsNotification();
         $modelNotification->buiId = $build->buiId;
@@ -436,7 +385,7 @@ class Builds extends \common\models\CActiveRecord
         $modelNotification->save();
 
 
-        return false;
+        return true;
     }
 
     /*

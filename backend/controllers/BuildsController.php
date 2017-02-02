@@ -257,6 +257,7 @@ class BuildsController extends Controller
                         'modelNotification' => $modelNotification,
                         'searchBuildsNotification' => $searchBuildsNotification,
                         'dataProvider' => $dataProvider,
+                        'otaProject' => $otaProject,
                     ]);
                 }
             } else {
@@ -268,6 +269,7 @@ class BuildsController extends Controller
                     'modelNotification' => $modelNotification,
                     'searchBuildsNotification' => $searchBuildsNotification,
                     'dataProvider' => $dataProvider,
+                    'otaProject' => $otaProject,
                 ]);
             }
         }
@@ -564,39 +566,35 @@ class BuildsController extends Controller
         foreach ($emails as $email){
             $sendTo [] = trim($email);
         }
-
         $project = OtaProjects::findOne($model->buiProIdFK);
 
-        //var_dump($tmpcont);die;
-        if ($model['buiDeviceOS'] == 0) {
-            $subject = '[MG-OTA iOS] '. $project->name . " - " . $model->buiBuildType . ' - ' . $model->buiVersion;
+        if ($model->buiDeviceOS == 1) {
+            $subject = '[MOBGEN] (OTAShare) '. $project->name;
+            if (!empty($model->buiBuildType))
+                $subject .=   " - " . $model->buiBuildType;
+            if (!empty($model->buiVersion))
+                $subject .=   " - " . $model->buiVersion;
+
             $appType = 'iOS';
         } else {
-            $subject = '[MG-OTA Android] '. $project->name . " - " . $model->buiBuildType . ' - ' . $model->buiVersion;
+            $subject = '[MOBGEN] (OTAShare) '. $project->name;
+            if (!empty($model->buiBuildType))
+                $subject .=   " - " . $model->buiBuildType;
+            if (!empty($model->buiVersion))
+                $subject .=   " - " . $model->buiVersion;
+
             $appType = 'Android';
         }
 
-        $sendEmail = Yii::$app->mailer->compose('newBuildAvailableExtraInformation', [
+        $sendEmail = Yii::$app->mailer->compose('newBuildAvailableExtraInformationJira', [
             'model' => $model,
             'project' => $project,
             'appType' => $appType])
-            ->setFrom(['otashare@mobgen.com' => $subject])
+            ->setFrom(['otashare@mobgen.com' =>'[MOBGEN] (OTAShare)'])
             ->setTo($sendTo)
-            ->setSubject('OTA Share: ' . $model->buiName)
+            ->setSubject($subject)
             ->send();
 
-        //->setHtmlBody('Body of the email. BuiHash: ' . $model->buiHash)
-
-
-        /*
-         $sendEmail = Yii::$app->mailer->compose('passwordResetToken', ['user' => $user])
-            //$sendEmail = Yii::$app->mailer->compose()
-            //->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
-            ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
-            ->setTo($user->email)
-            ->setSubject('Password reset for ' . Yii::$app->name)
-            ->send();
-        */
 
 
         $modelNotification = new BuildsNotification();

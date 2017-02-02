@@ -158,10 +158,10 @@ $userIdRole = User::getUserIdRole();
                             $type = 1;
                         }
 
-                        if (User::getUserIdRole() >= 11)
+                        if (User::getUserIdRole() == 11)
                             $exit = $fav;
                         else
-                            $exit = '<a href="javascript:void(0);" onclick="addFav('.$data->buiId. ');return false;" title="$text">'.$fav.'</a>';
+                            $exit = '<a href="javascript:void(0);" onclick="addFav('.$data->buiId. ');return false;" title="' . $text . '">'.$fav.'</a>';
 
                         return $exit;
                     }
@@ -184,7 +184,7 @@ $userIdRole = User::getUserIdRole();
                         }
 
 
-                        if (User::getUserIdRole() >= 11)
+                        if (User::getUserIdRole() == 11)
                             $exit = $fav;
                         else
                             $exit = Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);

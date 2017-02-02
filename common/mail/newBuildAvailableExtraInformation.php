@@ -8,12 +8,6 @@ $appLink = Yii::$app->params["FRONTEND"] . '/build/' . $model->buiHash;
 
 $url = Yii::$app->params["FRONTEND"] . '/build/qrcode/' . $model->buiHash;
 
-if ($model['buiDeviceOS'] == 0) {
-    $appType = 'iOS';
-} else {
-    $appType = 'Android';
-}
-
 ?>
 <style type="text/css">
 a{color: #9c34a5}
@@ -46,7 +40,7 @@ hr{border:0; border-bottom:1px solid #b0b0b0}
                 <tr>
                 <td width="310">
                     <br><br>
-                        <img width="150px" src="https://mobgen.com/files/mailsignature/Mobgen_logo_Accenture_Digital.png" alt="MOGBEN">
+                        <img width="110px" src="https://mobgen.com/files/mailsignature/Mobgen_logo_Accenture_Digital.png" alt="MOGBEN">
                     <br><br>
                 </td>
                 <td width="23"></td>
@@ -58,21 +52,47 @@ hr{border:0; border-bottom:1px solid #b0b0b0}
             <tr><td id="contenido" bgcolor="#FFFFFF"><center>
               <table cellspacing="0" cellpadding="0" border="0" width="530"><tbody>
                 <tr height="35"><td></td></tr>
-                <tr><td>
-                    <p>Hello,</p>
-                    <p>You have available a new app version of the project <?= $project->name;?>:</p><br>
-                    <h3>App Information</h3>
-                    <p><b>APP Type</b>: <?php echo $appType; ?></p>
-                    <p><b>Number</b>: <?php echo $model->buiName; ?></p>
-                    <p><b>Number</b>: <?php echo $model->buiBuildNum; ?></p>
-                    <p><b>Type</b>: <?php echo $model->buiBuildType; ?></p>
-                    <p><b>Version</b>: <?php echo $model->buiVersion; ?></p>
-                    <p><b>Changelog</b>: <?php echo $model->buiChangeLog; ?></p><br>
-
-                    <?php /* echo $url; */ ?>
-                    <!--<img src='https://otashare-front.mobgen.com/build/qrcode/jeqc6qonrgt9' />-->
-
-                    <p><?= Html::a(Html::encode('Link to the app'), $appLink) ?></p><br><br>
+                <tr>
+                    <td colspan="3">
+                        <p>Hello,</p>
+                        <p>Here is a new app version for <b><?= $project->name;?></b>:</p><br>
+                        <h3>App Information</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <p><b>Name</b>: <?php echo $model->buiName; ?></p>
+                    </td>
+                    <td>
+                        <p><b>APP Type</b>: <?php echo $appType; ?></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><b>Number</b>: <?php echo $model->buiBuildNum; ?></p>
+                    </td>
+                    <td>
+                        <p><b>Type</b>: <?php echo $model->buiBuildType; ?></p>
+                    </td>
+                    <td>
+                        <p><b>Version</b>: <?php echo $model->buiVersion; ?></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td  colspan="3">
+                        <p><b>Changelog</b>: <?php echo $model->buiChangeLog; ?></p><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 30%"></td>
+                    <td>
+                        <p><img src='https://otashare-front.mobgen.com/build/qrcode/jeqc6qonrgt9' /></p>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?= Html::a(Html::encode('Link to the app'), $appLink) ?></p><br><br>
+                    </td>
+                    <td style="width: 30%"></td>
+                </tr>
+                <tr>
+                    <td colspan="3">
                     <p>Regards,</p>
                     <p>MOBGEN</p>
                 </td></tr>
