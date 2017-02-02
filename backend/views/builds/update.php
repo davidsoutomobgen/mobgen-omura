@@ -24,6 +24,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
         'modelNotification' => $modelNotification,
         'searchBuildsNotification' => $searchBuildsNotification,
         'dataProvider' => $dataProvider,
+        'otaProject' => $otaProject,
     ]) ?>
 
 </div>

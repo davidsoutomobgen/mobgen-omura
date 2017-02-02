@@ -73,6 +73,17 @@ return [
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             'useFileTransport' => false,
+            /*
+            //Setup this to send emails with smtp and confirm permission to send emails in gmaill
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtp.gmail.com',
+                'username' => 'xyz@mobgen.com',
+                'password' => 'XXXXX',
+                'port' => 587,
+                'encryption' => 'tls',
+            ],
+            */
         ],
         'authManager'=>
             [

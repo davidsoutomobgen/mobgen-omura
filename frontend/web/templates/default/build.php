@@ -35,7 +35,7 @@ setTimeout(function () {
 			<section class="content" >
 				<p class="lbl">Name: <span class="bltxt"><?=$buildata->buiName?></span></p>
 				<p class="lbl">
-					Version: <span class="bltxt"><?=$buildata->buiVersion?><?=(!empty($buildata->buiBuildNum) ? '-'.$buildata->buiBuildNum : '-'); ?></span>
+					Version: <span class="bltxt"><?=$buildata->buiVersion?></span>
 				</p>
 
 				<div id="installBox">

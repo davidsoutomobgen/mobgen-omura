@@ -11,8 +11,6 @@ use kartik\select2\Select2;
 use backend\models\Templates;
 use backend\models\Utils;
 
-
-
 /* @var $this yii\web\View */
 /* @var $model backend\models\Builds */
 /* @var $form yii\widgets\ActiveForm */
@@ -24,6 +22,7 @@ use backend\models\Utils;
     ]); ?>
 </div>
 <div class="clear"></div>
+<?php echo $this->render('_infoapi', ['model'=>$model, 'otaProject'=>$otaProject]); ?>
 <div class="box box-primary">
     <div class="box-header with-border">
         <h3 class="box-title"><?php echo Yii::t('app', 'General information');?></h3>
@@ -38,7 +37,6 @@ use backend\models\Utils;
         $size = '';
         $title = '';
         $logo = '';
-
 
         if ($model->isNewRecord) {
             echo $form->field($model, 'buiFile')->hiddenInput(['value' => '']);
@@ -224,15 +222,15 @@ use backend\models\Utils;
             echo '<div class="reload">' . Html::a('<span><i class="fa fa-share fa-2x"></i></span>', '/builds/notification/' . $model->buiId, [
                     'title' => Yii::t('yii', 'Send notification?'),
                     'onclick' => "var email = $('#buildsnotification-email').val();
-                 $.ajax({
-                    type     :'POST',
-                    cache    : false,
-                    data : {email: email},
-                    url  : '/builds/notification/$model->buiId',
-                    success  : function(response) {
-                        $('#listNotifications').html(response);
-                    }
-             });return false;",
+                         $.ajax({
+                            type     :'POST',
+                            cache    : false,
+                            data : {email: email},
+                            url  : '/builds/notification/$model->buiId',
+                            success  : function(response) {
+                                $('#listNotifications').html(response);
+                            }
+                         });return false;",
                 ]) . '</div>';
         }
         ?>

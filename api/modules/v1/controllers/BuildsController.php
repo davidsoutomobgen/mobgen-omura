@@ -103,16 +103,15 @@ class BuildsController extends ActiveController
                         foreach ($build_types as $types) {
                             $btypes[$types->id] = $types->idOtaBuildtypes->name;
                         }
-                        //echo '<pre>';print_r($btypes);echo'</pre>'; die;
-        
+
                         if (!empty($project)  ) {
                             $build = new Builds();
                             $build->buiProIdFK = $projectid;                        
-                            //print_r($post); //die;
                             $post = new Builds();
                             $post->load($temp);
+                            $post->fld_email_list = $temp['Builds']['fld_email_list'];
+                            $post->fld_sent_email = $temp['Builds']['fld_sent_email'];
 
-                            //echo '<pre>';print_r($post->buiName);echo'</pre>';die;
                             if (isset($post->buiFeedUrl1)) $post->buiFeedUrl1 = urldecode($post['buiFeedUrl1']);
 
                             if (!empty($post->buiName)) {
@@ -127,7 +126,6 @@ class BuildsController extends ActiveController
                                     }
                                     // Check extension
                                     if (isset($device_os)) {
-                                        //print_r($post->attributes);die;
                                         $safe = Builds::_GenerateSafeFileName($_REQUEST['buiName']);
                                         $buiVisibleClient = (isset($post->buiVisibleClient)) ? '1' : '0';
                                         $buiFav = (isset($post->buiFav)) ? '1' : '0';
@@ -178,48 +176,37 @@ class BuildsController extends ActiveController
                                             $project->save();
                                         }
                                     }
-                                    else{
+                                    else {
+                                        $build = new Builds();
+                                        $build->load($temp);
+                                        $build->buiProIdFK = $projectid;
+                                        $build->buiSafename = $safe;
+                                        $build->buiDeviceOS = $device_os;
+                                        $build->buiType = $device_os;
+                                        $build->buiCerIdFK = $cerIdFK;
+                                        $build->buiSendEmail = $buiSendEmail;
+                                        $build->buiVisibleClient = $buiVisibleClient;
+                                        $build->buiFav = $buiFav;
+                                        $build->buiHash = Builds::_GenerateHash();
 
-                                        $build = Builds::find()->where('buiSafename = :buiSafename',  [':buiSafename' =>  $safe])->one();
-                                        /*
-                                        if (isset($build)) {
-                                            echo "Build already exists.\n";
+                                        $user = User::findByUsername($model->username);
+                                        $build->created_by = $user->id;
+                                        $build->created_at = strtotime(date("Y-m-d H:i:s"));
+                                        $build->updated_at = strtotime(date("Y-m-d H:i:s"));
+
+                                        if ($build->save()) {
                                             $id = $build->buiId;
-                                            die;
                                         } else {
-                                            */
+                                            print_r($build->getErrors());
+                                            echo "Error adding build\n";
+                                            die;
+                                        }
+                                        echo "Build CREATED correctly!\n";
 
-                                            $build = new Builds();
-                                            $build->load($temp);
-                                            $build->buiProIdFK = $projectid;                                       
-                                            $build->buiSafename = $safe;
-                                            $build->buiDeviceOS = $device_os;
-                                            $build->buiType = $device_os;
-                                            $build->buiCerIdFK = $cerIdFK;
-                                            $build->buiSendEmail = $buiSendEmail;
-                                            $build->buiVisibleClient = $buiVisibleClient;
-                                            $build->buiFav = $buiFav;
-                                            $build->buiHash = Builds::_GenerateHash();                                           
-
-                                            $user = User::findByUsername($model->username);  
-                                            $build->created_by = $user->id;
-                                            $build->created_at = strtotime(date("Y-m-d H:i:s"));
-                                            $build->updated_at = strtotime(date("Y-m-d H:i:s"));
-
-                                            if ($build->save()) {
-                                                $id = $build->buiId;
-                                            } else {
-                                                print_r($build->getErrors());
-                                                echo "Error adding build\n";
-                                                die;
-                                            }
-                                            echo "Build CREATED correctly!\n";
-
-                                            $project = new OtaProjects();
-                                            $project->load($build->buiProIdFK);
-                                            $project->updated_at = $build->updated_at;
-                                            $project->save();
-                                        //}
+                                        $project = new OtaProjects();
+                                        $project->load($build->buiProIdFK);
+                                        $project->updated_at = $build->updated_at;
+                                        $project->save();
                                     }
                                 
                                     //UPLOAD    
@@ -232,30 +219,8 @@ class BuildsController extends ActiveController
                                         if ($extension == "ipa") {
                                             
                                             $udids = Builds::_getUDIDs($path_file);
-                                            if (count($udids) > 0) {
+                                            if (count($udids) > 0)
                                                 $build->buiLimitedUDID = 1;
-                                                /*
-                                                $udid_array = array();
-                                                foreach ($udids as $udid) {
-                                                        $udid_array[] .= "('". $csql->RealEscapeNotQuoted($udid) ."','".$id."')";
-                                                }
-                                                //david.souto - Added to controller the error with the test devices
-                                                $filter_array = array_unique($udid_array);
-                                                $diff_array = array_diff_assoc($udid_array, $filter_array);
-                                                if (!empty($diff_array)) {
-                                                    echo "Execution stopped - Error with the ID of the devices. These devices are repeated: \n";
-                                                    print_r($diff_array);
-                                                    die;
-                                                }
-                                                
-                                                //We don'
-                                                //$sqlstr = "INSERT INTO builds_udids (budUdid,budBuiIdFK)
-                                                //           VALUES
-                                                //           ". implode(",",$udid_array) ."";
-                                                //           $csql->Query($sqlstr);
-                                                //
-                                                */
-                                            }
                                             
                                             $identifier = Builds::_getIdentifier($path_file);
 
@@ -271,21 +236,23 @@ class BuildsController extends ActiveController
                                             $id = $build->buiId;
                                             $project->save();    
 
-                                            echo "Build ADDED.\n"; 
+                                            echo "Build ADDED.\n";
 
                                             if ($buiSendEmail) {
-                                                if (($post->fld_email_list)) {       
+                                                if (($post->fld_email_list))
                                                     $to = $post->fld_email_list;
-                                                }
-                                                else {
+                                                else
                                                     $to = $project->default_notify_email;        
-                                                }
+
                                                 //$domain = Builds::_GetCurrentDomain();
                                                 $domain =  Yii::$app->params["FRONTEND"]; 
                                                 $template = Yii::$app->params["TEMPLATES"]; 
-                                      
-                                                Builds::_SendMail($to, $template, $domain, $project, $build, $user->id);
-                                                echo "Emails send to: $to \n";
+                                                if (!empty($to)) {
+                                                    Builds::_SendMail($to, $template, $domain, $project, $build, $user->id);
+                                                    echo "Emails send to: $to \n";
+                                                }
+                                                else
+                                                    echo "Error to send Emails. Please notify the admin. \n";
                                             }
 
                                             $domain =  Yii::$app->params["FRONTEND"]; 
