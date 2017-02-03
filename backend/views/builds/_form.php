@@ -87,6 +87,7 @@ use backend\models\Utils;
                     'otaProjectId' => $model->buiProIdFK,
                     'timestamp' => $time,
                 ],
+                'showPreview' => false,
                 'maxFileCount' => 1,
                 'initialPreviewAsData'=>true,
                 'initialCaption'=> (!empty($title)) ? $title : Yii::t('app', 'Select a File'),
