@@ -7,11 +7,10 @@ use yii\helpers\Html;
 $appLink = Yii::$app->params["FRONTEND"] . '/build/' . $model->buiHash;
 
 $url = Yii::$app->params["FRONTEND"] . '/build/qrcode/' . $model->buiHash;
-if ($appType == 'Android')
-    $icon = 'android.png';
-else
+if ($model->buiType == 0)
     $icon = 'apple.png';
-
+else
+    $icon = 'android.png';
 ?>
 <style type="text/css">
 a{color: #E65B2C}
