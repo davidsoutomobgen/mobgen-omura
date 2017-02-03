@@ -448,6 +448,24 @@ class BuildsController extends Controller
             $model->buiFav = 1;
             $icon = '<i class="fa fa-star fa-x '.$_SESSION['skin-color'].'"></i>';
         }
+        $model->detachBehavior('time');
+        $model->save(false);
+
+        return $icon;
+    }
+
+    public function actionVisible($id)
+    {
+
+        $model = $this->findModel($id);
+        if ($model->buiVisibleClient == 1) {
+            $model->buiVisibleClient = 0;
+            $icon = '<i class="fa fa-eye-slash fa-x '.$_SESSION['skin-color'].'"></i>';
+        } else {
+            $model->buiVisibleClient = 1;
+            $icon = '<i class="fa fa-eye fa-x '.$_SESSION['skin-color'].'"></i>';
+        }
+        $model->detachBehavior('time');
         $model->save(false);
 
         return $icon;
@@ -457,6 +475,7 @@ class BuildsController extends Controller
 
         $model = $this->findModel($id);
         $model->buiFav = 0;
+        $model->detachBehavior('time');
         $model->save(false);
         return true;
     }
@@ -466,6 +485,7 @@ class BuildsController extends Controller
         $model = $this->findModel($id);
 
         $model->buiVisibleClient = 1;
+        $model->detachBehavior('time');
         $model->save();
 
         return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);
@@ -476,6 +496,7 @@ class BuildsController extends Controller
         $model = $this->findModel($id);
 
         $model->buiVisibleClient = 0;
+        $model->detachBehavior('time');
         $model->save();
 
         return $this->redirect(['/otaprojects/'.$model->buiProIdFK]);

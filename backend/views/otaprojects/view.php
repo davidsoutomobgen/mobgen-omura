@@ -173,21 +173,21 @@ $userIdRole = User::getUserIdRole();
                     'format'=>'raw',
                     'value' => function($data){
                         if ($data->buiVisibleClient == 1) {
-                            $fav = '<span><i class="fa fa-eye fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
-                            $url = '/builds/hidden/'.$data->buiId;
+                            $fav = '<span id="buivisible_'.$data->buiId.'"><i class="fa fa-eye fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
                             $text = Yii::t('app', 'Hidden to the client');
+                            $type = 0;
                         }
                         else {
-                            $fav = '<span><i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
-                            $url = '/builds/show/'.$data->buiId;
+                            $fav = '<span id="buivisible_'.$data->buiId.'"><i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
                             $text = Yii::t('app', 'Visible to the client');
+                            $type = 1;
                         }
 
 
                         if (User::getUserIdRole() == 11)
                             $exit = $fav;
                         else
-                            $exit = Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
+                            $exit = '<a href="javascript:void(0);" onclick="toggleVisible('.$data->buiId. ');return false;" title="' . $text . '">'.$fav.'</a>';
 
                         return $exit;
                         //return Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
@@ -301,32 +301,32 @@ $this->registerJs('
     $(document).ready(function(){
 
         $(\'#submit1\').on(\'click\', function(e){
-            
+
             if ($(\'[name=action1]\').val() == 0) {
                 alert (\'Select the action to apply\');
                 return false;
-            } else if ($(\'[name=action1]\').val() == 3) { 
-               if (confirm (\'Are you sure you want to delete this item?\'))
-                    return true;
-                else
-                    return false;
-            }            
-        });
-
-        $(\'#submit2\').on(\'click\', function(e){
-            
-            if ($(\'[name=action2]\').val() == 0) {
-                alert (\'Select the action to apply\');
-                return false;
-            } else if ($(\'[name=action2]\').val() == 3) { 
+            } else if ($(\'[name=action1]\').val() == 3) {
                if (confirm (\'Are you sure you want to delete this item?\'))
                     return true;
                 else
                     return false;
             }
-            
         });
-        
+
+        $(\'#submit2\').on(\'click\', function(e){
+
+            if ($(\'[name=action2]\').val() == 0) {
+                alert (\'Select the action to apply\');
+                return false;
+            } else if ($(\'[name=action2]\').val() == 3) {
+               if (confirm (\'Are you sure you want to delete this item?\'))
+                    return true;
+                else
+                    return false;
+            }
+
+        });
+
         $(\'.user-menu\').on(\'click\', function(e){
             $(\'.user-menu\').addClass(\'open\');
         });
@@ -351,9 +351,21 @@ $this->registerJs('
             }
         });
     }
+    function toggleVisible(buiId){
+        var parametros = {
+            "buiId" : buiId
+        };
+
+        $.ajax({
+            data: parametros,
+            url: '../builds/visible/' + buiId,
+            type: 'post',
+            beforeSend: function () {
+                $("#buivisible_" + buiId).html("Process...");
+            },
+            success: function (response) {
+                $("#buivisible_" + buiId).html(response);
+            }
+        });
+    }
 </script>
-
-
-
-
-

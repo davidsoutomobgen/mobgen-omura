@@ -16,7 +16,7 @@ class CActiveRecord extends ActiveRecord
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            'time' => TimestampBehavior::className(),
         ];
     }
 }
