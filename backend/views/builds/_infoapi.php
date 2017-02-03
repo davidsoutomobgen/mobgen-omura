@@ -15,7 +15,7 @@
             <tr><th>Build API</th><td><?php echo $otaProject->proAPIBuildKey;?></td></tr>
             <tr><th>API Hash Build (to overwrite)</th><td><?php echo $model->buiHash; ?></td></tr>
             <?php if ($model->updated_at != 1485178131) { ?>
-                <tr><th>Modified date</th><td><?php echo date('Y-m-d H:i:s', strtotime($model->updated_at));?></td></tr>
+                <tr><th>Modified date</th><td><?php echo date('Y-m-d H:i:s', $model->updated_at);?></td></tr>
             <?php } ?>
             </tbody>
         </table>
