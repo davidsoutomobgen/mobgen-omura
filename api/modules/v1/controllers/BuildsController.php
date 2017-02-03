@@ -110,7 +110,9 @@ class BuildsController extends ActiveController
                             $post = new Builds();
                             $post->load($temp);
 
-                            if (isset( $temp['Builds']['api_build_hash']))
+                            if (isset($temp['Builds']['buiHash']))
+                                $post->api_build_hash = $temp['Builds']['buiHash'];
+                            else if (isset( $temp['Builds']['api_build_hash']))
                                 $post->api_build_hash = $temp['Builds']['api_build_hash'];
                             if (isset( $temp['Builds']['fld_email_list']))
                                 $post->fld_email_list = $temp['Builds']['fld_email_list'];
