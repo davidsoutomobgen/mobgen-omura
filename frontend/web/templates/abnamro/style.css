@@ -1,0 +1,7 @@
+body{margin:0;padding:582px 0 0 550px;height:110px;background-image:url(/templates/abnamro/images/install_landscape.jpg);background-repeat:no-repeat;}
+#install a{display:block;width:242px;height:78px;}
+#install a span{display:none;}
+@media only screen and (orientation:portrait) { 
+body{height:109px;background-image:url(/templates/abnamro/images/install_portrait.jpg);padding:833px 0 0 296px;}
+}
+.preload{display:none;background-image:url(/templates/abnamro/images/install_portrait.jpg);}
