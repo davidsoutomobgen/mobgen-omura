@@ -58,28 +58,6 @@ class PasswordResetRequestForm extends Model
                     ->setSubject('Password reset for ' . Yii::$app->name)
                     ->send();
 
-                //var_dump($sendEmail);
-                /*
-                echo '<br>dddd<br>';
-                $sendTo = 'david.souto@mobgen.com';
-                $mail = 'casa';
-                $subject = 'dddd';
-
-                $sendEmail2 = Yii::$app->mailer->compose()
-                    ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
-                    ->setTo($sendTo)
-                    ->setSubject($subject)
-                    ->setHtmlBody($mail)
-                    ->send();
-
-                var_dump($sendEmail2);
-
-                Builds::_SendMail($sendTo, $template, $domain, $project, $build, $user->id);
-                */
-                //die;
-
-                //mail('davidsoutoc@gmail.com', 'Test Email', 'Test Message body');
-
                 return $sendEmail;
             }
         }

@@ -109,8 +109,13 @@ class BuildsController extends ActiveController
                             $build->buiProIdFK = $projectid;                        
                             $post = new Builds();
                             $post->load($temp);
-                            $post->fld_email_list = $temp['Builds']['fld_email_list'];
-                            $post->fld_sent_email = $temp['Builds']['fld_sent_email'];
+
+                            if (isset( $temp['Builds']['api_build_hash']))
+                                $post->api_build_hash = $temp['Builds']['api_build_hash'];
+                            if (isset( $temp['Builds']['fld_email_list']))
+                                $post->fld_email_list = $temp['Builds']['fld_email_list'];
+                            if (isset( $temp['Builds']['fld_sent_email']))
+                                $post->fld_sent_email = $temp['Builds']['fld_sent_email'];
 
                             if (isset($post->buiFeedUrl1)) $post->buiFeedUrl1 = urldecode($post['buiFeedUrl1']);
 
@@ -140,8 +145,9 @@ class BuildsController extends ActiveController
                                         echo "File extension not recognized as valid extension.\n";
                                         die;
                                     }
+                                    $user = User::findByUsername($model->username);
 
-                                    if(isset($post['api_build_hash'])) {
+                                    if(isset($post->api_build_hash)) {
                                         // Add to database
                                         $build = Builds::find()->where('buiHash = :api_build_hash',  [':api_build_hash' =>  $post->api_build_hash])->one();
 
@@ -189,7 +195,6 @@ class BuildsController extends ActiveController
                                         $build->buiFav = $buiFav;
                                         $build->buiHash = Builds::_GenerateHash();
 
-                                        $user = User::findByUsername($model->username);
                                         $build->created_by = $user->id;
                                         $build->created_at = strtotime(date("Y-m-d H:i:s"));
                                         $build->updated_at = strtotime(date("Y-m-d H:i:s"));
@@ -242,7 +247,7 @@ class BuildsController extends ActiveController
                                                 if (($post->fld_email_list))
                                                     $to = $post->fld_email_list;
                                                 else
-                                                    $to = $project->default_notify_email;        
+                                                    $to = $project->default_notify_email;
 
                                                 //$domain = Builds::_GetCurrentDomain();
                                                 $domain =  Yii::$app->params["FRONTEND"]; 

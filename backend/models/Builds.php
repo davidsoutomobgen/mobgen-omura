@@ -51,6 +51,7 @@ class Builds extends \common\models\CActiveRecord
     public $fld_email_list;
     public $status;
     public $searchString;
+    public $api_build_hash;
     /**
      * @inheritdoc
      */
@@ -70,7 +71,7 @@ class Builds extends \common\models\CActiveRecord
             [['buiChangeLog'], 'string'],
             [['buiProIdFK', 'buiCerIdFK', 'buiType', 'buiVisibleClient', 'buiDeviceOS', 'buiLimitedUDID', 'buiFav', 'buiSendEmail', 'created_by', 'created_at', 'updated_at'], 'integer'],
             [['buiName', 'buiSafename', 'buiTemplate', 'buiFile', 'buiVersion', 'buiApple', 'buiSVN'], 'string', 'max' => 64],
-            [['buiBuildNum', 'buiHash'], 'string', 'max' => 16],
+            [['buiBuildNum', 'buiHash', 'api_build_hash'], 'string', 'max' => 16],
             [['buiBuildType'], 'string', 'max' => 255],
             [['buiFeedUrl', 'buiBundleIdentifier'], 'string', 'max' => 128],
             [['buiHash'], 'unique'],
@@ -340,7 +341,7 @@ class Builds extends \common\models\CActiveRecord
         return $toret;
     }
 
-    public static function _SendMail($to, $template, $domain, $project, $build, $userid) {
+    public static function _SendMail($to, $template, $domain, $project, $model, $userid) {
 
         $emails = explode(',', $to);
 
@@ -369,8 +370,8 @@ class Builds extends \common\models\CActiveRecord
         foreach ($emails as $email){
             $sendTo [] = trim($email);
         }
-        $sendEmail = Yii::$app->mailer->compose('newBuildAvailable', [
-            'model' => $build,
+        $sendEmail = Yii::$app->mailer->compose('newBuildAvailableExtraInformationJira', [
+            'model' => $model,
             'project' => $project,
             'appType' => $appType])
             ->setFrom(['otashare@mobgen.com' => '[MOBGEN] (OTAShare)'])
@@ -379,7 +380,7 @@ class Builds extends \common\models\CActiveRecord
             ->send();
 
         $modelNotification = new BuildsNotification();
-        $modelNotification->buiId = $build->buiId;
+        $modelNotification->buiId = $model->buiId;
         $modelNotification->email = $to;
         $modelNotification->created_by =  $userid;
         $modelNotification->save();

@@ -1,6 +1,0 @@
-body{margin:0;padding:0px;background-image:url(/web/templates/nationalexpress/images/install.png);background-repeat:no-repeat;}
-#install a{display:block;width:675px;height:100px;}
-#install a span{display:none;}
-.preload{display:none;background-image:url(/web/templates/nationalexpress/images/install.png);}
-
-#install { width: 675px; height: 100px; position: absolute; top: 360px; left: 175px; }

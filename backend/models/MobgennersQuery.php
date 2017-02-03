@@ -27,7 +27,7 @@ class MobgennersQuery extends \yii\db\ActiveQuery
         $roleId = User::getUserIdRole();
 
         if ($roleId != 1) {
-            $query->where('user.role_id != 1');
+            $query->andWhere('user.role_id != 1');
         }
 
         $command = $query->createCommand();
@@ -51,12 +51,11 @@ class MobgennersQuery extends \yii\db\ActiveQuery
             ->from('mobgenners')
             ->innerJoin('user', 'user.id = mobgenners.user')
             ->where('active = :active', [':active' => 1]);
-
-
+        
         $roleId = User::getUserIdRole();
 
         if ($roleId != 1) {
-            $query->where('user.role_id != 1');
+            $query->andWhere('user.role_id != 1');
         }
 
         $command = $query->createCommand();
