@@ -35,6 +35,10 @@ return [
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
+            //Active this to active timeout in sessions
+            //'enableAutoLogin' => false,
+            //'enableSession' => true,
+            //'authTimeout' => 18000,
         ],
         'urlManager' => [
             'class' => 'yii\web\UrlManager',

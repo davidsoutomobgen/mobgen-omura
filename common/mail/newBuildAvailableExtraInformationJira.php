@@ -17,21 +17,21 @@ else
 a{color: #E65B2C}
 a:link{text-decoration:none;}
 a:hover{text-decoration:underline;}
-#background-table{border-collapse:collapse;background-color:#f5f5f5;}
+#background-table{border-collapse:collapse;background-color:#ffffff;}
 #logo{padding:0;border-collapse:collapse;vertical-align:top;width:32px;padding-right:8px;}
 #logo img{border-radius:3px;vertical-align:top;}
 #footer-text div{width:100%;font-size:10px;line-height:14px;font-weight:400;color:#d6dde1;text-align:right;}
 </style>
 <title></title>
-<table id="background-table" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f5f5f5">
+<table id="background-table" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
     <tbody>
     <tr>
         <td id="header_container" style="padding:0;border-collapse:collapse;padding:10px 20px">
             <table id="header-pattern" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse">
                 <tbody>
                     <tr>
-                        <td id="logo" valign="top" width="64">
-                            <img src="https://mobgen.com/files/mailsignature/Mobgen_logo_Accenture_Digital.png" alt="MOGBEN"  width="64" border="0" >
+                        <td id="logo" valign="top" width="88">
+                            <img src="https://mobgen.com/files/mailsignature/Mobgen_logo_Accenture_Digital.png" alt="MOGBEN"  width="88" border="0" >
                         </td>
                     </tr>
                 </tbody>
@@ -53,11 +53,11 @@ a:hover{text-decoration:underline;}
                                 <td class="page-title-pattern-first-line" style="padding:0;border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;padding-top:10px">
                                     <?php
                                     ?>
-                                    <span  style="color:#3b73af">OTAShare</span> | <span style="color:#3b73af;"><img src="https://otashare-front.mobgen.com/images/<?php echo $icon; ?>" height="16" width="16" border="0" align="absmiddle" alt="Bug" style="vertical-align:text-bottom"> <?php echo $project->name;?></span>
+                                    <span  style="color:#157efb">OTAShare</span> | <span style="color: #157efb;;"><img src="https://otashare-front.mobgen.com/images/<?php echo $icon; ?>" height="16" width="16" border="0" align="absmiddle" alt="Bug" style="vertical-align:text-bottom"> <?php echo $project->name;?></span>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="font-family:Arial,sans-serif; color:#E65B2C; vertical-align:top;padding:0;border-collapse:collapse;padding-top:10px; padding-right:5px;font-size:20px;line-height:30px">
+                                <td style="font-family:Arial,sans-serif; color:#157efb; vertical-align:top;padding:0;border-collapse:collapse;padding-top:10px; padding-right:5px;font-size:20px;line-height:30px">
                                     <?php echo $model->buiName; ?>
                                 </td>
                             </tr>
@@ -108,11 +108,11 @@ a:hover{text-decoration:underline;}
                                     <table align="left" style="border-collapse:collapse">
                                         <tbody>
                                         <tr>
-                                            <td class="actions-pattern-action-icon-container" style="padding:0;border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;line-height:20px;vertical-align:middle">
-                                                <img src="https://otashare-front.mobgen.com/images/download.png" height="16" width="16" border="0" align="absmiddle" alt="Bug" style="vertical-align:text-bottom">
-                                            </td>
+                                            <td class="actions-pattern-action-icon-container" style="padding:0;border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;line-height:20px;vertical-align:middle">&nbsp;</td>
                                             <td class="actions-pattern-action-text-container" style="padding:0;border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;line-height:20px;padding-left:5px">
-                                                <a href="<?php echo $appLink; ?>" title="Link to the app" style="color:#3b73af;text-decoration:none" target="_blank">Link to the app</a>
+                                                <a href="<?php echo $appLink; ?>" title="Link to the app" style="color:#157efb;text-decoration:none" target="_blank">
+                                                    <img src="https://otashare-front.mobgen.com/images/download.png" height="20" width="20" border="0" align="absmiddle" alt="Bug" style="vertical-align:middle"> Link to the app
+                                                </a>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -138,8 +138,8 @@ a:hover{text-decoration:underline;}
                     <tr>
                         <td id="footer-text" width="100%" style="padding:0; border-collapse:collapse; font-size:12px;line-height:18px; text-align:right">
                             <div style="color:#808080;">
-                                <?php echo date('Y'); ?> © MOBGEN Copyright. All rights reserved.<br>
-                                No reply this email.
+                                © <?php echo date('Y'); ?> MOBGEN.<br>
+                                Please do not reply to this email.
                             </div>
                         </td>
                     </tr>
