@@ -133,29 +133,18 @@ class MobgennersController extends Controller
                     $model->save();
 
                     //Send email
-                    if ($user->status == 1) {
+                    if ($user->status == 1 && $_POST['SignupForm']['sendEmail']) {
                         Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Mobgenner and user created correctly.'));
 
-                        $sendTo = 'david.souto@mobgen.com'; //$user->email;
+                        $sendTo = $user->email;
                         $subject = Yii::t('app', 'New user OTAShare - MOBGEN');
-                        $mail = Yii::t('app', 'Hello, {name}! <br />', [
-                            'name' => $user->first_name,
-                        ]);
-                        $mail .= Yii::t('app', 'Welcome to the OTAShare.<br />User: {username} <br />Password: {password}', [
-                            'username' => $user->username,
-                            'password' => $user->password
-                        ]);
-                        $mail .= Yii::t('app', '<br />Change your password in your profile.<br />Greetings.<br />MOBGEN');
 
-                        $sendEmail = Yii::$app->mailer->compose()
+                        $sendEmail = Yii::$app->mailer->compose('newUser', [
+                            'user' => $user])
                             ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
                             ->setTo($sendTo)
                             ->setSubject($subject)
-                            ->setHtmlBody($mail)
                             ->send();
-                    }
-                    else{
-                        Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Mobgenner created but user didn\'t create.'));
                     }
 
                     return $this->redirect(['view', 'id' => $model->id]);

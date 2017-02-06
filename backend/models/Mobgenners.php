@@ -89,6 +89,23 @@ class Mobgenners extends \common\models\CActiveRecord
         return $this->hasOne(User::className(), ['id' => 'user']);
     }
 
+    public function getRoleName()
+    {
+        if (isset($this->user0->role_id)) {
+            $items[1] = 'ADMIN';
+            $items[10] = 'DEVELOPER';
+            $items[11] = 'QA';
+            $items[12] = 'LEAD';
+            return $items[$this->user0->role_id];
+        }
+        return null;
+    }
+
+    public function setRoleName($roleName)
+    {
+        return ($this->roleName = $roleName);
+    }
+
     /**
      * @inheritdoc
      * @return OptionsQuery the active query used by this AR class.

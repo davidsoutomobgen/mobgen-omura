@@ -18,6 +18,8 @@ class MobgennersQuery extends \yii\db\ActiveQuery
      */
     public function all($db = null)
     {
+        return parent::all($db);
+
         $query = new Query;
         $query->select('mobgenners.*, user.role_id, user.username')
             ->from('mobgenners')
@@ -51,7 +53,7 @@ class MobgennersQuery extends \yii\db\ActiveQuery
             ->from('mobgenners')
             ->innerJoin('user', 'user.id = mobgenners.user')
             ->where('active = :active', [':active' => 1]);
-        
+
         $roleId = User::getUserIdRole();
 
         if ($roleId != 1) {
@@ -62,4 +64,5 @@ class MobgennersQuery extends \yii\db\ActiveQuery
         $data = $command->queryAll();
         return ($data[0]['total']);
     }
+
 }
