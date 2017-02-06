@@ -169,6 +169,18 @@ if (($role == 1) || ($role == 12)) {
             ]]);
             ?>
         </div>
+
+        <?php if ($model->isNewRecord) { ?>
+            <div class="col-xs-3">
+                <? echo $form->field($user, 'sendEmail')->widget(SwitchInput::classname(), [ 'pluginOptions' => [
+                    'handleWidth'=>60,
+                    'onText'=>'Yes',
+                    'offText'=>'No'
+                ]]);
+                ?>
+            </div>
+        <?php } ?>
+        
         <div class="col-xs-5">
             <?php
             if ($role == 1) {

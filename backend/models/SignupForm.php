@@ -21,6 +21,7 @@ class SignupForm extends Model
     public $password;
     public $permissions;
     public $role_id;
+    public $sendEmail;
 
     /**
      * @inheritdoc
@@ -29,16 +30,16 @@ class SignupForm extends Model
     {
         return [
             ['username', 'filter', 'filter' => 'trim'],
-            ['username','required'],            
-            
+            ['username','required'],
+
             ['first_name', 'required','message'=>'have to fill this field'],
-            
+
             ['last_name', 'required'],
             ['status', 'required'],
-            
+
             ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
-	        
+
             ['role_id', 'integer'],
 
             ['email', 'filter', 'filter' => 'trim'],
@@ -71,11 +72,11 @@ class SignupForm extends Model
 	        $user->role_id = $this->role_id;
             $user->save();
 
-            // lets add the permissions 
+            // lets add the permissions
             $permissionList = new Permissions;
             $permissionList = $permissionList->find()->all();
             //print_r($permissionList);die;
-            foreach ($permissionList as $value) 
+            foreach ($permissionList as $value)
             {
                 //print_r($value->id);die;
                 $newPermission = new PermissionsUsers;
@@ -84,7 +85,7 @@ class SignupForm extends Model
                 $newPermission->state = 1;
                 $newPermission->save();
             }
-            
+
             return $user;
         }
 

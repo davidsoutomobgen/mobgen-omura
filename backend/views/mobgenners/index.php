@@ -36,14 +36,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => Yii::t('app', 'Usename'),
                         'value' => 'user0.username',
                     ],
-                    [
-                        'label' => Yii::t('app', 'Role'),
-                        'value' => function($data){
-                            return Utils::getRolById($data->role_id);
-                        }
-                    ],
+                    'roleName',
                     'phone',
-                    //'skype',
                     ['class' => 'yii\grid\ActionColumn'],
                 ],
             ]); ?>
