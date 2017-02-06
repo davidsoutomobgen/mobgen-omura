@@ -149,7 +149,7 @@ class BuildsController extends ActiveController
                                     }
                                     $user = User::findByUsername($model->username);
 
-                                    if(isset($post->api_build_hash)) {
+                                    if (!empty($post->api_build_hash)) {
                                         // Add to database
                                         $build = Builds::find()->where('buiHash = :api_build_hash',  [':api_build_hash' =>  $post->api_build_hash])->one();
 
