@@ -183,8 +183,7 @@ class BuildsController extends ActiveController
                                             $project->updated_at = $build->updated_at;
                                             $project->save();
                                         }
-                                    }
-                                    else {
+                                    } else {
                                         $build = new Builds();
                                         $build->load($temp);
                                         $build->buiProIdFK = $projectid;
@@ -284,14 +283,18 @@ class BuildsController extends ActiveController
                                         echo "Error uploading file.\n";
                                     }
                                 }
+                                else {
+                                    echo "Error uploading file. Type error: " . $_FILES['buiFile']['error'] . "\n";
+                                }
                             }
+                            else
+                                echo "No buiName specified.";
                         }
-                        else
-                        {   
+                        else {
                             echo "API key or project or API key build ID wrong.";
                         }
                     }
-                    else{
+                    else {
                         if ($login)
                             echo "buiUser and buiPassword wrongs.\n";
                         else 
@@ -299,8 +302,7 @@ class BuildsController extends ActiveController
                         die;
                     }
                 }
-                else 
-                {
+                else {
                     echo "No build API key specified.";
                 }
             }
