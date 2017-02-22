@@ -172,7 +172,7 @@ if (($role == 1) || ($role == 12)) {
 
         <?php if ($model->isNewRecord) { ?>
             <div class="col-xs-3">
-                <? echo $form->field($user, 'sendEmail')->widget(SwitchInput::classname(), [ 'pluginOptions' => [
+                <?php echo $form->field($user, 'sendEmail')->widget(SwitchInput::classname(), [ 'pluginOptions' => [
                     'handleWidth'=>60,
                     'onText'=>'Yes',
                     'offText'=>'No'
