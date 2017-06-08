@@ -12,7 +12,7 @@ use yii\filters\VerbFilter;
 /**
  * UsergroupsController implements the CRUD actions for UserGroups model.
  */
-class UsergroupsController extends Controller
+class UsergroupsController extends CController
 {
     public function behaviors()
     {

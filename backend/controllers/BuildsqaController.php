@@ -13,7 +13,7 @@ use yii\filters\VerbFilter;
 /**
  * BuildsQaController implements the CRUD actions for BuildsQa model.
  */
-class BuildsqaController extends Controller
+class BuildsqaController extends CController
 {
     /**
      * @inheritdoc

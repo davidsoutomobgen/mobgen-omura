@@ -15,7 +15,6 @@ use backend\models\Utils;
 use backend\models\Permissions;
 use common\models\User;
 
-
 use yii\web\Controller;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
@@ -26,7 +25,7 @@ use yii\helpers\Url;
 /**
  * BuildsController implements the CRUD actions for Builds model.
  */
-class BuildsController extends Controller
+class BuildsController extends CController
 {
     public $send_email;
 
@@ -44,7 +43,6 @@ class BuildsController extends Controller
 
     public function beforeAction($action)
     {
-
         if (isset(Yii::$app->user->identity->id)) {
             if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'update') || ($this->action->id == 'delete')) {
                 $permission = $this->action->controller->id.'_'.$this->action->id;

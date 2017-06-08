@@ -18,7 +18,7 @@ use yii\helpers\ArrayHelper;
 /**
  * TemplatesController implements the CRUD actions for Templates model.
  */
-class TemplatesController extends Controller
+class TemplatesController extends CController
 {
     public function behaviors()
     {
