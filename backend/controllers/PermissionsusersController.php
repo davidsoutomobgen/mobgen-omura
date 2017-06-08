@@ -12,7 +12,7 @@ use yii\filters\VerbFilter;
 /**
  * PermissionsusersController implements the CRUD actions for PermissionsUsers model.
  */
-class PermissionsusersController extends Controller
+class PermissionsusersController extends CController
 {
     public function behaviors()
     {

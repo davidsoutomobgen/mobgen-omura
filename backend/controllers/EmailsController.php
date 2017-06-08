@@ -13,7 +13,7 @@ use yii\filters\VerbFilter;
 /**
  * EmailsController implements the CRUD actions for Emails model.
  */
-class EmailsController extends Controller
+class EmailsController extends CController
 {
     public function behaviors()
     {

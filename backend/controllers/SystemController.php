@@ -16,7 +16,7 @@ use yii\filters\VerbFilter;
 /**
  * SystemController implements the CRUD actions for System model.
  */
-class SystemController extends Controller
+class SystemController extends CController
 {
     /**
      * @inheritdoc
