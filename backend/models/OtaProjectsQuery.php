@@ -44,4 +44,26 @@ class OtaProjectsQuery extends \yii\db\ActiveQuery
 
         return ($data);
     }
+
+
+    public function getOtaProjectsByProject($projectId, $status = 0)
+    {
+        $projects = ProjectOtaProjects::find()
+                    -> where('id_project = :projectId ', [':projectId' => $projectId])
+                    -> all();
+
+        $otaProjectsId = array();
+
+        foreach ($projects as $key => $project) {
+            array_push($otaProjectsId, $project->id_ota_project);
+        }
+
+        $data = OtaProjects::find()
+            -> where('deleted = :status ', [':status' => $status])
+            -> andWhere(['in', 'id', $otaProjectsId])
+            -> orderBY('updated_at DESC')
+            -> all();
+
+        return ($data);
+    }
 }

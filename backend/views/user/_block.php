@@ -29,25 +29,22 @@ use backend\models\Builds;
 
         <p class="text-muted text-center"><?= $user->job_title; ?></p>
         <?php $roleId = User::getUserIdRole(); ?>
-        <ul class="list-group list-group-unbordered">
-            <li class="list-group-item">
-                <b><?= Yii::t('app', 'Projects');?></b>
-
-                <?php  if ($roleId == Yii::$app->params['CLIENT_ROLE']) : ?>
-                    <a class="pull-right"><?= Builds::find()->getOtaProjectsByClientUser($user->id); ?></a>
-                <?php else : ?>
+        <?php  if ($roleId != Yii::$app->params['CLIENT_ROLE']) : ?>
+            <ul class="list-group list-group-unbordered">
+                <li class="list-group-item">
+                    <b><?= Yii::t('app', 'Projects');?></b>
                     <a class="pull-right"><?= Builds::find()->getOtaProjectsByUser($user->id); ?></a>
-                <?php endif; ?>
-            </li>
-            <li class="list-group-item">
-                <b><?= Yii::t('app', 'Builds');?></b> <a class="pull-right"><?= Builds::find()->getBuildsByUser($user->id); ?></a>
-            </li>
-            <!--
-            <li class="list-group-item">
-                <b><?= Yii::t('app', 'Groups');?></b> <a class="pull-right">-</a>
-            </li>
-            -->
-        </ul>
+                </li>
+                <li class="list-group-item">
+                    <b><?= Yii::t('app', 'Builds');?></b> <a class="pull-right"><?= Builds::find()->getBuildsByUser($user->id); ?></a>
+                </li>
+                <!--
+                <li class="list-group-item">
+                    <b><?= Yii::t('app', 'Groups');?></b> <a class="pull-right">-</a>
+                </li>
+                -->
+            </ul>
+        <?php endif; ?>
     </div>
     <?php if ($header) { ?>
         <div class="box-footer text-center">

@@ -51,7 +51,7 @@ use common\models\User;
 
             <?php
             //LAST PROJECTS
-            echo $this->render('/otaprojects/_block', [
+            echo $this->render('/otaprojects/_block_client', [
                 'bordercolor' => 'danger',
                 'header' => true,
             ]);
@@ -123,4 +123,3 @@ $this->registerJs('
                     });', \yii\web\View::POS_READY);
 
 ?>
-

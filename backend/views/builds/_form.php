@@ -192,12 +192,19 @@ use backend\models\Utils;
     </div>
 
     <div class="col-xs-3">
-        <?= $form->field($model, 'buiVisibleClient')->widget(SwitchInput::classname(), [ 'pluginOptions' => [
-        'handleWidth'=>60,
-        'onText'=>'Yes',
-        'offText'=>'No'
-    ]]);
-    ?>
+        <?php
+        $data = array(
+            0 => 'Visible to the client',
+            1 => 'Hidden to the client',
+            2 => 'Visible to registered users'
+        );
+        echo $form->field($model, 'buiVisibleClient')->widget(Select2::classname(), [
+            'data' => $data,
+            'options' => ['placeholder' => 'Select a state ...'],
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ]); ?>
     </div>
     <div class="col-xs-3">
         <?= $form->field($model, 'buiFav')->widget(SwitchInput::classname(), [ 'pluginOptions' => [
@@ -228,7 +235,7 @@ use backend\models\Utils;
                          var email = $('#buildsnotification-email').val();
                          var button = $(this);
                          if (!button.hasClass('load')) {
-                             button.addClass('load');   
+                             button.addClass('load');
                              $.ajax({
                                 type     :'POST',
                                 cache    : false,

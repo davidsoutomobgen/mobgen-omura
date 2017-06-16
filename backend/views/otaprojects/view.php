@@ -173,21 +173,26 @@ $userIdRole = User::getUserIdRole();
                     'format'=>'raw',
                     'value' => function($data){
                         if ($data->buiVisibleClient == 1) {
-                            $fav = '<span id="buivisible_'.$data->buiId.'"><i class="fa fa-eye fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
+                            $fav = '<span id="buivisible_'.$data->buiId.'"><i class="fa fa-unlock-alt fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
+                            $url = '/builds/hidden/'.$data->buiId;
                             $text = Yii::t('app', 'Visible to the client');
                             $type = 0;
-                        }
-                        else {
-                            $fav = '<span id="buivisible_'.$data->buiId.'"><i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
-                            $text = Yii::t('app', 'Hidden to the client');
+                        } elseif ($data->buiVisibleClient == 2) {
+                            $fav = '<span id="buivisible_'.$data->buiId.'"><i class="fa fa-lock fa-x '.$_SESSION['skin-color'].'"></i></span>';
+                            $url = '/builds/hidden/'.$data->buiId;
+                            $text = Yii::t('app', 'Visible to registered users');
+                        } else {
                             $type = 1;
+                            $fav = '<span id="buivisible_'.$data->buiId.'"><i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
+                            $url = '/builds/show/'.$data->buiId;
+                            $text = Yii::t('app', 'Hidden to the client');
                         }
 
 
                         if (User::getUserIdRole() == 11)
                             $exit = $fav;
                         else
-                            $exit = '<a href="javascript:void(0);" onclick="toggleVisible('.$data->buiId. ');return false;" title="' . $text . '">'.$fav.'</a>';
+                            $exit = '<a href="javascript:void(0);" onclick="toggleVisible(this, '.$data->buiId. ');return false;" title="' . $text . '">'.$fav.'</a>';
 
                         return $exit;
                         //return Html::a($fav, $url, ['title' => $text, 'data-method' => 'post']);
@@ -343,14 +348,15 @@ $this->registerJs('
             url: '../builds/like/' + buiId,
             type: 'post',
             beforeSend: function () {
-                $("#buifavicon_" + buiId).html("Process...");
+                $("#buifavicon_" + buiId).html("...");
             },
             success: function (response) {
                 $("#buifavicon_" + buiId).html(response);
             }
         });
     }
-    function toggleVisible(buiId){
+    function toggleVisible(button, buiId){
+        console.log(button);
         var parametros = {
             "buiId" : buiId
         };
@@ -360,10 +366,12 @@ $this->registerJs('
             url: '../builds/visible/' + buiId,
             type: 'post',
             beforeSend: function () {
-                $("#buivisible_" + buiId).html("Process...");
+                $("#buivisible_" + buiId).html("...");
             },
             success: function (response) {
-                $("#buivisible_" + buiId).html(response);
+                console.log(response);
+                button.setAttribute("title", response.text);
+                $("#buivisible_" + buiId).html(response.icon);
             }
         });
     }

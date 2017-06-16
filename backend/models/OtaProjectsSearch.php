@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use backend\models\OtaProjects;
 use backend\models\UserOptions;
+use common\models\User;
 
 /**
  * OtaProjectsSearch represents the model behind the search form about `backend\models\OtaProjects`.
@@ -51,6 +52,23 @@ class OtaProjectsSearch extends OtaProjects
         $pagesize = (int) $option['value'];
         /**************/
         $query = OtaProjects::find();
+
+        $roleId = User::getUserIdRole();
+        if ($roleId == Yii::$app->params['CLIENT_ROLE']) {
+            $projectId = Client::find()->getOtaProjectsClientByUser(Yii::$app->user->identity->id);
+            $projects = ProjectOtaProjects::find()
+                        -> where('id_project = :projectId ', [':projectId' => $projectId])
+                        -> all();
+
+            $otaProjectsId = array();
+
+            foreach ($projects as $key => $project) {
+                array_push($otaProjectsId, $project->id_ota_project);
+            }
+
+
+            $query = $query -> where(['in', 'id', $otaProjectsId]);
+        }
 
         // add conditions that should always apply here
         /*
