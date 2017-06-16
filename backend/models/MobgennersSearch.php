@@ -89,12 +89,12 @@ class MobgennersSearch extends Mobgenners
             'user.role_id' => $roleId
         ]);
 
-        $query->andFilterWhere(['like', 'first_name', $this->first_name])
-            ->andFilterWhere(['like', 'last_name', $this->last_name])
-            ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['like', 'phone', $this->phone])
-            ->andFilterWhere(['like', 'skype', $this->skype])
-            ->andFilterWhere(['like', 'job_title', $this->job_title]);
+        $query->andFilterWhere(['like', 'mobgenners.first_name', $this->first_name])
+            ->andFilterWhere(['like', 'mobgenners.last_name', $this->last_name])
+            ->andFilterWhere(['like', 'mobgenners.email', $this->email])
+            ->andFilterWhere(['like', 'mobgenners.phone', $this->phone])
+            ->andFilterWhere(['like', 'mobgenners.skype', $this->skype])
+            ->andFilterWhere(['like', 'mobgenners.job_title', $this->job_title]);
 
             $roleId = User::getUserIdRole();
 

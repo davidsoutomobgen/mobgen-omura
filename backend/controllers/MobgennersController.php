@@ -17,7 +17,7 @@ use backend\models\Builds;
 /**
  * MobgennersController implements the CRUD actions for Mobgenners model.
  */
-class MobgennersController extends Controller
+class MobgennersController extends CController
 {
     /**
      * @inheritdoc

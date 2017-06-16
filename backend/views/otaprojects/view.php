@@ -174,12 +174,12 @@ $userIdRole = User::getUserIdRole();
                     'value' => function($data){
                         if ($data->buiVisibleClient == 1) {
                             $fav = '<span id="buivisible_'.$data->buiId.'"><i class="fa fa-eye fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
-                            $text = Yii::t('app', 'Hidden to the client');
+                            $text = Yii::t('app', 'Visible to the client');
                             $type = 0;
                         }
                         else {
                             $fav = '<span id="buivisible_'.$data->buiId.'"><i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
-                            $text = Yii::t('app', 'Visible to the client');
+                            $text = Yii::t('app', 'Hidden to the client');
                             $type = 1;
                         }
 
@@ -255,9 +255,8 @@ $userIdRole = User::getUserIdRole();
                                         'title' => Yii::t('app', 'View'), 'data-method' => 'post']);
                                 },
                                 'update' => function ($url,$model) {
-                                    $url = str_replace('otaprojects', 'builds', $url);
-                                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
-                                        'title' => Yii::t('app', 'Update'), 'data-method' => 'post']);
+                                    $url = str_replace('otaprojects', 'builds', '/builds/update/'.$model->buiId);
+                                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url);
                                 },
                                 'delete' => function($url, $model) {
                                     $url = str_replace('otaprojects', 'builds', $url);

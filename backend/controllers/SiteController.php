@@ -21,7 +21,7 @@ use yii\web\NotFoundHttpException;
 /**
  * Site controller
  */
-class SiteController extends Controller
+class SiteController extends CController
 {
     /**
      * @inheritdoc
@@ -33,11 +33,11 @@ class SiteController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error', 'forgotpassword', 'resetpassword'],
+                        'actions' => ['login', 'logout', 'error', 'forgotpassword', 'resetpassword'],
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index', 'time', 'date'],
+                        'actions' => ['index', 'time', 'date'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -109,7 +109,17 @@ class SiteController extends Controller
         $this->layout = 'loginLayout';
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        $userPost = Yii::$app->request->post();
+        if (isset($userPost['LoginForm']['username'])) {
+            $user = User::find()->where(['email' => $userPost['LoginForm']['username']])->one();
+            if ($user) {
+                $userPost['LoginForm']['username'] = $user->username;
+            }
+        }
+        if ($model->load($userPost) && $model->login()) {
+            if (isset($_GET['back'])) {
+                return $this->redirect($_GET['back']);
+            }
             return $this->redirect('/site');
         } else {
             return $this->render('login', [
@@ -122,7 +132,7 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->goHome();
+        return $this->redirect("/site/login?back={$_GET['back']}");
     }
 
     public function actionTime()

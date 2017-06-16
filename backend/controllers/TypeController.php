@@ -16,7 +16,7 @@ use yii\web\UploadedFile;
 /**
  * TypeController implements the CRUD actions for Type model.
  */
-class TypeController extends Controller
+class TypeController extends CController
 {
     public function behaviors()
     {

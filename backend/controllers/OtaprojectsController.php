@@ -20,7 +20,7 @@ use yii\helpers\Url;
 /**
  * OtaprojectsController implements the CRUD actions for OtaProjects model.
  */
-class OtaprojectsController extends Controller
+class OtaprojectsController extends CController
 {
     public function behaviors()
     {
