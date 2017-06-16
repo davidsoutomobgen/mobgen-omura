@@ -5,7 +5,6 @@ use yii\widgets\DetailView;
 use yii\grid\GridView;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
-use yii\bootstrap\Modal;
 use yii\helpers\Url;
 use backend\models\BuildsDownloaded;
 use backend\models\Utils;
@@ -19,7 +18,20 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Ota Projects'), 'url
 $this->params['breadcrumbs'][] = $this->title;
 
 $userIdRole = User::getUserIdRole();
+
+$cloneResult = Yii::$app->session->getFlash('cloneResult');
+
+if ($cloneResult) :
+    $class = $cloneResult['error'] ? 'warning' : 'success';
+    $title = $cloneResult['error'] ? 'Error' : 'Success';
 ?>
+    <br>
+    <div class="alert alert-<?php echo $class; ?> alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong><?php echo $title; ?>!</strong> <?php echo $cloneResult['message']; ?>
+    </div>
+<?php endif; ?>
+
 <?= $this->render('/utils/_alerts', []); ?>
 
 <div class="ota-projects-view">
@@ -48,15 +60,19 @@ $userIdRole = User::getUserIdRole();
             ]) ?>
         </div>
     </div>
-    <?php
-    Modal::begin([
-        'header'=>'<h3>QA Status</h3>',
-        'id' => 'modal',
-        'size'=>'modal-lg',
-    ]);
-    echo "<div id='modalContent'></div>";
-    Modal::end();
-    ?>
+    <div id="modal" class="fade modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>QA Status</h3>
+                </div>
+                <div class="modal-body">
+                    <div id='modalContent'></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="box box-success">
         <div class="box-header with-border">
             <h3  class="box-title"><?php echo Yii::t('app', 'Builds'); ?></h3>
@@ -71,7 +87,13 @@ $userIdRole = User::getUserIdRole();
             <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>
         </div>
         <div class="addbuild right">
-            <?=  ($userIdRole != 11) ? Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']) : '' ?>
+            <?php if ($userIdRole != 11): ?>
+                <div class="btn btn-default" data-toggle="modal" data-target="#modal-clone-apk">
+                    Clone build
+                </div>
+                <?php echo Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']); ?>
+            <?php endif; ?>
+
         </div>
         <div class="clear"></div>
 
@@ -332,6 +354,38 @@ $this->registerJs('
 
     });', \yii\web\View::POS_READY);
 ?>
+
+<div class="modal fade" id="modal-clone-apk">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Clone build</h4>
+      </div>
+      <form class="" action="/otaprojects/clone" method="post">
+          <div class="modal-body">
+            <div class="form-group field-clone-buihash required">
+                <input type="hidden" id="clone-id" name="id" value="<?php echo $model->id; ?>">
+                <label class="control-label" for="clone-buihash">API Hash Build</label>
+                <input type="text" id="clone-buihash" class="form-control" name="buiHash" maxlength="64" aria-required="true" aria-invalid="false">
+
+                <div class="help-block"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Clone</button>
+          </div>
+      </form>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
 <script>
     function addFav(buiId){
         var parametros = {
