@@ -12,7 +12,7 @@ use yii\filters\VerbFilter;
 /**
  * BuildsnotificationController implements the CRUD actions for BuildsNotification model.
  */
-class BuildsnotificationController extends Controller
+class BuildsnotificationController extends CController
 {
     /**
      * @inheritdoc

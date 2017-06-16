@@ -17,7 +17,7 @@ use yii\filters\VerbFilter;
 /**
  * OtabuildtypesController implements the CRUD actions for OtaBuildTypes model.
  */
-class OtabuildtypesController extends Controller
+class OtabuildtypesController extends CController
 {
     public function behaviors()
     {

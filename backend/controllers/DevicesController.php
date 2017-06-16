@@ -13,7 +13,7 @@ use yii\filters\VerbFilter;
 /**
  * DevicesController implements the CRUD actions for Devices model.
  */
-class DevicesController extends Controller
+class DevicesController extends CController
 {
     public function behaviors()
     {
