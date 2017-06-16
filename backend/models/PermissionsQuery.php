@@ -40,6 +40,7 @@ class PermissionsQuery extends \yii\db\ActiveQuery
     public function hasPermission($permission){
 
         $data = array();
+        //echo Yii::$app->user->identity->id; die;
         if (Yii::$app->user->identity->id == 1) $data[0]['state'] = 1;
         else {
             //Check if have permissions as User

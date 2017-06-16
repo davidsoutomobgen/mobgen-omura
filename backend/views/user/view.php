@@ -57,9 +57,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="tab-pane <?= $user_tab;?>" id="activity">
                             <h3 class="left"><?= Yii::t('app', 'User');?></h3>
                             <?php if (!\Yii::$app->devicedetect->isMobile()) { ?>
-                                <p class="right">
-                                    <?= Html::a(Yii::t('app', 'Edit'), ['/mobgenners/update/', 'id' => $mobgenner->id] , ['class' => 'btn btn-primary']) ?>
-                                </p>
+                                <?php $roleId = User::getUserIdRole(); ?>
+                                <?php  if ($roleId == Yii::$app->params['CLIENT_ROLE']) { ?>
+                                    <p class="right">
+                                        <?= Html::a(Yii::t('app', 'Edit'), ['/client/update/', 'id' => $mobgenner->id] , ['class' => 'btn btn-primary']) ?>
+                                    </p>
+                                <?php } else { ?>
+                                    <p class="right">
+                                        <?= Html::a(Yii::t('app', 'Edit'), ['/mobgenners/update/', 'id' => $mobgenner->id] , ['class' => 'btn btn-primary']) ?>
+                                    </p>
+                                <?php } ?>
                             <?php } ?>
                             <?php
                             echo DetailView::widget([

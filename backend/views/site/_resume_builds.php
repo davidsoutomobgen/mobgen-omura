@@ -34,8 +34,9 @@ $userIdRole = User::getUserIdRole();
                 <tbody>
                 <?php if (!empty($lastbuilds)) { ?>
                     <?php foreach($lastbuilds as $build) { ?>
+                        <?php //print_r($build); die;?>
                         <tr>
-                            <!-- <td><?= $build->buiId; ?></td> -->
+                            <!-- <td><?//= $build->buiId; ?></td> -->
                             <td>
                                 <?php
                                 if ($userIdRole != 11)
