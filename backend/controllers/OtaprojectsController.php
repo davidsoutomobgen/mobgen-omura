@@ -353,4 +353,62 @@ class OtaprojectsController extends CController
         return $text;
     }
 
+    public function actionClone() {
+        $result = array(
+            'error' => 0,
+            'message' => 'Build cloned properly'
+        );
+        $permission = $this->action->controller->id.'_create';
+        $hasPermission = Permissions::find()->hasPermission($permission);
+        //echo $permission.'<br>';die;
+        if ($hasPermission == 0) {
+            $result['error'] = 1;
+            $result['message'] = 'You don\'t have the necesary permissions';
+        } else  if (isset($_POST['id'])) {
+            $id = $_POST['id'];
+            if ($_POST['buiHash']) {
+                $buiHash = $_POST['buiHash'];
+                $buildToCopy = Builds::find()->where('buiHash = :buiHash AND buiStatus != 9',  [':buiHash' => $buiHash])->one();
+
+                $newBuild = new Builds();
+                $newBuild->attributes = $buildToCopy->attributes;
+                $newBuild->buiId = null;
+                $newBuild->buiChangeLog = '';
+                $newBuild->buiProIdFK = $id;
+                $newBuild->created_at = strtotime('today UTC');
+                $newBuild->updated_at = strtotime('today UTC');
+
+                $timestamp = strtotime(date('Y-m-d H:i:s'));
+                $newBuild->buiSafename = Builds::_GenerateSafeFileName((string) $newBuild->buiName);
+                $newBuild->buiHash = Builds::_GenerateHash();
+                $safe = Builds::_GenerateSafeFileName((string) $id.'_'.$timestamp);
+
+                if ($newBuild->save()) {
+                    $path_file = Yii::$app->params["BUILD_DIR"] . $newBuild->buiFile;
+                    $new_filename = str_replace($buildToCopy->buiId, $newBuild->buiId, $newBuild->buiFile);
+                    $path_file_new = Yii::$app->params["BUILD_DIR"] . $new_filename;
+                    if (file_exists($path_file) && copy($path_file, $path_file_new)) {
+                        $newBuild->buiFile = $new_filename;
+                        $newBuild->save();
+                    } else {
+                        $result['error'] = 1;
+                        $result['message'] = 'Build cloned but an error occurred copying the file';
+                    }
+                } else {
+                    $result['error'] = 1;
+                    $result['message'] = 'The new build can\'t be copied';
+                }
+
+
+            } else {
+                $result['error'] = 1;
+                $result['message'] = 'The request doesn\'t have the correct format';
+            }
+            $this->redirect("/otaprojects/{$id}");
+            Yii::$app->getSession()->setFlash('cloneResult', $result);
+        } else {
+            echo "ko";
+        }
+    }
+
 }

@@ -121,8 +121,13 @@ class SiteController extends CController
     public function actionLogout()
     {
         Yii::$app->user->logout();
+        $url = '/site/login';
 
-        return $this->redirect("/site/login?back={$_GET['back']}");
+        if (isset($_GET['back'])) {
+            $url = "{$url}?back={$_GET['back']}";
+        }
+
+        return $this->redirect($url);
     }
 
     public function actionTime()
