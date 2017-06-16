@@ -2,21 +2,18 @@
 
 namespace backend\controllers;
 
+use backend\models\ProjectOtaProjectsSearch;
 use Yii;
-use backend\models\Type;
-use backend\models\TypeSearch;
-use backend\models\Permissions;
+use backend\models\Project;
+use backend\models\ProjectSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\web\MethodNotAllowedHttpException;
 use yii\filters\VerbFilter;
-use yii\web\UploadedFile;
-
 
 /**
- * TypeController implements the CRUD actions for Type model.
+ * ProjectotaprojectsController implements the CRUD actions for ProjectOtaProjects model.
  */
-class TypeController extends Controller
+class ProjectotaprojectsController extends Controller
 {
     public function behaviors()
     {
@@ -24,32 +21,19 @@ class TypeController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['post'],
+                    'delete' => ['POST'],
                 ],
             ],
         ];
     }
 
-    public function beforeAction($action)
-    {
-        $permission = $this->action->controller->id.'_'.$this->action->id;
-        $hasPermission = Permissions::find()->hasPermission($permission);
-        //echo $permission.'<br>';die;
-        if ($hasPermission == 0) {
-            throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
-        }
-
-        return true;
-    }
-
-
     /**
-     * Lists all Type models.
+     * Lists all OtaProjectsBuildtypes models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new TypeSearch();
+        $searchModel = new ProjectOtaProjectsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -59,7 +43,7 @@ class TypeController extends Controller
     }
 
     /**
-     * Displays a single Type model.
+     * Displays a single OtaProjectsBuildtypes model.
      * @param integer $id
      * @return mixed
      */
@@ -71,13 +55,13 @@ class TypeController extends Controller
     }
 
     /**
-     * Creates a new Type model.
+     * Creates a new OtaProjectsBuildtypes model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Type();
+        $model = new Projects();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -89,7 +73,7 @@ class TypeController extends Controller
     }
 
     /**
-     * Updates an existing Type model.
+     * Updates an existing OtaProjectsBuildtypes model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -98,34 +82,8 @@ class TypeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
-
-            $model->image_logo = UploadedFile::getInstance($model, 'image_logo');
-
-            $valid = $model->validate();
-            //echo $model->image_logo;die;
-
-            if (!empty($model->image_logo)) {
-                //echo '<pre>';print_r($model);echo '</pre>';die;
-
-                //echo $model->image_logo;die;
-                // file is uploaded successfully
-                $model->logo = $model->upload();
-                $model->image_logo->tempName = $model->logo;
-            }
-
-            //echo '<pre>';print_r($model);echo '</pre>';die;
-            //var_dump($valid); die;
-            $model->save();
-
-
-            if ($valid  &&  $model->save())
-                return $this->redirect(['view', 'id' => $model->id]);
-            else {
-                return $this->render('update', [
-                    'model' => $model,
-                ]);
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -134,7 +92,7 @@ class TypeController extends Controller
     }
 
     /**
-     * Deletes an existing Type model.
+     * Deletes an existing OtaProjectsBuildtypes model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -147,19 +105,18 @@ class TypeController extends Controller
     }
 
     /**
-     * Finds the Type model based on its primary key value.
+     * Finds the OtaProjectsBuildtypes model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Type the loaded model
+     * @return OtaProjectsBuildtypes the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Type::findOne($id)) !== null) {
+        if (($model = Projects::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    
 }

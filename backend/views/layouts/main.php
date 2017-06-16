@@ -92,7 +92,12 @@ else {
                         <!-- User Account: style can be found in dropdown.less -->
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <img src="<?= $user->image;?>" class="user-image" alt="User Image">
+                                <?php if (!empty($user->image)) : ?>
+                                    <img src="<?= $user->image;?>" class="user-image" alt="User Image">
+                                <?php else : ?>
+                                    <img src="/files/user2-128x128.png" class="user-image" alt="User Image">
+                                <?php endif; ?>
+
                                 <span class="hidden-xs"><?php echo Yii::$app->user->identity->first_name.' '.Yii::$app->user->identity->last_name ; ?></span>
                             </a>
                             <ul class="dropdown-menu">
@@ -132,44 +137,78 @@ else {
 
                 <ul class="sidebar-menu">
                     <li class="header"><?= Yii::t('app', 'MAIN NAVIGATION'); ?></li>
-                    <li class="<?=($this->context->id == 'site') ? 'active' : '' ?> treeview">
-                        <a href="/site">
-                            <i class="fa fa-dashboard"></i> <span><?= Yii::t('app', 'Dashboard'); ?></span>
-                        </a>
-                    </li>
-                    <li class="treeview <?=($this->context->id == 'otaprojects') ? 'active' : ' ' ?>">
-                        <a href="/otaprojects">
-                            <i class="fa fa-share-alt"></i> <span>OTA Share</span>
-                        </a>
-                    </li>
                     <?php
-                    if ($user->role_id < 11) {
-                    ?>
-                    <li class="treeview <?=($this->context->id == 'otabuildtypes') ? 'active' : ' ' ?>">
-                        <a href="#">
-                            <i class="fa fa-cog"></i>
-                            <span>OTA Share Admin</span>
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="<?=($this->context->id == 'otabuildtypes') ? 'active' : ' ' ?>"><a href="/otabuildtypes"><i class="fa fa-ellipsis-h"></i> Build Types</a></li>
-                        </ul>
-                    </li>
-                    <?php } ?>
-                    <?php /* if ($user->role_id  == 1) { ?>
-                        <li class="treeview <?=($this->context->id == 'devices') ? 'active' : ' ' ?>">
-                            <a href="/devices">
-                                <i class="fa fa-tablet"></i> <span>Test Devices</span>
+                    if ($user->role_id == Yii::$app->params['CLIENT_ROLE']) { ?>
+                        <li class="<?=($this->context->id == 'site') ? 'active' : '' ?> treeview">
+                            <a href="/site">
+                                <i class="fa fa-dashboard"></i> <span><?= Yii::t('app', 'Dashboard'); ?></span>
                             </a>
                         </li>
-                    <?php } */ ?>
-                    <?php  if ($user->role_id == 1 || $user->role_id== 12) { ?>
-                        <li class="treeview <?=($this->context->id == 'mobgenners') ? 'active' : ' ' ?>">
-                            <a href="/mobgenners">
-                                <i class="fa fa-circle-o"></i> <span><?= Yii::t('app', 'Mobgenners')?></span>
+                        <li class="treeview <?=($this->context->id == 'otaprojects') ? 'active' : ' ' ?>">
+                            <a href="/otaprojects">
+                                <i class="fa fa-share-alt"></i> <span>OTA Share</span>
                             </a>
                         </li>
-                    <?php
+                        <li class="treeview <?=($this->context->id == 'otaprojects') ? 'active' : ' ' ?>">
+                            <a href="/user/profile/<?=$userId?>">
+                                <i class="fa fa-user"></i> <span>User</span>
+                            </a>
+                        </li>
+                    <?php } else { ?>
+                        <li class="<?=($this->context->id == 'site') ? 'active' : '' ?> treeview">
+                            <a href="/site">
+                                <i class="fa fa-dashboard"></i> <span><?= Yii::t('app', 'Dashboard'); ?></span>
+                            </a>
+                        </li>
+                        <li class="treeview">
+                            <a href="/project">
+                                <i class="fa fa-flask"></i> <span>Projects</span>
+                            </a>
+                        </li>
+                        <li class="treeview">
+                            <a href="/client">
+                                <i class="fa fa-diamond"></i> <span>Clients</span>
+                            </a>
+                        </li>
+                        <li class=" treeview">
+                            <a href="/type">
+                                <i class="fa fa-desktop"></i> <span>Project type</span>
+                            </a>
+                        </li>
+                        <li class="treeview <?=($this->context->id == 'otaprojects') ? 'active' : ' ' ?>">
+                            <a href="/otaprojects">
+                                <i class="fa fa-share-alt"></i> <span>OTA Share</span>
+                            </a>
+                        </li>
+                        <?php
+                        if ($user->role_id < 11) {
+                        ?>
+                        <li class="treeview <?=($this->context->id == 'otabuildtypes') ? 'active' : ' ' ?>">
+                            <a href="#">
+                                <i class="fa fa-cog"></i>
+                                <span>OTA Share Admin</span>
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li class="<?=($this->context->id == 'otabuildtypes') ? 'active' : ' ' ?>"><a href="/otabuildtypes"><i class="fa fa-ellipsis-h"></i> Build Types</a></li>
+                            </ul>
+                        </li>
+                        <?php } ?>
+                        <?php /* if ($user->role_id  == 1) { ?>
+                            <li class="treeview <?=($this->context->id == 'devices') ? 'active' : ' ' ?>">
+                                <a href="/devices">
+                                    <i class="fa fa-tablet"></i> <span>Test Devices</span>
+                                </a>
+                            </li>
+                        <?php } */ ?>
+                        <?php  if ($user->role_id == 1 || $user->role_id== 12) { ?>
+                            <li class="treeview <?=($this->context->id == 'mobgenners') ? 'active' : ' ' ?>">
+                                <a href="/mobgenners">
+                                    <i class="fa fa-circle-o"></i> <span><?= Yii::t('app', 'Mobgenners')?></span>
+                                </a>
+                            </li>
+                        <?php
+                        }
                     }
 
                     if (!\Yii::$app->devicedetect->isMobile()) {
