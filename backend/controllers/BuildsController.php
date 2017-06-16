@@ -454,19 +454,32 @@ class BuildsController extends CController
 
     public function actionVisible($id)
     {
-
+        $result = array(
+            'icon' => null,
+            'text' => null
+        );
         $model = $this->findModel($id);
-        if ($model->buiVisibleClient == 1) {
-            $model->buiVisibleClient = 0;
-            $icon = '<i class="fa fa-eye-slash fa-x '.$_SESSION['skin-color'].'"></i>';
+        $next = ($model->buiVisibleClient + 1) % 3;
+
+        if ($next == 1) {
+            $result['text'] = 'Visible to the client';
+            $result['icon'] = '<i class="fa fa-unlock-alt fa-x '.$_SESSION['skin-color'].'"></i>';
+        } elseif ($next == 2) {
+            $result['text'] = 'Visible to registered users';
+            $result['icon'] = '<i class="fa fa-lock fa-x '.$_SESSION['skin-color'].'"></i>';
         } else {
-            $model->buiVisibleClient = 1;
-            $icon = '<i class="fa fa-eye fa-x '.$_SESSION['skin-color'].'"></i>';
+            $next = 0;
+            $result['text'] = 'Hidden to the client';
+            $result['icon'] = '<i class="fa fa-eye-slash fa-x '.$_SESSION['skin-color'].'"></i>';
         }
+
+        $model->buiVisibleClient = $next;
         $model->detachBehavior('time');
         $model->save(false);
 
-        return $icon;
+        header('Content-Type: application/json');
+        echo json_encode($result);
+        exit;
     }
 
     public function actionDislike($id){

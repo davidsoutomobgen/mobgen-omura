@@ -11,7 +11,7 @@ $this->title = 'Client';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="client-index">
-<?php echo 'kk'; die; ?>
+    
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

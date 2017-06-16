@@ -56,7 +56,7 @@ else {
 
     <link rel="apple-touch-icon" sizes="144x144" href="/images/favicon/favicon_144x144.png">
     <?php $this->head() ?>
-    <?php 
+    <?php
     if (!isset($_SESSION['skin-color'])) {
         $_SESSION['skin-color'] = 'skin-blue';
     }
@@ -149,7 +149,7 @@ else {
                                 <i class="fa fa-share-alt"></i> <span>OTA Share</span>
                             </a>
                         </li>
-                        <li class="treeview <?=($this->context->id == 'otaprojects') ? 'active' : ' ' ?>">
+                        <li class="treeview <?=($this->context->id == 'user') ? 'active' : ' ' ?>">
                             <a href="/user/profile/<?=$userId?>">
                                 <i class="fa fa-user"></i> <span>User</span>
                             </a>
@@ -300,45 +300,45 @@ else {
                     <?php
 
                     $this->registerJs('
-    
+
                                 $(document).ready(function(){
                                     var id_user = ' . \Yii::$app->user->identity->id . ';
-    
+
                                     $(\'.control-sidebar input:checkbox\').click(function(){
-    
+
                                         var option =  $(this).attr("id");
                                         var value = 0;
                                         if ($(this).is(":checked"))
                                             var value = 1;
-    
+
                                        // alert ($(this).attr("id")+" -- "+value);
-    
+
                                         /* Fixed-header */
                                         if ((option == \'fixed-header\') && (value == 1))
                                             $(\'body\').addClass(\'fixed\');
                                         else if ((option == \'fixed-header\') && (value == 0))
                                             $(\'body\').removeClass(\'fixed\');
-    
+
                                         /* Layout-boxed */
                                         if ((option == \'layout-boxed\') && (value == 1))
                                             $(\'body\').addClass(\'layout-boxed\');
                                         else if ((option == \'layout-boxed\') && (value == 0))
                                             $(\'body\').removeClass(\'layout-boxed\');
-    
+
                                         /* Sidebar-collapse */
                                         if ((option == \'sidebar-collapse\') && (value == 1))
                                             $(\'body\').addClass(\'sidebar-collapse\');
                                         else if ((option == \'sidebar-collapse\') && (value == 0))
                                             $(\'body\').removeClass(\'sidebar-collapse\');
-    
+
                                         /* control-sidebar-open */
                                         if ((option == \'control-sidebar-open\') && (value == 1))
                                             $(\'body\').addClass(\'control-sidebar-open\');
                                         else if ((option == \'control-sidebar-open\') && (value == 0))
                                             $(\'body\').removeClass(\'control-sidebar-open\');
-    
+
                                         //console.log("dddd " + option + " --- " + value);
-    
+
                                         $.ajax({
                                             type: \'POST\',
                                             url : \'/useroptions/updateajax\',
@@ -348,13 +348,13 @@ else {
                                             }
                                         });
                                     });
-    
+
                                     $(\'ul#skins li a\').click(function(){
                                         var option = \'skin-color\';
                                         var value = $(this).attr("data-skin");
                                         //Added jquery.alterclasss.js
                                         $(\'body\').alterClass(\'skin-*\', value);
-    
+
                                         $.ajax({
                                             type: \'POST\',
                                             url : \'/useroptions/updateajax/\',

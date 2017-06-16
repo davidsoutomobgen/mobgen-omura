@@ -43,7 +43,7 @@ if (isset($message) && ($message == 1)) {
     <h1><?= Html::encode($this->title) ?></h1>
     <div class="btn-header">
         <?php
-        if ($userIdRole != 11) {
+        if ($userIdRole != 11 && $userIdRole != Yii::$app->params['CLIENT_ROLE']) {
             echo $this->render('/utils/_buttonscreate', [
                 'titulo' => Yii::t('app', 'Project'),
             ]);
@@ -56,14 +56,8 @@ if (isset($message) && ($message == 1)) {
         </div>
 
         <div class="box-body">
-            <?= GridView::widget([
-                'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
-                'filterSelector' => '#' . Html::getInputId($searchModel, 'pagesize'),
-                'rowOptions'   => function ($data, $key, $index, $grid) {
-                        return ['data-id' => $data->id];
-                    },
-                'columns' => [
+            <?php
+                $columns = [
                     //['class' => 'yii\grid\SerialColumn'],
                     //'id',
                     [
@@ -90,30 +84,32 @@ if (isset($message) && ($message == 1)) {
                             return ("<a href='$frontend/project/$data->proHash/$data->safename' target='_blank' title='$data->name' alt='$data->name' >$data->proHash</a>");
                         },
                     ],
-                    'proAPIKey',
+
+                ];
+                if ($userIdRole != Yii::$app->params['CLIENT_ROLE']) {
+                    $columns[] = 'proAPIKey';
                     //'proAPIBuildKey',
                     // 'proBuildTypes',
                     // 'default_notify_email:email',
                     //'numBuilds',
-                    [
+                    $columns[] = [
                         'attribute' => 'numBuilds',
                         //'filter' => Builds::getA(),
                         'filter'=>false,
-                    ],
-                    [
+                    ];
+                    $columns[] = [
                         'attribute' => 'numFavs',
                         'filter'=>false,
-                    ],
-                    [
+                    ];
+                    $columns[] = [
                         'attribute'=>'updated_at',
                         'value' => function ($model, $index, $widget) {
                             $date = date('Y-m-d H:i', $model->updated_at);
                             return $date ;
                         },
                         'filter'=>false,
-                    ],
-                    //['class' => 'yii\grid\ActionColumn'],
-                    [
+                    ];
+                    $columns[] = [
                         'class' => 'yii\grid\ActionColumn',
                         'template' => '{view} {update} {delete} ',
                         'visibleButtons' => [
@@ -145,8 +141,29 @@ if (isset($message) && ($message == 1)) {
                             },
                             */
                         ],
-                    ],
-                ],
+                    ];
+                } else {
+
+                    $columns[] = [
+                        'class' => 'yii\grid\ActionColumn',
+                        'template' => '{view}',
+                        'buttons' => [
+                            'view' => function ($url,$model) {
+                                return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
+                                    'title' => Yii::t('app', 'View'), 'data-method' => 'post']);
+                            }
+                        ],
+                    ];
+                }
+             ?>
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'filterSelector' => '#' . Html::getInputId($searchModel, 'pagesize'),
+                'rowOptions'   => function ($data, $key, $index, $grid) {
+                        return ['data-id' => $data->id];
+                    },
+                'columns' => $columns,
                 'pager' => [
                     'options'=>['class'=>'pagination'],   // set clas name used in ui list of pagination
                     'maxButtonCount'=>3,    // Set maximum number of page buttons that can be displayed
@@ -163,7 +180,7 @@ if (isset($message) && ($message == 1)) {
 </div>
 <div class="btn-footer">
     <?php
-    if ($userIdRole != 11) {
+    if ($userIdRole != 11 && $userIdRole != Yii::$app->params['CLIENT_ROLE']) {
         echo $this->render('/utils/_buttonscreate', [
             'titulo' => Yii::t('app', 'Project'),
         ]);
