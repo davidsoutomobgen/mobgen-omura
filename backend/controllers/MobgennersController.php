@@ -280,20 +280,19 @@ class MobgennersController extends CController
     {
         $mobgennerId = (int)\Yii::$app->request->post('key');
 
-            $model = $this->findModel($mobgennerId);
-            if ($model) {
-                if ($model->image != '') {
-                    $filename = Yii::$app->params["BACKEND_WEB"] . "files/mobgenners/" . $model->image;
-                    unlink($filename);
-                    $model->image = '';
-                    $model->save();
-                    $data = array('1' => 'Done');
-                    return json_encode($data);
-                } else {
-                    $data = array('1' => 'Nothing to do.');
-                    return json_encode($data);
-                }
+        $model = $this->findModel($mobgennerId);
+        if ($model) {
+            if ($model->image != '') {
+                $filename = Yii::$app->params["BACKEND_WEB"] . "files/mobgenners/" . $model->image;
+                unlink($filename);
+                $model->image = '';
+                $model->save();
+                $data = array('1' => 'Done');
+                return json_encode($data);
+            } else {
+                $data = array('1' => 'Nothing to do.');
+                return json_encode($data);
             }
+        }
     }
-
 }

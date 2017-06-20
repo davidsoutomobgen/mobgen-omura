@@ -69,23 +69,33 @@ class SiteController extends CController
 
     public function actionIndex()
     {
-        $userid =  Yii::$app->user->identity->id;
+        $userid = Yii::$app->user->identity->id;
         //$variable = 'fixed-header';
         //$model = UserOptions::find()->getVariable($userid, 'fixed_header');
 
-        $options = UserOptions::find()->getUserOptionsByUserId((int) $userid);
+
+        $options = UserOptions::find()->getUserOptionsByUserId((int)$userid);
         $session = Yii::$app->session;
         foreach ($options as $opt) {
             if ($opt['type'] == 'integer')
-                $session->set($opt['variable'], (int) $opt['value']);
+                $session->set($opt['variable'], (int)$opt['value']);
             else if ($opt['type'] == 'string')
-                $session->set($opt['variable'], (string) $opt['value']);
+                $session->set($opt['variable'], (string)$opt['value']);
         }
 
-        if (\Yii::$app->devicedetect->isMobile())
-            $view = 'indexmobile';
-        else
-            $view = 'index';
+        $roleId = User::getUserIdRole();
+        if ($roleId == Yii::$app->params['CLIENT_ROLE']) {
+            if (\Yii::$app->devicedetect->isMobile())
+                $view = 'indexmobile_client';
+            else
+                $view = 'index_client';
+        }
+        else {
+            if (\Yii::$app->devicedetect->isMobile())
+                $view = 'indexmobile';
+            else
+                $view = 'index';
+        }
 
         $user = User::find()->where(['id'=>$userid])->one();
 

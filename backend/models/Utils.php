@@ -70,6 +70,7 @@ class Utils
         $roles[10] = 'DEVELOPER';
         $roles[11] = 'QA';
         $roles[12] = 'LEAD';
+        $roles[99] = 'CLIENT';
 
         return [
             'roles' => $roles,
@@ -89,6 +90,9 @@ class Utils
                 break;
             case 12:
                 $role = 'LEAD';
+                break;
+            case 99:
+                $role = 'CLIENT';
                 break;
             default:
                 $role = '-';

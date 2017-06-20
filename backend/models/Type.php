@@ -60,7 +60,7 @@ class Type extends \common\models\CActiveRecord
     {
         if ($this->validate() && (!empty($this->image_logo))) {
             //print_r($this->image_logo);die;
-            $image_path = 'files/types/'. rand(0, 99999999).'_'. $this->image_logo->baseName . '.' . $this->image_logo->extension;
+            $image_path = 'files/types/' . rand(0, 99999999) . '_' . $this->image_logo->baseName . '.' . $this->image_logo->extension;
             $this->image_logo->saveAs($image_path);
             return $image_path;
         } else

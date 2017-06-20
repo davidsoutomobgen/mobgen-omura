@@ -9,6 +9,7 @@ use backend\models\SignupForm;
 use backend\models\PasswordForm;
 use backend\models\Mobgenners;
 use backend\models\Login;
+use backend\models\Client;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -43,7 +44,11 @@ class UserController extends CController
                 }
                 else if (($this->action->id == 'view') || ($this->action->id == 'update') || ($this->action->id == 'profile')) {
 
-                    $mobgenner = Mobgenners::find()->where(['user'=>Yii::$app->user->identity->id])->one();
+                    if ($roleId == Yii::$app->params['CLIENT_ROLE'])
+                        $mobgenner = Client::find()->where(['user'=>Yii::$app->user->identity->id])->one();
+                    else
+                        $mobgenner = Mobgenners::find()->where(['user'=>Yii::$app->user->identity->id])->one();
+
                     //print_r($mobgenner->attributes);die;
                     if ($_GET['id'] != $mobgenner->user) {
                         $this->redirect('/user/profile/'.$mobgenner->user);
@@ -211,9 +216,15 @@ class UserController extends CController
 
 
     public function actionProfile($id){
+
         $modelpass = new PasswordForm;
         $user = User::find()->where(['id'=>$id])->one();
-        $mobgenner = Mobgenners::find()->where(['user'=>$id])->one();
+        //echo '<pre>'; print_r($user); echo '</pre>'; die;
+        $roleId = User::getUserIdRole();
+        if ($roleId == Yii::$app->params['CLIENT_ROLE'])
+            $mobgenner = Client::find()->where(['user'=>$id])->one();
+        else
+            $mobgenner = Mobgenners::find()->where(['user'=>$id])->one();
 
         if($modelpass->load(Yii::$app->request->post())){
             if($modelpass->validate()){
@@ -337,4 +348,5 @@ class UserController extends CController
             'model' => $model,
         ]);
     }
+
 }
