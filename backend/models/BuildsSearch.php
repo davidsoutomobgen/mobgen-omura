@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use backend\models\Builds;
+use common\models\User;
 
 /**
  * BuildsSearch represents the model behind the search form about `backend\models\Builds`.
@@ -88,6 +89,15 @@ class BuildsSearch extends Builds
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
+
+        $userIdRole = User::getUserIdRole();
+        if ($userIdRole != Yii::$app->params['CLIENT_ROLE']) {
+            $query->andFilterWhere([
+                'buiVisibleClient' => $this->buiVisibleClient
+            ]);
+        } else {
+            $query->andWhere('buiVisibleClient != 0');
+        }
 
         if (isset($params['BuildsSearch']['searchString'])){
             $this->buiName = $params['BuildsSearch']['searchString'];

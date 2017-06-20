@@ -71,6 +71,48 @@ class BuildsQuery extends \yii\db\ActiveQuery
         return ($data);
     }
 
+    public function getLastBuildsByProjectClient($project_id, $n = 5)
+    {
+        $query = new Query;
+        $query -> select(['id_ota_project'])
+            -> from('project_otaprojects')
+            -> where('id_project = :project_id ', [':project_id' => $project_id])
+            -> orderBY('updated_at DESC')
+            -> all();
+
+        $command = $query->createCommand();
+        $projects = $command->queryAll();
+
+        //echo '<pre>'; print_r($projects); echo '</pre>'; die;
+        $ps = array();
+        foreach ($projects as $p) {
+            $ps[] = (string) '"'. $p['id_ota_project'] . '"';
+        }
+        $array = implode(",", $ps);
+
+        //print_r($ps); print_r($array); die;
+        /*
+        $query = new Query;
+        $query ->from('builds')
+            -> where('buiProIdFK IN ('.$array.') AND buiVisibleClient = :status ', [':status' => 1])
+            -> orderBY('updated_at DESC')
+            -> limit($n)
+            -> all();
+
+
+        $command = $query->createCommand();
+        $builds = $command->queryAll();
+        */
+
+        $builds = Builds::find()->from('builds')
+            -> where('buiProIdFK IN ('.$array.') AND buiVisibleClient = :status ', [':status' => 1])
+            -> orderBY('updated_at DESC')
+            -> limit($n)
+            -> all();
+        //print_r($builds); die;
+        return ($builds);
+    }
+
     public function getOtaProjectsByUser($userid)
     {
         $query = new Query;
@@ -84,6 +126,24 @@ class BuildsQuery extends \yii\db\ActiveQuery
         $data = $command->queryAll();
         //print_r(count($data));die;
         return (count($data));
+    }
+
+    public function getOtaProjectsByClientUser($userid)
+    {
+        /*
+        User::
+        $query = new Query;
+        $query -> select(['id_ota_project'])
+            -> from('project_otaprojects')
+            -> where('id_project = :project_id ', [':project_id' => $project_id])
+            -> orderBY('updated_at DESC')
+            -> all();
+
+        $command = $query->createCommand();
+        $projects = $command->queryAll();
+        //print_r(count($data));die;
+        return (count($data));
+        */
     }
 
     public function activeBuilds()

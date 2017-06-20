@@ -16,29 +16,35 @@ use backend\models\Builds;
     <div class="box-body box-profile">
         <?php
         $user = User::getUserInfo($model->id);
+        if (!empty($user->image)):
         ?>
-        <img class="profile-user-img img-responsive img-circle" src="<?= $user->image ?>" alt="User profile picture">
+            <img class="profile-user-img img-responsive img-circle" src="<?= $user->image ?>" alt="User profile picture">
+        <?php else : ?>
+            <img class="profile-user-img img-responsive img-circle" src="/files/user2-128x128.png" alt="User profile picture">
+        <?php endif; ?>
 
         <h3 class="profile-username text-center">
             <?php echo $user->first_name . ' ' . $user->last_name ; ?>
         </h3>
 
         <p class="text-muted text-center"><?= $user->job_title; ?></p>
-
-        <ul class="list-group list-group-unbordered">
-            <li class="list-group-item">
-                <b><?= Yii::t('app', 'Projects');?></b>
-                <a class="pull-right"><?= Builds::find()->getOtaProjectsByUser($user->id); ?></a>
-            </li>
-            <li class="list-group-item">
-                <b><?= Yii::t('app', 'Builds');?></b> <a class="pull-right"><?= Builds::find()->getBuildsByUser($user->id); ?></a>
-            </li>
-            <!--
-            <li class="list-group-item">
-                <b><?= Yii::t('app', 'Groups');?></b> <a class="pull-right">-</a>
-            </li>
-            -->
-        </ul>
+        <?php $roleId = User::getUserIdRole(); ?>
+        <?php  if ($roleId != Yii::$app->params['CLIENT_ROLE']) : ?>
+            <ul class="list-group list-group-unbordered">
+                <li class="list-group-item">
+                    <b><?= Yii::t('app', 'Projects');?></b>
+                    <a class="pull-right"><?= Builds::find()->getOtaProjectsByUser($user->id); ?></a>
+                </li>
+                <li class="list-group-item">
+                    <b><?= Yii::t('app', 'Builds');?></b> <a class="pull-right"><?= Builds::find()->getBuildsByUser($user->id); ?></a>
+                </li>
+                <!--
+                <li class="list-group-item">
+                    <b><?= Yii::t('app', 'Groups');?></b> <a class="pull-right">-</a>
+                </li>
+                -->
+            </ul>
+        <?php endif; ?>
     </div>
     <?php if ($header) { ?>
         <div class="box-footer text-center">

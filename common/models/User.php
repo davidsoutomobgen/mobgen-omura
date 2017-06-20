@@ -8,6 +8,8 @@ use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
 use backend\models\Mobgenners;
+use backend\models\SignupForm;
+use backend\models\Utils;
 
 
 /**
@@ -288,5 +290,54 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+
+    public static function adminUser($model, $idRol, $status = 0) {
+
+        //echo '<pre>'; print_r($_POST); echo '</pre>'; //die;
+        //echo '<pre>'; print_r($model); echo '</pre>'; die;
+        $user = new SignupForm();
+
+        $user->first_name = $model->first_name;
+        $user->last_name = $model->last_name;
+        $user->status = $status; //$_POST['SignupForm']['status'];
+        $user->username = substr($model->email, 0, strrpos($model->email, '@'));
+        $user->email = $model->email;
+        $random_password = Utils::randomPassword();
+        $user->password = $random_password;
+        $user->role_id = $idRol;
+        //echo '<pre>'; print_r($user->attributes); echo '</pre>';// die;
+
+        if ($newuser = $user->signup()) {
+           // echo 'SI'; die;
+
+            $model->user = $newuser->id;
+            $model->save();
+
+            //Send email
+            /*
+            if ($user->status == 1 && $_POST['SignupForm']['sendEmail']) {
+                Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Mobgenner and user created correctly.'));
+
+                $sendTo = $user->email;
+                $subject = Yii::t('app', 'New user OTAShare - MOBGEN');
+
+                $sendEmail = Yii::$app->mailer->compose('newUser', [
+                    'user' => $user])
+                    ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
+                    ->setTo($sendTo)
+                    ->setSubject($subject)
+                    ->send();
+            }
+            */
+            //return $this->redirect(['view', 'id' => $model->id]);
+            return true;
+        }
+        else {
+            //Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Mobgenner created but user didn\'t create.'));
+            return $user->getErrors();
+            //return false;
+        }
     }
 }

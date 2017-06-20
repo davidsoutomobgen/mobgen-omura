@@ -113,11 +113,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format'=>'raw',
                 'value' => function($data){
                     if ($data->buiVisibleClient == 1) {
-                        $fav = '<span><i class="fa fa-eye fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
+                        $fav = '<span><i class="fa fa-unlock-alt fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
                         $url = '/builds/hidden/'.$data->buiId;
                         $text = Yii::t('app', 'Visible to the client');
-                    }
-                    else {
+                    } elseif ($data->buiVisibleClient == 2) {
+                        $fav = '<span><i class="fa fa-lock fa-x '.$_SESSION['skin-color'].'"></i></span>';
+                        $url = '/builds/hidden/'.$data->buiId;
+                        $text = Yii::t('app', 'Visible to registered users');
+                    } else {
                         $fav = '<span><i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i></span>';
                         $url = '/builds/show/'.$data->buiId;
                         $text = Yii::t('app', 'Hidden to the client');

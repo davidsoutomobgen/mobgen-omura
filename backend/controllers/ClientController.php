@@ -3,20 +3,16 @@
 namespace backend\controllers;
 
 use Yii;
-use backend\models\Type;
-use backend\models\TypeSearch;
-use backend\models\Permissions;
+use backend\models\Client;
+use backend\models\ClientSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\web\MethodNotAllowedHttpException;
 use yii\filters\VerbFilter;
-use yii\web\UploadedFile;
-
 
 /**
- * TypeController implements the CRUD actions for Type model.
+ * ClientController implements the CRUD actions for Client model.
  */
-class TypeController extends CController
+class ClientController extends Controller
 {
     public function behaviors()
     {
@@ -30,26 +26,13 @@ class TypeController extends CController
         ];
     }
 
-    public function beforeAction($action)
-    {
-        $permission = $this->action->controller->id.'_'.$this->action->id;
-        $hasPermission = Permissions::find()->hasPermission($permission);
-        //echo $permission.'<br>';die;
-        if ($hasPermission == 0) {
-            throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
-        }
-
-        return true;
-    }
-
-
     /**
-     * Lists all Type models.
+     * Lists all Client models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new TypeSearch();
+        $searchModel = new ClientSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -59,25 +42,28 @@ class TypeController extends CController
     }
 
     /**
-     * Displays a single Type model.
+     * Displays a single Client model.
      * @param integer $id
      * @return mixed
      */
     public function actionView($id)
     {
+        $model = Client::find()->with('project')->where('id = :idClient',  [':idClient' => $id])->all();
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            //'model' => $this->findModel($id),
+            'model' => $model[0],
         ]);
     }
 
     /**
-     * Creates a new Type model.
+     * Creates a new Client model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Type();
+        $model = new Client();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -89,7 +75,7 @@ class TypeController extends CController
     }
 
     /**
-     * Updates an existing Type model.
+     * Updates an existing Client model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -98,34 +84,9 @@ class TypeController extends CController
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
-            $model->image_logo = UploadedFile::getInstance($model, 'image_logo');
-
-            $valid = $model->validate();
-            //echo $model->image_logo;die;
-
-            if (!empty($model->image_logo)) {
-                //echo '<pre>';print_r($model);echo '</pre>';die;
-
-                //echo $model->image_logo;die;
-                // file is uploaded successfully
-                $model->logo = $model->upload();
-                $model->image_logo->tempName = $model->logo;
-            }
-
-            //echo '<pre>';print_r($model);echo '</pre>';die;
-            //var_dump($valid); die;
-            $model->save();
-
-
-            if ($valid  &&  $model->save())
-                return $this->redirect(['view', 'id' => $model->id]);
-            else {
-                return $this->render('update', [
-                    'model' => $model,
-                ]);
-            }
+            return $this->redirect(['/user/profile/', 'id' => $model->user]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -134,7 +95,7 @@ class TypeController extends CController
     }
 
     /**
-     * Deletes an existing Type model.
+     * Deletes an existing Client model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -147,19 +108,18 @@ class TypeController extends CController
     }
 
     /**
-     * Finds the Type model based on its primary key value.
+     * Finds the Client model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Type the loaded model
+     * @return Client the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Type::findOne($id)) !== null) {
+        if (($model = Client::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    
 }

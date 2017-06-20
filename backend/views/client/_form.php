@@ -8,9 +8,8 @@ use kartik\switchinput\SwitchInput;
 use common\models\User;
 use backend\models\Utils;
 
-
 /* @var $this yii\web\View */
-/* @var $model backend\models\Mobgenners */
+/* @var $model backend\models\Client */
 /* @var $form yii\widgets\ActiveForm */
 
 $userIdRole = User::getUserIdRole();
@@ -69,7 +68,7 @@ if (Yii::$app->getSession()->hasFlash('error')) {
             ],
             'pluginOptions' => [
                 'showRemove' => false,
-                'uploadUrl' => Url::to(['/mobgenners/fileupload']),
+                'uploadUrl' => Url::to(['/client/fileupload']),
                 'uploadExtraData' => [
                     'mobgennerId' => $model->id,
                     //'otaProjectId' => $model->buiProIdFK,
@@ -85,7 +84,7 @@ if (Yii::$app->getSession()->hasFlash('error')) {
                     [
                         'caption' => $title,
                         'size' => $size,
-                        'url' => Url::to(['/mobgenners/fileremove']),
+                        'url' => Url::to(['/client/fileremove']),
                         'key' => $model->id
                     ],
                 ],
@@ -116,15 +115,14 @@ if (Yii::$app->getSession()->hasFlash('error')) {
     <div class="col-xs-3">
         <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
     </div>
-    <div class="col-xs-3">
-
+    <div class="col-xs-2">§
         <?php
 
         if ($userIdRole == 1) $disabled = false;
         else $disabled = true;
 
         echo $form->field($model, 'active')->widget(SwitchInput::classname(), ['disabled' => $disabled, 'pluginOptions' => [
-            'handleWidth' => 60,
+            'handleWidth' => 40,
             'onText' => 'Yes',
             'offText' => 'No',
         ]]);
@@ -133,18 +131,9 @@ if (Yii::$app->getSession()->hasFlash('error')) {
     <div class="col-xs-3">
         <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
     </div>
-    <div class="col-xs-3">
-        <?php
-        $genders['M'] = 'MALE';
-        $genders['F'] = 'FEMALE';
 
-        echo $form->field($model, 'gender')->dropDownList(
-            $genders
-        );
-        ?>
-    </div>
     <div class="col-xs-6">
-        <?= $form->field($model, 'skype')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'company')->textInput(['maxlength' => true]) ?>
     </div>
 
     <div class="col-xs-6">
