@@ -31,6 +31,12 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_ACTIVE = 1;
     const ROLE_USER = 10;
 
+    const ADMIN_ROLE = 1;
+    const DEVELOPER_ROLE = 10;
+    const QA_ROLE = 11;
+    const LEAD = 12;
+    const CLIENT_ROLE = 99;
+
     //ADMIN = 10
     //QA = 11
 
@@ -188,7 +194,7 @@ class User extends ActiveRecord implements IdentityInterface
         $user = static::findOne(['id' => $id_user, 'status' => self::STATUS_ACTIVE]);
         return $user->role_id;
     }
-    
+
     public static function getUserInfo($id_user = '')
     {
         if (empty($id_user))
