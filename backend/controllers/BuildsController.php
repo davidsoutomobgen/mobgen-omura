@@ -463,14 +463,14 @@ class BuildsController extends CController
 
         if ($next == 1) {
             $result['text'] = 'Visible to the client';
-            $result['icon'] = '<i class="fa fa-unlock-alt fa-x '.$_SESSION['skin-color'].'"></i>';
+            $result['icon'] = '<i class="fa fa-unlock fa-x '.$_SESSION['skin-color'].'"></i>';
         } elseif ($next == 2) {
             $result['text'] = 'Visible to registered users';
-            $result['icon'] = '<i class="fa fa-lock fa-x '.$_SESSION['skin-color'].'"></i>';
+            $result['icon'] = '<i class="fa fa-unlock-alt fa-x '.$_SESSION['skin-color'].'"></i>';
         } else {
             $next = 0;
             $result['text'] = 'Hidden to the client';
-            $result['icon'] = '<i class="fa fa-eye-slash fa-x '.$_SESSION['skin-color'].'"></i>';
+            $result['icon'] = '<i class="fa fa-lock fa-x '.$_SESSION['skin-color'].'"></i>';
         }
 
         $model->buiVisibleClient = $next;
