@@ -21,6 +21,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Url;
 
+use app\components\AccessRule;
+use yii\filters\AccessControl;
 
 /**
  * BuildsController implements the CRUD actions for Builds model.
@@ -36,6 +38,37 @@ class BuildsController extends CController
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view', 'download'],
+                        'allow' => true,
+                    ],
+                    [
+                        'actions' => ['create', 'delete', 'update', 'fileupload', 'notification'],
+                        'allow' => true,
+                        'roles' => [
+                                User::ADMIN_ROLE,
+                                User::DEVELOPER_ROLE,
+                                User::LEAD
+                            ],
+                    ],
+                    [
+                        'actions' => ['bulk', 'show', 'hidden', 'like', 'visible', 'dislike'],
+                        'allow' => true,
+                        'roles' => [
+                                User::ADMIN_ROLE,
+                                User::DEVELOPER_ROLE,
+                                User::QA_ROLE,
+                                User::LEAD
+                            ],
+                    ],
                 ],
             ],
         ];

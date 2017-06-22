@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use app\components\AccessRule;
 use backend\models\UserOptions;
 use backend\models\UserOptionsSearch;
 use backend\models\UserOptionsQuery;
@@ -31,6 +32,10 @@ class SiteController extends CController
         return [
             'access' => [
                 'class' => AccessControl::className(),
+                // We will override the default rule config with the new AccessRule class
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
                 'rules' => [
                     [
                         'actions' => ['login', 'logout', 'error', 'forgotpassword', 'resetpassword'],
@@ -39,7 +44,7 @@ class SiteController extends CController
                     [
                         'actions' => ['index', 'time', 'date'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => [User::ROLE_USER],
                     ],
                 ],
             ],
@@ -65,8 +70,7 @@ class SiteController extends CController
             ],
         ];
     }
-
-
+    
     public function actionIndex()
     {
         $userid =  Yii::$app->user->identity->id;
