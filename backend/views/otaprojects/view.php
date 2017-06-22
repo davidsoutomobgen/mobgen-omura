@@ -9,6 +9,7 @@ use yii\helpers\Url;
 use backend\models\BuildsDownloaded;
 use backend\models\Utils;
 use common\models\User;
+use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\OtaProjects */
@@ -62,19 +63,15 @@ if ($cloneResult) :
             </div>
         </div>
     <?php endif; ?>
-    <div id="modal" class="fade modal" role="dialog" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3>QA Status</h3>
-                </div>
-                <div class="modal-body">
-                    <div id='modalContent'></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php
+        Modal::begin([
+        'header'=>'<h3>QA Status</h3>',
+        'id' => 'modal',
+        'size'=>'modal-lg',
+        ]);
+        echo "<div id='modalContent'></div>";
+        Modal::end();
+    ?>
     <div class="box box-success">
         <div class="box-header with-border">
             <h3  class="box-title"><?php echo Yii::t('app', 'Builds'); ?></h3>
@@ -90,7 +87,13 @@ if ($cloneResult) :
                 <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>
             </div>
             <div class="addbuild right">
-                <?= ($userIdRole != 11) ? Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']) : '' ?>
+                <?php if ($userIdRole != 11): ?>
+                    <div class="btn btn-default" onclick="$('#modal-clone-apk').modal('show');">
+                        Clone build
+                    </div>
+                    <?php echo Html::a(Yii::t('app', 'Add build'), ['/builds/create/'.$model->id], ['class' => 'btn btn-primary']); ?>
+                <?php endif; ?>
+
             </div>
         <?php endif; ?>
         <div class="clear"></div>
@@ -364,35 +367,31 @@ $this->registerJs('
     });', \yii\web\View::POS_READY);
 ?>
 
-<div class="modal fade" id="modal-clone-apk">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Clone build</h4>
-      </div>
-      <form class="" action="/otaprojects/clone" method="post">
-          <div class="modal-body">
-            <div class="form-group field-clone-buihash required">
-                <input type="hidden" id="clone-id" name="id" value="<?php echo $model->id; ?>">
-                <label class="control-label" for="clone-buihash">API Hash Build</label>
-                <input type="text" id="clone-buihash" class="form-control" name="buiHash" maxlength="64" aria-required="true" aria-invalid="false">
+<?php
+Modal::begin([
+'header'=>'<h3>Clone build</h3>',
+'id' => 'modal-clone-apk',
+'size'=>'modal-lg',
+]);
+?>
+<form class="" action="/otaprojects/clone" method="post">
+    <div class="modal-body">
+      <div class="form-group field-clone-buihash required">
+          <input type="hidden" id="clone-id" name="id" value="<?php echo $model->id; ?>">
+          <label class="control-label" for="clone-buihash">API Hash Build</label>
+          <input type="text" id="clone-buihash" class="form-control" name="buiHash" maxlength="64" aria-required="true" aria-invalid="false">
 
-                <div class="help-block"></div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Clone</button>
-          </div>
-      </form>
+          <div class="help-block"></div>
+      </div>
     </div>
-    <!-- /.modal-content -->
-  </div>
-  <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+      <button type="submit" class="btn btn-primary">Clone</button>
+    </div>
+</form>
+<?php
+Modal::end();
+?>
 
 
 <script>
