@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <h1><?= Html::encode($this->title) ?></h1>
     </div>
 
-    
+
     <div class="btn-header">
         <p>
             <?php if (User::getUserIdRole() < 11) { ?>
@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="box-header with-border">
             <h3  class="box-title"><?php echo Yii::t('app', 'Listado'); ?></h3>
         </div>
-	
+
         <div class="box-body">
         <?= DetailView::widget([
             'model' => $model,
@@ -62,7 +62,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 'buiFeedUrl:url',
                 [
                     'attribute' => 'buiVisibleClient',
-                    'value' => $model->buiVisibleClient == 1 ? 'Yes' : 'No'
+                    'value' => function($data){
+                        if ($data->buiVisibleClient == 1) {
+                            $text = Yii::t('app', 'Visible to the client');
+                        } elseif ($data->buiVisibleClient == 2) {
+                            $text = Yii::t('app', 'Visible to registered users');
+                        } else {
+                            $text = Yii::t('app', 'Hidden to the client');
+                        }
+                        return $text;
+                    }
+
                 ],
                 'buiDeviceOS',
                 'buiLimitedUDID',
@@ -94,7 +104,4 @@ $this->params['breadcrumbs'][] = $this->title;
             ]); ?>
         </div>
     <?php } ?>
-
 </div>
-
-
