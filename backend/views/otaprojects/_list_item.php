@@ -28,10 +28,14 @@ use backend\models\BuildsDownloaded;
                 $fav = '<i class="fa fa-star fa-x ' . $_SESSION['skin-color'] . '"></i>';
             else
                 $fav = '<i class="fa fa-star-o fa-x ' . $_SESSION['skin-color'] . '"></i>';
-            if ($model->buiVisibleClient == 1)
-                $visible = '<i class="fa fa-eye fa-x ' . $_SESSION['skin-color'] . '"></i>';
-            else
-                $visible = '<i class="fa fa-eye-slash fa-x ' . $_SESSION['skin-color'] . '"></i>';
+
+            if ($model->buiVisibleClient == 1):
+                $visible = '<i class="fa fa-unlock fa-x ' . $_SESSION['skin-color'] . '"></i>';
+            elseif ($model->buiVisibleClient == 2):
+                $visible = '<i class="fa fa-unlock-alt fa-x '.$_SESSION['skin-color'].'"></i>';
+            else:
+                $visible = '<i class="fa fa-lock fa-x ' . $_SESSION['skin-color'] . '"></i>';
+            endif;
 
             echo '<p>' . $fav . '</p><br /><p>' . BuildsDownloaded::getDownloads($model->buiId) . '</p><br /><p>'. $visible.'</p>';
 
@@ -42,4 +46,3 @@ use backend\models\BuildsDownloaded;
     </div>
     <div class="clear"></div>
 </article>
-
