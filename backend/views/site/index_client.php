@@ -43,7 +43,7 @@ use common\models\User;
                 'bordercolor' => 'success',
                 'title' => Yii::t('app', 'Latest Builds'),
                 'lastbuilds' => $lastBuilds,
-                'showcreated' => true,
+                'showcreated' => false,
             ]);
             ?>
         </div>

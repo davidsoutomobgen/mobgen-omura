@@ -42,7 +42,7 @@ class MobgennersController extends CController
         if (isset(Yii::$app->user->identity->id)) {
             $roleId = User::getUserIdRole();
 
-            if ($roleId == 1 || $roleId == 12)
+            if ($roleId == Yii::$app->params['ADMIN_ROLE'] || $roleId == Yii::$app->params['LEAD_ROLE'])
                 return true;
             else {
                 if (($this->action->id == 'index')  || ($this->action->id == 'create') || ($this->action->id == 'delete')){

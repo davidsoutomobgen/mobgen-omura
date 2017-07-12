@@ -11,6 +11,7 @@ use backend\models\Mobgenners;
 use backend\models\Login;
 use backend\models\Client;
 use yii\web\Controller;
+use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -37,7 +38,7 @@ class UserController extends CController
         if (isset(Yii::$app->user->identity->id)) {
             $roleId = User::getUserIdRole();
 
-            if ($roleId != 1) {
+            if ($roleId != Yii::$app->params['ADMIN_ROLE']) {
                 if (($this->action->id == 'index')  || ($this->action->id == 'create') || ($this->action->id == 'delete')){
                     //$this->redirect('/site/logout');
                     throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');

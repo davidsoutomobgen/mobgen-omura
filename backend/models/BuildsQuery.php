@@ -105,7 +105,7 @@ class BuildsQuery extends \yii\db\ActiveQuery
         */
 
         $builds = Builds::find()->from('builds')
-            -> where('buiProIdFK IN ('.$array.') AND buiVisibleClient = :status ', [':status' => 1])
+            -> where('buiProIdFK IN ('.$array.') AND buiVisibleClient >= :status ', [':status' => 1])
             -> orderBY('updated_at DESC')
             -> limit($n)
             -> all();

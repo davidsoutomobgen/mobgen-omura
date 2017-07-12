@@ -12,6 +12,7 @@ use backend\models\OtaProjects;
 use backend\models\Mobgenners;
 use backend\models\System;
 use backend\models\Utils;
+use backend\models\Client;
 ?>
 <section class="content-header">
     <h1>
@@ -30,19 +31,16 @@ use backend\models\Utils;
     <div class="row">
         <div class="col-md-8">
             <?php
-            $lastBuildsUser = Builds::find()->getLastBuildsByUser(Yii::$app->user->identity->id, 0, 5);
-            if (empty($lastBuildsUser)) $n = 9;
-            else $n = 6;
-
-            $lastBuilds = Builds::find()->getLastBuilds(0, $n);
+            //$user = User::getUserInfo(Yii::$app->user->identity->id);
+            $id_project = Client::find()->getOtaProjectsClientByUser(Yii::$app->user->identity->id);
+            $lastBuilds = Builds::find()->getLastBuildsByProjectClient($id_project, 9);
 
             echo $this->render('_resume_buildsmobile', [
                 'bordercolor' => 'success',
                 'title' => Yii::t('app', 'Latest Builds'),
                 'lastbuilds' => $lastBuilds,
-                'showcreated' => true,
+                'showcreated' => false,
             ]);
-
 
             //LAST PROJECTS
             echo $this->render('/otaprojects/_block', [ 

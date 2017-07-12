@@ -84,6 +84,7 @@ class SiteController extends CController
         }
 
         $roleId = User::getUserIdRole();
+
         if ($roleId == Yii::$app->params['CLIENT_ROLE']) {
             if (\Yii::$app->devicedetect->isMobile())
                 $view = 'indexmobile_client';

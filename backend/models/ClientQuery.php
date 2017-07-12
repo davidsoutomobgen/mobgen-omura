@@ -45,7 +45,10 @@ class ClientQuery extends \yii\db\ActiveQuery
 
         $command = $query->createCommand();
         $data = $command->queryAll();
-        return ($data[0]['id_project']);
+        if (isset($data[0]['id_project']))
+            return ($data[0]['id_project']);
+        else
+            return false;
     }
 
 }

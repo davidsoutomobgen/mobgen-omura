@@ -98,8 +98,8 @@ class MobgennersSearch extends Mobgenners
 
             $roleId = User::getUserIdRole();
 
-            if ($roleId != 1) {
-                $query->andFilterWhere(['!=', 'user.role_id', 1]);
+            if ($roleId != Yii::$app->params['ADMIN_ROLE']) {
+                $query->andFilterWhere(['!=', 'user.role_id', Yii::$app->params['ADMIN_ROLE']]);
             }
 
 

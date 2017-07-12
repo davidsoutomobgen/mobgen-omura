@@ -38,11 +38,23 @@ use yii\helpers\Html;
                             $frontend = Yii::$app->params['FRONTEND'];
                             $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $build->buiFile;
 
-                            if (file_exists($path_file))
-                                $link = Html::a($build->buiHash,
-                                    Yii::$app->params["FRONTEND"].'/build/'.$build->buiHash.'/'.$build->buiSafename,
-                                    ['target'=>'_blank', 'title'=>$build->buiName, 'alt'=>$build->buiName]
-                                );
+                            if (file_exists($path_file)) {
+                                if ($build->buiVisibleClient == 1)
+                                    $link = Html::a($build->buiHash,
+                                        Yii::$app->params["FRONTEND"].'/build/'.$build->buiHash.'/'.$build->buiSafename,
+                                        ['target'=>'_blank', 'title'=>$build->buiName, 'alt'=>$build->buiName, 'class'=>'green-build']
+                                    );
+                                else if ($build->buiVisibleClient == 2)
+                                    $link = Html::a($build->buiHash,
+                                        Yii::$app->params["BACKEND"].'/build/'.$build->buiHash.'/'.$build->buiSafename,
+                                        ['target'=>'_blank', 'title'=>$build->buiName, 'alt'=>$build->buiName, 'class'=>'orange-build']
+                                    );
+                                else
+                                    $link = Html::a($build->buiHash,
+                                        Yii::$app->params["BACKEND"].'/build/'.$build->buiHash.'/'.$build->buiSafename,
+                                        ['target'=>'_blank', 'title'=>$build->buiName, 'alt'=>$build->buiName, 'class'=>'red-build']
+                                    );
+                            }
                             else
                                 $link = '<span class="text-red">' . $build->buiHash . '</span>';
 
