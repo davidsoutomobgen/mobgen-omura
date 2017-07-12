@@ -96,13 +96,23 @@ class PermissionsQuery extends \yii\db\ActiveQuery
         return true;
     }
 
-    public function hasPermissionContent($permission)
+    /* This function is executed after the user has permission to the action */
+    public function hasPermissionContent($type, $userIdRole, $id)
     {
-        $data = Yii::$app->db->createCommand('SELECT p . alias, p . permission_view, pu . state
-                                                FROM project p
-                                                LEFT JOIN permissions_users pu ON pu . id_permission = p . permission_view
-                                                WHERE pu . id_user = = :id_user AND p.name = :permission'
-            , array('id_user' => Yii::$app->user->identity->id, 'permission' => $permission) )->queryAll();
+        if ($userIdRole == Yii::$app->params['CLIENT_ROLE']) {
+            $id_project = Client::find()->getOtaProjectsClientByUser(Yii::$app->user->identity->id);
+
+            if ($type == 'otaprojects') {
+                //echo $userIdRole. ' -- ' . Yii::$app->user->identity->id . ' id_project ' . $id_project . ' id ' .  $id; //die;
+                return OtaProjects::find()->getClientAccessOtaProjects($id_project, $id);
+            } else if ($type == 'builds') {
+
+            }
+            else
+                return false;
+        }
+        return true;
+
     }
 
 

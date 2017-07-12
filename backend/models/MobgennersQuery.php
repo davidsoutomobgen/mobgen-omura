@@ -2,6 +2,7 @@
 
 namespace backend\models;
 
+use Yii;
 use yii\db\Query;
 use common\models\User;
 
@@ -28,8 +29,8 @@ class MobgennersQuery extends \yii\db\ActiveQuery
 
         $roleId = User::getUserIdRole();
 
-        if ($roleId != 1) {
-            $query->andWhere('user.role_id != 1');
+        if ($roleId != Yii::$app->params['ADMIN_ROLE']) {
+            $query->andWhere('user.role_id != ' . Yii::$app->params['ADMIN_ROLE']);
         }
 
         $command = $query->createCommand();
@@ -56,8 +57,8 @@ class MobgennersQuery extends \yii\db\ActiveQuery
 
         $roleId = User::getUserIdRole();
 
-        if ($roleId != 1) {
-            $query->andWhere('user.role_id != 1');
+        if ($roleId != Yii::$app->params['ADMIN_ROLE']) {
+            $query->andWhere('user.role_id != ' . Yii::$app->params['ADMIN_ROLE']);
         }
 
         $command = $query->createCommand();

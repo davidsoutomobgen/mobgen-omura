@@ -101,6 +101,9 @@ use backend\models\Utils;
 
             <div class="col-xs-12">
                 <?php
+                if (!isset($value_otaprojects))  $value_otaprojects = array();
+                if (!isset($ota_projects))  $ota_projects = array();
+
                 if ($value_otaprojects == -1) $error_class = 'has-error';
                 else $error_class = '';
                 ?>

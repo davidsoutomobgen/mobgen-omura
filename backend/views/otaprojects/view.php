@@ -44,7 +44,7 @@ if ($cloneResult) :
             'id' => $model->id,
         ]); ?>
     </div>
-    <?php if ($userIdRole != Yii::$app->params['CLIENT_ROLE']): ?>
+    <?php if (($userIdRole != Yii::$app->params['CLIENT_ROLE']) && ($userIdRole != Yii::$app->params['PM_ROLE'])) : ?>
         <div class="box box-primary clear">
             <div class="box-header with-border">
                 <h3  class="box-title"><?php echo Yii::t('app', 'API Keys'); ?></h3>
@@ -79,7 +79,7 @@ if ($cloneResult) :
 
         <div class="box-body">
 
-        <?php if ($userIdRole != Yii::$app->params['CLIENT_ROLE']): ?>
+        <?php if (($userIdRole != Yii::$app->params['CLIENT_ROLE']) && ($userIdRole != Yii::$app->params['PM_ROLE'])) : ?>
             <div class="dropdown-list left">
                 <?=Html::beginForm(['builds/bulk'],'post');?>
                 <?=Html::dropDownList('action1','',[''=>'Bulk actions','1'=>'Like','2'=>'Dislike', '3'=>'Delete' ],['class'=>'form-control dropdown-list',])?>
@@ -87,7 +87,7 @@ if ($cloneResult) :
                 <?=Html::submitButton('Apply', ['value' => '1', 'id' => 'submit1', 'name'=>'submit', 'class' => 'btn btn-warning']);?>
             </div>
             <div class="addbuild right">
-                <?php if ($userIdRole != 11): ?>
+                <?php if ($userIdRole != Yii::$app->params['QA_ROLE']): ?>
                     <div class="btn btn-default" onclick="$('#modal-clone-apk').modal('show');">
                         Clone build
                     </div>
@@ -116,7 +116,7 @@ if ($cloneResult) :
                     'label'=>'Name',
                     'format' => 'raw',
                     'value'=>function ($data) {
-                        return ( User::getUserIdRole() == 11 || User::getUserIdRole() == Yii::$app->params['CLIENT_ROLE'] ) ?
+                        return ( (User::getUserIdRole() == Yii::$app->params['QA_ROLE']) || User::getUserIdRole() == Yii::$app->params['CLIENT_ROLE'] ) ?
                             (Html::a($data->buiName, ['/builds/view/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>')
                             :
                             (Html::a($data->buiName, ['/builds/update/'.$data->buiId]).'<p class="identifier"><small>'.$data->buiBundleIdentifier.'</small></p>')
@@ -134,8 +134,16 @@ if ($cloneResult) :
                         $path_file = Yii::$app->params["DOWNLOAD_BUILD_DIR"] .  $data->buiFile;
                         //echo $path_file.'<br />';
 
-                        if (file_exists($path_file))
-                            return Html::a($data->buiHash, Yii::$app->params["FRONTEND"].'/build/'.$data->buiHash.'/'.$data->buiSafename, ['target'=>'_blank', 'title'=>$data->buiName, 'alt'=>$data->buiName]);
+                        if (file_exists($path_file)) {
+                            if ($data->buiVisibleClient == 1)
+                                $class = 'green-build';
+                            else if ($data->buiVisibleClient == 2)
+                                $class = 'orange-build';
+                            else
+                                $class = 'red-build';
+
+                            return Html::a($data->buiHash, Yii::$app->params["BACKEND"] . '/build/' . $data->buiHash . '/' . $data->buiSafename, ['target' => '_blank', 'title' => $data->buiName, 'alt' => $data->buiName, 'class' => $class, 'id' => 'buihash_' . $data->buiId]);
+                        }
                         else
                             return 'Not available';
                     },
@@ -150,6 +158,7 @@ if ($cloneResult) :
                     'filter'=>false,
                 ]
             ];
+
             if ($userIdRole != Yii::$app->params['CLIENT_ROLE']) :
                 array_unshift($columns, ['class' => 'yii\grid\CheckboxColumn']);
                 $columns[] = [
@@ -429,6 +438,9 @@ Modal::end();
                 console.log(response);
                 button.setAttribute("title", response.text);
                 $("#buivisible_" + buiId).html(response.icon);
+                $("#buihash_" + buiId).removeClass();
+                $("#buihash_" + buiId).addClass(response.url);
+                $("#buihash_" + buiId).attr('style', 'color:' + response.color);
             }
         });
     }

@@ -10,6 +10,7 @@ use backend\models\BuildsSearch;
 use backend\models\OtaBuildTypes;
 use backend\models\OtaProjectsBuildtypes;
 use backend\models\Permissions;
+use common\models\User;
 use backend\models\UserOptions;
 use yii\web\Controller;
 use yii\web\MethodNotAllowedHttpException;
@@ -39,18 +40,20 @@ class OtaprojectsController extends CController
         if (isset(Yii::$app->user->identity->id)) {
             $permission = $this->action->controller->id.'_'.$this->action->id;
             $hasPermission = Permissions::find()->hasPermission($permission);
-            //echo $permission.'<br>';die;
+            //echo $permission.'<br>'.$hasPermission;die;
             if ($hasPermission == 0) {
                 throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
             }
+
             if (!isset($_SESSION['skin-color'])) {
                 $_SESSION['skin-color'] = 'skin-blue';
             }
+
             return true;
         }
-        else {
+        else
             $this->redirect('/site/logout');
-        }
+
     }
 
 
@@ -88,32 +91,42 @@ class OtaprojectsController extends CController
      */
     public function actionView($id)
     {
-        $option = UserOptions::find()->getVariable(Yii::$app->user->id, 'pages_table_otaviews');
+        $userIdRole = User::getUserIdRole();
 
-        if ((isset($_GET['BuildsSearch']['pagesize'])) && ($_GET['BuildsSearch']['pagesize'] != (int)$option['value'])) {
-            $useroption = UserOptions::find()->where('id = :id_option', [':id_option' => $option['id']])->one();
-            $useroption->value = $_GET['BuildsSearch']['pagesize'];
-            $useroption->save();
+        $hasPermissionContent = Permissions::find()->hasPermissionContent('otaprojects', $userIdRole, $id);
+        //echo $permission.'<br>'.$hasPermission.'<br>'.$hasPermissionContent;die;
+        if ($hasPermissionContent) {
+
+            $option = UserOptions::find()->getVariable(Yii::$app->user->id, 'pages_table_otaviews');
+
+            if ((isset($_GET['BuildsSearch']['pagesize'])) && ($_GET['BuildsSearch']['pagesize'] != (int)$option['value'])) {
+                $useroption = UserOptions::find()->where('id = :id_option', [':id_option' => $option['id']])->one();
+                $useroption->value = $_GET['BuildsSearch']['pagesize'];
+                $useroption->save();
+            }
+            $params = Yii::$app->request->queryParams;
+
+            $params['BuildsSearch']['buiProIdFK'] = $id;
+            $params['BuildsSearch']['buiStatus'] = 0;
+
+
+            $searchBuilds = new BuildsSearch();
+            $dataProvider = $searchBuilds->search($params);
+
+            if (\Yii::$app->devicedetect->isMobile())
+                $view = 'viewmobile';
+            else
+                $view = 'view';
+
+            return $this->render($view, [ 
+                'model' => $this->findModel($id),
+                'searchBuilds' => $searchBuilds,
+                'dataProvider' => $dataProvider,
+            ]);
         }
-        $params = Yii::$app->request->queryParams;
-
-        $params['BuildsSearch']['buiProIdFK'] =  $id;
-        $params['BuildsSearch']['buiStatus'] = 0;
-
-
-        $searchBuilds = new BuildsSearch();
-        $dataProvider = $searchBuilds->search($params);
-
-        if (\Yii::$app->devicedetect->isMobile())
-            $view = 'viewmobile';
-        else
-            $view = 'view';
-
-        return $this->render($view, [
-            'model' => $this->findModel($id),
-            'searchBuilds' => $searchBuilds,
-            'dataProvider' => $dataProvider,
-        ]);
+        else {
+            throw new MethodNotAllowedHttpException('This content doesn\'t exist or  You don\'t have permission to see it.');
+        }
     }
 
     /**

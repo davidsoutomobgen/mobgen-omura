@@ -49,7 +49,7 @@ class BuildsController extends CController
                 $hasPermission = Permissions::find()->hasPermission($permission);
                 $userIdRole = User::getUserIdRole();
                 //echo $permission;die;
-                if (($hasPermission == 0) || (($permission == 'builds_update') && ($userIdRole == 11))) {
+                if (($hasPermission == 0) || (($permission == 'builds_update') && ($userIdRole == Yii::$app->params['QA_ROLE']))) {
                     throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
                 }
                 if (!isset($_SESSION['skin-color'])) {
@@ -464,13 +464,19 @@ class BuildsController extends CController
         if ($next == 1) {
             $result['text'] = 'Visible to the client';
             $result['icon'] = '<i class="fa fa-unlock fa-x '.$_SESSION['skin-color'].'"></i>';
+            $result['url'] = 'green-build';
+            $result['color'] = '#3B8DBC';
         } elseif ($next == 2) {
             $result['text'] = 'Visible to registered users';
             $result['icon'] = '<i class="fa fa-unlock-alt fa-x '.$_SESSION['skin-color'].'"></i>';
+            $result['url'] = 'orange-link';
+            $result['color'] = 'orange';
         } else {
             $next = 0;
             $result['text'] = 'Hidden to the client';
             $result['icon'] = '<i class="fa fa-lock fa-x '.$_SESSION['skin-color'].'"></i>';
+            $result['url'] = 'red-link';
+            $result['color'] = 'red';
         }
 
         $model->buiVisibleClient = $next;

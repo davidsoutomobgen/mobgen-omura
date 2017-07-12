@@ -21,13 +21,13 @@ $this->params['breadcrumbs'][] = $this->title;
             echo '<div class="alert alert-' . $key . '">' . $message . '</div>';
         }
         ?>
-        <p class="login-box-msg">Sign in to start your session</p>
+        <p class="login-box-msg"><?=Yii::t('app', 'Sign in to start your session');?></p>
 
         <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
             <div class="form-group has-feedback">
                 <?php echo $form->field($model, 'username', [
                                             'inputOptions' => ['class' => 'form-control transparent']
-                                        ])->textInput()->input('username', ['placeholder' => "Username"])->label(false); ?>
+                                        ])->textInput()->input('username', ['placeholder' => "Username / Email"])->label(false); ?>
                 <span class="glyphicon glyphicon-user form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-xs-12">
                 <div class="text-center">
                     <p>- OR -</p>
-                    <a href="/site/forgotpassword">I forgot my password</a>
+                    <a href="/site/forgotpassword"><?=Yii::t('app', 'I forgot my password');?></a>
                     <!-- a href="register.html" class="text-center">Register a new membership</a -->
                 </div>
 
