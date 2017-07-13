@@ -14,5 +14,5 @@ return [
     'CERTIFICATE_DIR' => '${env.projects_folder}/${env.project_folder}/data/certificates/',
     'SITE_ROOT' => realpath(dirname(__FILE__)),
     'BACKEND' => 'http://${apache.url}',
-    'FRONTEND' => 'http://${apache.url}',
+    'FRONTEND' => 'http://${env.subdomain}-front.${env.domain}',
 ];
