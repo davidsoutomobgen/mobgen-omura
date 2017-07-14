@@ -23,6 +23,10 @@ return [
                     'levels' => ['error', 'warning'],
                 ],
             ],
+            'mailer' => [
+                'class' => 'yii\swiftmailer\Mailer',
+                'useFileTransport' => false,
+            ],
         ],
     ],
     'params' => $params,
