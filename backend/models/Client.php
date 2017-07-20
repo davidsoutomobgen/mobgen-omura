@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use common\models\User;
 
 /**
  * This is the model class for table "client".
@@ -24,7 +25,6 @@ use Yii;
  */
 class Client extends \yii\db\ActiveRecord
 {
-
     /**
      * @inheritdoc
      */
@@ -67,6 +67,14 @@ class Client extends \yii\db\ActiveRecord
             'deleted' => Yii::t('app', 'Deleted'),
             'project' => Yii::t('app', 'Project'),
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser0()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user']);
     }
 
     /**
