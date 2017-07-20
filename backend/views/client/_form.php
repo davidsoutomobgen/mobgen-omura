@@ -1,18 +1,29 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use kartik\file\FileInput;
 use kartik\switchinput\SwitchInput;
 use common\models\User;
 use backend\models\Utils;
+use backend\models\SignupForm;
+use backend\models\Project;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\Client */
 /* @var $form yii\widgets\ActiveForm */
 
 $userIdRole = User::getUserIdRole();
+
+if ($model->user0 == null) {
+    $user = new SignupForm();
+    $userNotExist = true;
+} else {
+    $user = $model->user0;
+    $userNotExist = false;
+}
 ?>
 
 <?php $form = ActiveForm::begin(['id'=>$model->formName(), 'options' => ['enctype' => 'multipart/form-data']]); ?>
@@ -115,7 +126,7 @@ if (Yii::$app->getSession()->hasFlash('error')) {
     <div class="col-xs-3">
         <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
     </div>
-    <div class="col-xs-2">§
+    <div class="col-xs-2">
         <?php
 
         if ($userIdRole == 1) $disabled = false;
@@ -139,6 +150,15 @@ if (Yii::$app->getSession()->hasFlash('error')) {
     <div class="col-xs-6">
         <?= $form->field($model, 'job_title')->textInput(['maxlength' => true]) ?>
     </div>
+
+    <div class="col-xs-6">
+        <?php
+        echo $form->field($model, 'id_project')->dropDownList(ArrayHelper::map(Project::find()->all(), 'id', 'name'), array(
+            'empty'=>'select Type',
+        ));
+
+        ?>
+    </div>
     <div class="clear"></div>
 </div>
 
@@ -159,7 +179,7 @@ if (($role == 1) || ($role == 12)) {
             ?>
         </div>
 
-        <?php if ($model->isNewRecord) { ?>
+        <?php if ($userNotExist) { ?>
             <div class="col-xs-3">
                 <?php echo $form->field($user, 'sendEmail')->widget(SwitchInput::classname(), [ 'pluginOptions' => [
                     'handleWidth'=>60,
@@ -169,19 +189,10 @@ if (($role == 1) || ($role == 12)) {
                 ?>
             </div>
         <?php } ?>
-        
+
         <div class="col-xs-5">
             <?php
-            if ($role == 1) {
-                $items[1] = 'ADMIN';
-            }
-            $items[10] = 'DEVELOPER';
-            $items[11] = 'QA';
-            $items[12] = 'LEAD';
-            //$roles[99] = 'CLIENT';
-
-            if (isset($model->user0->role_id))
-                $model->role_id = $model->user0->role_id;
+            $items[99] = 'CLIENT';
 
             $selected = $user->role_id ? $user->role_id : 10;
             echo $form->field($user, 'role_id')->dropDownList($items, array(
@@ -192,8 +203,8 @@ if (($role == 1) || ($role == 12)) {
             ?>
         </div>
         <div class="col-xs-4">
-            <?php //= $form->field($model, 'user')->textInput(['value' => (isset($model->user0->role_id)) ? $model->user0->username : '', 'readonly' => true,  'disabled' => true]) ?>
-            <?= $form->field($user, 'user')->textInput(['value' => (isset($model->user0->role_id)) ? $model->user0->username : '', 'readonly' => true,  'disabled' => true]) ?>
+            <?php //= $form->field($model, 'user')->textInput(['value' => (isset($user->role_id)) ? $user->username : '', 'readonly' => true,  'disabled' => true]) ?>
+            <?= $form->field($user, 'user')->textInput(['value' => (isset($user->role_id)) ? $user->username : '', 'readonly' => true,  'disabled' => true]) ?>
             <?php
             $user_error = $user->getErrors();
             if (isset($user_error['username'])) {
@@ -203,7 +214,7 @@ if (($role == 1) || ($role == 12)) {
 
         </div>
 
-        <?php if ($model->isNewRecord) { ?>
+        <?php if ($userNotExist) { ?>
             <?php
             $random_password = Utils::randomPassword();
             $user->password = $random_password;

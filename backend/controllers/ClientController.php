@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use backend\models\Client;
 use backend\models\ClientSearch;
+use backend\models\SignupForm;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -64,14 +65,54 @@ class ClientController extends Controller
     public function actionCreate()
     {
         $model = new Client();
+        $user = new SignupForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+
+        if ($model->load(Yii::$app->request->post()) && $user->load(Yii::$app->request->post())) {
+
+            if ($model->save()) {
+                $user->first_name = $model->first_name;
+                $user->last_name = $model->last_name;
+                $user->username = substr($model->email, 0, strrpos($model->email, '@'));
+                $user->email = $model->email;
+                $user->password = $_POST['SignupForm']['password'];
+                $user->status = $_POST['SignupForm']['status'];
+                $user->role_id = $_POST['SignupForm']['role_id'];
+                if ($newuser = $user->signup()) {
+
+                    $model->user = $newuser->id;
+                    $model->save();
+
+                    //Send email
+                    if ($user->status == 1 && $_POST['SignupForm']['sendEmail']) {
+                        Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Client and user created correctly.'));
+
+                        $sendTo = $user->email;
+                        $subject = Yii::t('app', 'New user OTAShare - MOBGEN');
+
+                        $sendEmail = Yii::$app->mailer->compose('newUser', [
+                            'user' => $user])
+                            ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
+                            ->setTo($sendTo)
+                            ->setSubject($subject)
+                            ->send();
+                    }
+
+                    return $this->redirect(['view', 'id' => $model->id]);
+
+                }
+                else {
+                    Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Client created but user didn\'t create.'));
+                    return $this->redirect(['update', 'id' => $model->id]);
+                }
+            }
         }
+
+        return $this->render('create', [
+            'model' => $model,
+            'user' => $user,
+        ]);
+
     }
 
     /**
@@ -86,7 +127,49 @@ class ClientController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
-            return $this->redirect(['/user/profile/', 'id' => $model->user]);
+            if ($model->user0 == null) {
+                $user = new SignupForm();
+                $user->first_name = $model->first_name;
+                $user->last_name = $model->last_name;
+                $user->username = substr($model->email, 0, strrpos($model->email, '@'));
+                $user->email = $model->email;
+                $user->password = $_POST['SignupForm']['password'];
+                $user->status = $_POST['SignupForm']['status'];
+                $user->role_id = $_POST['SignupForm']['role_id'];
+                if ($newuser = $user->signup()) {
+
+                    $model->user = $newuser->id;
+                    $model->save();
+
+                    //Send email
+                    if ($user->status == 1 && $_POST['SignupForm']['sendEmail']) {
+                        Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Client and user updated correctly.'));
+
+                        $sendTo = $user->email;
+                        $subject = Yii::t('app', 'New user OTAShare - MOBGEN');
+
+                        $sendEmail = Yii::$app->mailer->compose('newUser', [
+                            'user' => $user])
+                            ->setFrom(['otashare@mobgen.com' => 'OTAShare - MOBGEN'])
+                            ->setTo($sendTo)
+                            ->setSubject($subject)
+                            ->send();
+                    }
+
+                    return $this->redirect(['view', 'id' => $model->id]);
+
+                }
+                else {
+                    Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Client updated but user didn\'t create.'));
+                    return $this->render('update', [
+                        'model' => $model,
+                        'user' => $user,
+                    ]);
+                }
+            } else {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
         } else {
             return $this->render('update', [
                 'model' => $model,
