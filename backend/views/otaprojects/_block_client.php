@@ -37,9 +37,9 @@ use backend\models\OtaProjects;
                         </span>
 
                     </li>
-                <?php } ?>
+                <?php }
             }
-
+            ?>
         </ul>
     </div>
     <!--<div class="box-footer text-center">
