@@ -83,6 +83,11 @@ class BuildsQuery extends \yii\db\ActiveQuery
         $command = $query->createCommand();
         $projects = $command->queryAll();
 
+
+        if (!isset($projects[0])) {
+            return false;
+        }
+
         //echo '<pre>'; print_r($projects); echo '</pre>'; die;
         $ps = array();
         foreach ($projects as $p) {

@@ -2,7 +2,7 @@
 use yii\helpers\Html;
 
 use backend\models\Client;
-use backend\models\Otaprojects;
+use backend\models\OtaProjects;
 ?>
 <div class="box box-warning">
     <div class="box-header with-border">
@@ -19,22 +19,27 @@ use backend\models\Otaprojects;
             $id_project = Client::find()->getOtaProjectsClientByUser(Yii::$app->user->identity->id);
             $otaprojects = OtaProjects::find()->getOtaProjectsByProject($id_project);
 
-            foreach ($otaprojects as $project) {
-                ?>
-                <li class="item">
-                    <?php
-                    $link = Html::a($project->name,
-                        Yii::$app->params["BACKEND"].'/otaprojects/'.$project->id,
-                        ['target'=>'_blank', 'title'=>$project->name, 'alt'=>$project->name]
-                    );
-                    echo $link;
+            if (!$otaprojects) {
+                echo '<li>You haven\'t projects.</li>';
+            } else {
+                foreach ($otaprojects as $project) {
                     ?>
-                    <span class="product-description">
-                        <?php echo date('d-m-Y', $project->updated_at); ?>
-                    </span>
+                    <li class="item">
+                        <?php
+                        $link = Html::a($project->name,
+                            Yii::$app->params["BACKEND"].'/otaprojects/'.$project->id,
+                            ['target'=>'_blank', 'title'=>$project->name, 'alt'=>$project->name]
+                        );
+                        echo $link;
+                        ?>
+                        <span class="product-description">
+                            <?php echo date('d-m-Y', $project->updated_at); ?>
+                        </span>
 
-                </li>
-            <?php } ?>
+                    </li>
+                <?php } ?>
+            }
+
         </ul>
     </div>
     <!--<div class="box-footer text-center">
