@@ -33,15 +33,28 @@ class OtabuildtypesController extends CController
 
     public function beforeAction($action)
     {
-        $permission = $this->action->controller->id.'_'.$this->action->id;
-        $hasPermission = Permissions::find()->hasPermission($permission);
-        $userIdRole = User::getUserIdRole();
-        if ($hasPermission == 1 || $userIdRole != 11 )
+        if (isset(Yii::$app->user->identity->id)) {
+            if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'update') || ($this->action->id == 'delete')) {
+                $permission = $this->action->controller->id.'_'.$this->action->id;
+                $hasPermission = Permissions::find()->hasPermission($permission);
+                $userIdRole = User::getUserIdRole();
+                //echo $permission;die;
+                if (($hasPermission == 0) || (($userIdRole == Yii::$app->params['QA_ROLE']) || ($userIdRole == Yii::$app->params['CLIENT_ROLE']))) {
+                    throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+                }
+                if (!isset($_SESSION['skin-color'])) {
+                    $_SESSION['skin-color'] = 'skin-blue';
+                }
+            }
             return true;
-        else
-            throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+        }
+        else {
+            $this->redirect('/site/logout');
+        }
 
     }
+
+
 
     /**
      * Lists all OtaBuildTypes models.

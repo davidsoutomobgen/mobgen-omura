@@ -6,7 +6,10 @@ use Yii;
 use backend\models\Client;
 use backend\models\ClientSearch;
 use backend\models\SignupForm;
+use backend\models\Permissions;
+use common\models\User;
 use yii\web\Controller;
+use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -25,6 +28,29 @@ class ClientController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function beforeAction($action)
+    {
+        if (isset(Yii::$app->user->identity->id)) {
+            if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'update') || ($this->action->id == 'delete')) {
+                $permission = $this->action->controller->id.'_'.$this->action->id;
+                //$hasPermission = Permissions::find()->hasPermission($permission);
+                $userIdRole = User::getUserIdRole();
+                //if (($hasPermission == 0) || ... ) { //hasPermission is not working!
+                if ((($permission == 'client_index') || ($permission == 'client_delete')) && (($userIdRole == Yii::$app->params['QA_ROLE']) || ($userIdRole == Yii::$app->params['CLIENT_ROLE']))) {
+                    throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+                }
+                if (!isset($_SESSION['skin-color'])) {
+                    $_SESSION['skin-color'] = 'skin-blue';
+                }
+            }
+            return true;
+        }
+        else {
+            $this->redirect('/site/logout');
+        }
+
     }
 
     /**
@@ -51,10 +77,14 @@ class ClientController extends Controller
     {
         $model = Client::find()->with('project')->where('id = :idClient',  [':idClient' => $id])->all();
 
-        return $this->render('view', [
-            //'model' => $this->findModel($id),
-            'model' => $model[0],
-        ]);
+        if ((isset($model[0])) && ($model[0]->user == Yii::$app->user->identity->id))
+            return $this->render('view', [
+                //'model' => $this->findModel($id),
+                'model' => $model[0],
+            ]);
+        else
+            $this->redirect('/site');
+
     }
 
     /**
@@ -113,6 +143,7 @@ class ClientController extends Controller
             'user' => $user,
         ]);
 
+
     }
 
     /**
@@ -124,6 +155,15 @@ class ClientController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+
+        $roleId = User::getUserIdRole();
+
+        if ($roleId == Yii::$app->params['CLIENT_ROLE']) {
+            $client = Client::find()->where(['id'=>$id])->one();
+            //echo '<pre>'; print_r($client); echo '</pre>'; die;
+            if ((!isset($client)) || (Yii::$app->user->identity->id != $client->user))
+                return $this->redirect(['/user/profile/' . Yii::$app->user->identity->id]);
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 

@@ -91,11 +91,13 @@ class Mobgenners extends \common\models\CActiveRecord
 
     public function getRoleName()
     {
-        if (isset($this->user0->role_id)) {
+        if (!empty($this->user0->role_id)) {
             $items[1] = 'ADMIN';
             $items[10] = 'DEVELOPER';
             $items[11] = 'QA';
             $items[12] = 'LEAD';
+            $items[13] = 'PM';
+
             return $items[$this->user0->role_id];
         }
         return null;

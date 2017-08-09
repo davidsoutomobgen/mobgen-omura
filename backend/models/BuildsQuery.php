@@ -114,7 +114,7 @@ class BuildsQuery extends \yii\db\ActiveQuery
             -> orderBY('updated_at DESC')
             -> limit($n)
             -> all();
-        //print_r($builds); die;
+        //echo '<pre>'; print_r($builds); echo '</pre>';die;
         return ($builds);
     }
 

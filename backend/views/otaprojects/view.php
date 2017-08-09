@@ -195,7 +195,7 @@ if ($cloneResult) :
                 ];
                 $columns[] = [
                     'attribute'=>'buiVisibleClient',
-                    'filter'=>array("0"=>"No","1"=>"Yes"),
+                    'filter'=>array("0"=>"Hidden","1"=>"Visible","2"=>"Only Registered Users"),
                     'label'=>'Visible',
                     'format'=>'raw',
                     'value' => function($data){

@@ -38,23 +38,28 @@ class OtaprojectsController extends CController
     public function beforeAction($action)
     {
         if (isset(Yii::$app->user->identity->id)) {
-            $permission = $this->action->controller->id.'_'.$this->action->id;
-            $hasPermission = Permissions::find()->hasPermission($permission);
-            //echo $permission.'<br>'.$hasPermission;die;
-            if ($hasPermission == 0) {
-                throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+            if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'update') || ($this->action->id == 'delete')) {
+                $permission = $this->action->controller->id.'_'.$this->action->id;
+                $hasPermission = Permissions::find()->hasPermission($permission);
+                $userIdRole = User::getUserIdRole();
+                //echo $permission;die;
+                if (($hasPermission == 0) || ((($permission == 'otaprojects_update') || ($permission == 'otaprojects_delete')) && (($userIdRole == Yii::$app->params['QA_ROLE']) || ($userIdRole == Yii::$app->params['CLIENT_ROLE'])))) {
+                    throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+                }
+                if (!isset($_SESSION['skin-color'])) {
+                    $_SESSION['skin-color'] = 'skin-blue';
+                }
             }
-
-            if (!isset($_SESSION['skin-color'])) {
-                $_SESSION['skin-color'] = 'skin-blue';
-            }
-
             return true;
         }
-        else
+        else {
             $this->redirect('/site/logout');
+        }
 
     }
+
+
+
 
 
     /**

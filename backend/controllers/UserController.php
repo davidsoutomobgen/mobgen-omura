@@ -178,12 +178,12 @@ class UserController extends CController
                         Yii::$app->getSession()->setFlash(
                             'success','Password changed'
                         );
-                        return $this->redirect(['/user/' . $user->id]);
+                        return $this->redirect(['/user/profile/' . $user->id]);
                     }else{
                         Yii::$app->getSession()->setFlash(
                             'error','Password not changed'
                         );
-                        return $this->redirect(['/user/' . $user->id]);
+                        return $this->redirect(['/user/profile/' . $user->id]);
                     }
                 }catch(Exception $e){
                     Yii::$app->getSession()->setFlash(
@@ -220,12 +220,17 @@ class UserController extends CController
 
         $modelpass = new PasswordForm;
         $user = User::find()->where(['id'=>$id])->one();
-        //echo '<pre>'; print_r($user); echo '</pre>'; die;
+        //echo $id . '<pre>'; print_r($user->attributes); echo '</pre>'; //die;
         $roleId = User::getUserIdRole();
+
         if ($roleId == Yii::$app->params['CLIENT_ROLE'])
             $mobgenner = Client::find()->where(['user'=>$id])->one();
         else
             $mobgenner = Mobgenners::find()->where(['user'=>$id])->one();
+
+        if (!isset($mobgenner)) {
+            return $this->redirect(['/user/profile/' . Yii::$app->user->identity->id]);
+        }
 
         if($modelpass->load(Yii::$app->request->post())){
             if($modelpass->validate()){
@@ -256,17 +261,18 @@ class UserController extends CController
             }
             /*
             else {
-                echo '<pre>'; print_r($modelpass->getErrors()); echo '</pre>';
-                echo 'aki2'; die;
+                echo 'ERROR 33: <pre>'; print_r($modelpass->getErrors()); echo '</pre>'; die;
             }
             */
         }
-        return $this->render('view',[
-            'modelpass'=>$modelpass,
+
+        return $this->render('view', [
+            'modelpass' => $modelpass,
             'user' => $user,
             'model' => $this->findModel($id),
             'mobgenner' => $mobgenner,
         ]);
+
 
     }
 
