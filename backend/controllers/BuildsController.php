@@ -49,7 +49,7 @@ class BuildsController extends CController
                 $hasPermission = Permissions::find()->hasPermission($permission);
                 $userIdRole = User::getUserIdRole();
                 //echo $permission;die;
-                if (($hasPermission == 0) || (($permission == 'builds_update') && ($userIdRole == Yii::$app->params['QA_ROLE']))) {
+                if (($hasPermission == 0) || ((($permission == 'builds_update') || ($permission == 'builds_delete')) && (($userIdRole == Yii::$app->params['QA_ROLE']) || ($userIdRole == Yii::$app->params['CLIENT_ROLE'])))) {
                     throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
                 }
                 if (!isset($_SESSION['skin-color'])) {
@@ -86,9 +86,14 @@ class BuildsController extends CController
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        $build = $this->findModel($id);
+        if ($build->buiStatus == 9)
+            return $this->redirect(['/otaprojects']);
+        else
+            return $this->render('view', [
+                'model' => $build,
+            ]);
+
     }
 
     /**
@@ -104,11 +109,12 @@ class BuildsController extends CController
         //Build Types
         $otaBuildTypes = OtaProjectsBuildtypes::find()->with('idOtaBuildtypes')->where('id_ota_project = :id_ota_project',  [':id_ota_project' => $id])->all();
         if (!empty($otaBuildTypes)) {
-	    foreach ($otaBuildTypes as $buildtypes) {
+	        foreach ($otaBuildTypes as $buildtypes) {
                 $data[$buildtypes->id] =  $buildtypes->idOtaBuildtypes->name;
             }
-	}
-	else $data = array();
+	    }
+	    else $data = array();
+
         $selectedBuildTypes = array();
 
         //Mails notifications

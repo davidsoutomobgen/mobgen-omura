@@ -17,11 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <div class="btn-header">
-        <?= $this->render('/utils/_buttonscreate', [
-            'titulo' => Yii::t('app', 'Client'),
-        ]); ?>
-    </div>
     <div class="box box-primary">
         <div class="box-header with-border">
             <h3  class="box-title"><?php echo Yii::t('app', 'List'); ?></h3>
@@ -75,11 +70,6 @@ $this->params['breadcrumbs'][] = $this->title;
             ]); ?>
 
         </div>
-    </div>
-    <div class="btn-footer">
-        <?= $this->render('/utils/_buttonscreate', [
-            'titulo' => Yii::t('app', 'Client'),
-        ]); ?>
     </div>
 
 </div>

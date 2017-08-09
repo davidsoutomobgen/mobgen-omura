@@ -39,16 +39,17 @@ $userIdRole = User::getUserIdRole();
                             <!-- <td><?//= $build->buiId; ?></td> -->
                             <td>
                                 <?php
-                                if ($userIdRole != 11)
+                                if (($userIdRole != Yii::$app->params['QA_ROLE']) && ($userIdRole != Yii::$app->params['CLIENT_ROLE']))
                                     echo Html::a($build->buiName,
                                         Yii::$app->params["BACKEND"].'/builds/update/'.$build->buiId,
                                         ['target'=>'_blank', 'title'=>$build->buiName, 'alt'=>$build->buiName]);
                                 else
                                     echo Html::a($build->buiName,
-                                        Yii::$app->params["BACKEND"].'/otaprojects/'.$build->buiProIdFK,
+                                        Yii::$app->params["BACKEND"].'/builds/view/'.$build->buiId,
                                         ['target'=>'_blank', 'title'=>$build->buiName, 'alt'=>$build->buiName]);
                                 ?>
                             </td>
+                            <!-- <td><?= $build->buiVisibleClient; ?></td> -->
                             <td>
                                 <?php
                                 $frontend = Yii::$app->params['FRONTEND'];
@@ -72,7 +73,7 @@ $userIdRole = User::getUserIdRole();
                                         );
                                 }
                                 else
-                                    $link = '<span class="text-red">' . $build->buiHash . '</span>';
+                                    $link = '<span class="text">Not available</span>';
 
                                 echo $link;
                                 ?>

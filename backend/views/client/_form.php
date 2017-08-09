@@ -126,6 +126,7 @@ if (Yii::$app->getSession()->hasFlash('error')) {
     <div class="col-xs-3">
         <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
     </div>
+    <!--
     <div class="col-xs-2">
         <?php
 
@@ -139,6 +140,7 @@ if (Yii::$app->getSession()->hasFlash('error')) {
         ]]);
         ?>
     </div>
+    -->
     <div class="col-xs-3">
         <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
     </div>
@@ -153,10 +155,11 @@ if (Yii::$app->getSession()->hasFlash('error')) {
 
     <div class="col-xs-6">
         <?php
-        echo $form->field($model, 'id_project')->dropDownList(ArrayHelper::map(Project::find()->all(), 'id', 'name'), array(
-            'empty'=>'select Type',
-        ));
-
+        if ($userIdRole == 1) {
+            echo $form->field($model, 'id_project')->dropDownList(ArrayHelper::map(Project::find()->all(), 'id', 'name'), array(
+                'empty'=>'select Type',
+            ));
+        }
         ?>
     </div>
     <div class="clear"></div>

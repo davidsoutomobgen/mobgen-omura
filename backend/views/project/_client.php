@@ -7,8 +7,8 @@ use yii\grid\GridView;
 /* @var $searchModel backend\models\PoItemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Client';
-$this->params['breadcrumbs'][] = $this->title;
+//$this->title = 'Client';
+//$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="client-index">
     

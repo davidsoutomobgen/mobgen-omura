@@ -194,8 +194,8 @@ use backend\models\Utils;
     <div class="col-xs-3">
         <?php
         $data = array(
-            0 => 'Visible to the client',
-            1 => 'Hidden to the client',
+            0 => 'Hidden to the client',
+            1 => 'Visible to the client',
             2 => 'Visible to registered users'
         );
         echo $form->field($model, 'buiVisibleClient')->widget(Select2::classname(), [
