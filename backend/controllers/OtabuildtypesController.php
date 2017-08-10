@@ -34,7 +34,7 @@ class OtabuildtypesController extends CController
     public function beforeAction($action)
     {
         if (isset(Yii::$app->user->identity->id)) {
-            if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'update') || ($this->action->id == 'delete')) {
+            if (($this->action->id == 'index') || ($this->action->id == 'view') || ($this->action->id == 'create') || ($this->action->id == 'update') || ($this->action->id == 'delete')) {
                 $permission = $this->action->controller->id.'_'.$this->action->id;
                 $hasPermission = Permissions::find()->hasPermission($permission);
                 $userIdRole = User::getUserIdRole();
