@@ -38,7 +38,7 @@ class ClientController extends Controller
                 //$hasPermission = Permissions::find()->hasPermission($permission);
                 $userIdRole = User::getUserIdRole();
                 //if (($hasPermission == 0) || ... ) { //hasPermission is not working!
-                if ((($permission == 'client_index') || ($permission == 'client_delete')) && (($userIdRole == Yii::$app->params['QA_ROLE']) || ($userIdRole == Yii::$app->params['CLIENT_ROLE']))) {
+                if ((($permission == 'client_index') || ($permission == 'client_create') || ($permission == 'client_delete')) && (($userIdRole == Yii::$app->params['QA_ROLE']) || ($userIdRole == Yii::$app->params['CLIENT_ROLE']))) {
                     throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
                 }
                 if (!isset($_SESSION['skin-color'])) {
