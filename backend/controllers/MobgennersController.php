@@ -8,6 +8,7 @@ use backend\models\MobgennersSearch;
 use backend\models\SignupForm;
 use common\models\User;
 use yii\web\Controller;
+use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -42,7 +43,7 @@ class MobgennersController extends CController
         if (isset(Yii::$app->user->identity->id)) {
             $roleId = User::getUserIdRole();
 
-            if ($roleId == Yii::$app->params['ADMIN_ROLE'] || $roleId == Yii::$app->params['LEAD_ROLE'])
+            if (($roleId == Yii::$app->params['ADMIN_ROLE']) || ($roleId == Yii::$app->params['LEAD_ROLE']))
                 return true;
             else {
                 if (($this->action->id == 'index')  || ($this->action->id == 'create') || ($this->action->id == 'delete')){
