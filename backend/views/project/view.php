@@ -25,6 +25,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
+        <div class="box box-primary">
+            <div class="box-body">
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
@@ -50,6 +52,26 @@ $this->params['breadcrumbs'][] = $this->title;
             'onboarding_document:html',
             'created_at:date',
             'updated_at:date',
+            [
+                'format' => 'html',
+                'attribute' => 'clients',
+                'value' => function($model) {
+
+                  $output = '';
+                  if ($model->client) {
+                    $output .= '<ul>';
+                    foreach ($model->client as $key => $client) {
+                      $output .= "<li>{$client->first_name} {$client->last_name} - {$client->email} &nbsp;&nbsp;
+                      <a href='/client/5' title='View' aria-label='View' data-pjax='0'><span class='glyphicon glyphicon-eye-open'></span></a>&nbsp;
+                      <a href='/client/update/5' title='Update' aria-label='Update' data-pjax='0'><span class='glyphicon glyphicon-pencil'></span></a></li>";
+                    }
+                    $output .= '</ul>';
+                  } else {
+                    $output = 'This project doesn\'t have clients, you can assing this project to a client in him profile.';
+                  }
+                  return $output;
+                }
+            ]
             //'deleted',
         ],
     ]) ?>
@@ -63,4 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
     */
     ?>
 
+
+        </div>
+    </div>
 </div>

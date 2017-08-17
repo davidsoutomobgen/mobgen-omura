@@ -217,6 +217,16 @@ class ProjectController extends Controller
         }
         else $ota_projects = array();
 
+        //OTA Projects
+        $clients = OtaProjects::find()->all();
+
+        if (!empty($otaProjects)) {
+            foreach ($otaProjects as $otaproject) {
+                $ota_projects[$otaproject->id] =  $otaproject->name;
+            }
+        }
+        else $ota_projects = array();
+
         $pt_array = ProjectOtaProjects::find()->where('id_project = :idproject',  [':idproject' => $id])->all();
         $value_otaprojects = array();
         foreach ($pt_array as $tt) {
