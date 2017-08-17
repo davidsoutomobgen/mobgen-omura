@@ -15,7 +15,7 @@ use backend\models\Utils;
 ?>
 
 <div class="project-form">
-    <div class="row">
+    <div class="row-none">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4><i class="fa fa-flask"></i> Info Project</h4>
@@ -148,8 +148,10 @@ use backend\models\Utils;
         </div>
 
     </div>
+    </div>
 
-    <div class="row">
+    <?php /*
+    <div class="row-none">
         <div class="panel panel-default">
              <div class="panel-heading">
                  <h4><i class="fa fa-users"></i> Clients</h4>
@@ -195,7 +197,7 @@ use backend\models\Utils;
                                     echo Html::activeHiddenInput($modelClient, "[{$i}]id");
                                 }
                                 ?>
-                                <div class="row">
+                                <div class="row-none">
                                     <div class="col-sm-6">
                                         <?= $form->field($modelClient, "[{$i}]first_name")->textInput(['maxlength' => 128]) ?>
                                     </div>
@@ -224,9 +226,12 @@ use backend\models\Utils;
             </div>
         </div>
     </div>
+    */ ?>
 
-    <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    <div class="row-none">
+      <div class="form-group">
+          <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+      </div>
     </div>
 
     <?php ActiveForm::end(); ?>
