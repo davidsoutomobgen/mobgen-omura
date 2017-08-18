@@ -123,8 +123,8 @@ class OtaprojectsController extends CController
             else
                 $view = 'view';
 
-            return $this->render($view, [ 
-                'model' => $this->findModel($id),
+            return $this->render($view, [
+                'model' => $this->findModel($id, 0),
                 'searchBuilds' => $searchBuilds,
                 'dataProvider' => $dataProvider,
             ]);
@@ -316,9 +316,18 @@ class OtaprojectsController extends CController
      * @return OtaProjects the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel($id, $deleted = false)
     {
-        if (($model = OtaProjects::findOne($id)) !== null) {
+        $condition = [
+            'id' => $id
+        ];
+
+
+        if (is_int($deleted)) {
+            $condition['deleted'] = $deleted;
+        }
+
+        if (($model = OtaProjects::findOne($condition)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
