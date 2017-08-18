@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use yii\web\MethodNotAllowedHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use common\models\User;
 
 
 /**
