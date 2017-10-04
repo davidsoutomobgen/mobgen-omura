@@ -381,7 +381,7 @@ class OtaprojectsController extends CController
         //echo $permission.'<br>';die;
         if ($hasPermission == 0) {
             $result['error'] = 1;
-            $result['message'] = 'You don\'t have the necesary permissions';
+            $result['message'] = 'You don\'t have the necessary permissions';
         } else  if (isset($_POST['id'])) {
             $id = $_POST['id'];
             if ($_POST['buiHash']) {

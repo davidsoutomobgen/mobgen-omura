@@ -247,6 +247,11 @@ use backend\models\Utils;
             $('div[name="'+name+'"] .expand-item').hide();
             $('div[name="'+name+'"] .close-item').show();
         });
+         
+         $('.add-item').click(function(e) {
+            var name = $(this).parent().parent().parent().attr("name");
+            console.log('+1');
+        });
 
         $(".dynamicform_wrapper").on("afterInsert", function(e, item) {
             var set = $(".dynamicform_wrapper .panel-title");

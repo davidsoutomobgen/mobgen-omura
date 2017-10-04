@@ -252,9 +252,9 @@ class Utils
     public static function freeSpace()
     {
         // disk space free (in bytes)
-        $df = disk_free_space("/");
+        $df = disk_free_space(Yii::$app->params["BUILD_HD"]);
         // disk space total (in bytes)
-        $dt = disk_total_space("/");
+        $dt = disk_total_space(Yii::$app->params["BUILD_HD"]);
         //disk space used (in bytes)
         $du = $dt - $df;
         // percentage of disk used
