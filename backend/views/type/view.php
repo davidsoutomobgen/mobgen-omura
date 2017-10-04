@@ -25,34 +25,38 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            //'id',
-            /*
-            [
-                'attribute' => 'logo',
-                'value'=> (!empty($model->logo)) ? '/'.$model->logo : '/files/empty.png',
-                'format' => ['image',['width'=>'100','height'=>'auto']],
-            ],
-            */
-            [
-                'attribute'=>'Logo',
-                'value'=> (!empty($model->logo)) ? '/'.$model->logo  : '/files/empty.png',
-                'format' => ['image',['width'=>'40','height'=>'40']],
-            ],
-            'name',
-            'description',
-            [
-                'attribute' => 'created_at',
-                'format' => ['date', 'php:d/m/Y']
-            ],
-            [
-                'attribute' => 'updated_at',
-                'format' => ['date', 'php:d/m/Y']
-            ],
-            //'deleted',
-        ],
-    ]) ?>
+    <div class="box box-primary">
+        <div class="box-body">
+            <?= DetailView::widget([
+                'model' => $model,
+                'attributes' => [
+                    //'id',
+                    /*
+                    [
+                        'attribute' => 'logo',
+                        'value'=> (!empty($model->logo)) ? '/'.$model->logo : '/files/empty.png',
+                        'format' => ['image',['width'=>'100','height'=>'auto']],
+                    ],
+                    */
+                    [
+                        'attribute'=>'Logo',
+                        'value'=> (!empty($model->logo)) ? '/'.$model->logo  : '/files/empty.png',
+                        'format' => ['image',['width'=>'40','height'=>'40']],
+                    ],
+                    'name',
+                    'description',
+                    [
+                        'attribute' => 'created_at',
+                        'format' => ['date', 'php:d/m/Y']
+                    ],
+                    [
+                        'attribute' => 'updated_at',
+                        'format' => ['date', 'php:d/m/Y']
+                    ],
+                    //'deleted',
+                ],
+            ]) ?>
+        </div>
+    </div>
 
 </div>
