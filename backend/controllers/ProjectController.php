@@ -49,20 +49,25 @@ class ProjectController extends Controller
     public function beforeAction($action)
     {
         if (isset(Yii::$app->user->identity->id)) {
-            $permission = $this->action->controller->id.'_'.$this->action->id;
-            $hasPermission = Permissions::find()->hasPermission($permission);
-            //echo $permission.'<br>';die;
-            if ($hasPermission == 0) {
-                throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+            if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'update') || ($this->action->id == 'delete')) {
+                $permission = $this->action->controller->id.'_'.$this->action->id;
+                //$hasPermission = Permissions::find()->hasPermission($permission);
+                $userIdRole = User::getUserIdRole();
+                //if (($hasPermission == 0) || ... ) { //hasPermission is not working!
+                if ((($permission == 'project_index') || ($permission == 'project_create') || ($permission == 'project_delete')) && (($userIdRole == Yii::$app->params['QA_ROLE']) || ($userIdRole == Yii::$app->params['CLIENT_ROLE']))) {
+                    throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+                }
+                if (!isset($_SESSION['skin-color'])) {
+                    $_SESSION['skin-color'] = 'skin-blue';
+                }
             }
-
             return true;
         }
         else {
             $this->redirect('/site/logout');
         }
-    }
 
+    }
 
     /**
      * Lists all Project models.
@@ -209,6 +214,16 @@ class ProjectController extends Controller
 
         //OTA Projects
         $otaProjects = OtaProjects::find()->all();
+
+        if (!empty($otaProjects)) {
+            foreach ($otaProjects as $otaproject) {
+                $ota_projects[$otaproject->id] =  $otaproject->name;
+            }
+        }
+        else $ota_projects = array();
+
+        //OTA Projects
+        $clients = OtaProjects::find()->all();
 
         if (!empty($otaProjects)) {
             foreach ($otaProjects as $otaproject) {

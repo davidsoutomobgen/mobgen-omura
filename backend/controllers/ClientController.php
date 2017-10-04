@@ -79,7 +79,7 @@ class ClientController extends Controller
 
         $model = Client::find()->with('project')->where('id = :idClient',  [':idClient' => $id])->all();
 
-        if (($userIdRole == Yii::$app->params['ADMIN_ROLE']) || (isset($model[0])) && ($model[0]->user == Yii::$app->user->identity->id) && ($userIdRole == Yii::$app->params['CLIENT_ROLE']))
+        if (($userIdRole == Yii::$app->params['ADMIN_ROLE'] || $userIdRole == Yii::$app->params['LEAD_ROLE']) || (isset($model[0])) && ($model[0]->user == Yii::$app->user->identity->id) && ($userIdRole == Yii::$app->params['CLIENT_ROLE']))
             return $this->render('view', [
                 //'model' => $this->findModel($id),
                 'model' => $model[0],

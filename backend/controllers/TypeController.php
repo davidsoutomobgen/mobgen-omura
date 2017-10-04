@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use yii\web\MethodNotAllowedHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use common\models\User;
 
 
 /**
@@ -32,14 +33,25 @@ class TypeController extends CController
 
     public function beforeAction($action)
     {
-        $permission = $this->action->controller->id.'_'.$this->action->id;
-        $hasPermission = Permissions::find()->hasPermission($permission);
-        //echo $permission.'<br>';die;
-        if ($hasPermission == 0) {
-            throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+        if (isset(Yii::$app->user->identity->id)) {
+            if (($this->action->id == 'index') || ($this->action->id == 'create') || ($this->action->id == 'update') || ($this->action->id == 'delete')) {
+                $permission = $this->action->controller->id.'_'.$this->action->id;
+                //$hasPermission = Permissions::find()->hasPermission($permission);
+                $userIdRole = User::getUserIdRole();
+                //if (($hasPermission == 0) || ... ) { //hasPermission is not working!
+                if ((($permission == 'type_index') || ($permission == 'type_create') || ($permission == 'type_delete')) && (($userIdRole == Yii::$app->params['QA_ROLE']) || ($userIdRole == Yii::$app->params['CLIENT_ROLE']))) {
+                    throw new MethodNotAllowedHttpException('You don\'t have permission to see this content.');
+                }
+                if (!isset($_SESSION['skin-color'])) {
+                    $_SESSION['skin-color'] = 'skin-blue';
+                }
+            }
+            return true;
+        }
+        else {
+            $this->redirect('/site/logout');
         }
 
-        return true;
     }
 
 
@@ -161,5 +173,5 @@ class TypeController extends CController
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    
+
 }
