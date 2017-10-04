@@ -1,0 +1,31 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>{{$project.proName}}</title>
+<link type="text/css" rel="stylesheet" href="/web/templates/default/style.css" />
+<meta name = "viewport" content = "width = 320, user-scalable = no">
+</head>
+<body>
+<div id="content">
+<h1>{{$project.proName}} - Builds</h1>
+	<table>
+	<tr>
+		<th>Name</th>
+		<th>Version</th>
+		<th>Date</th>
+		<th>OS</th>
+		<th>Distribution</th>
+	</tr>
+{{foreach from=$builds item=i}}
+	<tr>
+		<td><a href="/build/{{$i.buiHash}}/{{$i.buiSafename}}">{{$i.buiName}}</a></td>
+		<td>{{$i.buiVersion}}</td>
+		<td>{{$i.buiCreated}}</td>
+		<td>{{$devices[$i.buiDeviceOS]}}</td>
+		<td>{{$distribution_types[$i.buiDistributionType]}} ({{$build_types[$i.buiType]}})</td>
+	</tr>
+{{/foreach}}
+	</table>
+</div>
+</body>
+</html>

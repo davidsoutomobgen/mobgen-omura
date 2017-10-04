@@ -1,0 +1,75 @@
+@CHARSET "ISO-8859-1";
+@font-face {
+	font-family: Century Gothic;
+	src: url(GOTHIC.TTF) format(truetype);
+}
+html,
+body {
+	height: 100%;
+	font-family: Century Gothic, Verdana;
+	margin: 0px;
+}
+h1{
+	font-size: 1.6em;
+	color: #ea5829;
+	margin-top: 14px;
+	margin-bottom: 6px;
+}
+.grid-container {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 1200px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+.site-logo img {
+	height:63px;
+	width:124px;
+	vertical-align:middle;
+	margin-top: -6px;
+}
+
+.wrap {
+	min-height: 100%;
+	height: auto;
+	margin: 0 auto -148px;
+	padding: 0 0 62px;
+}
+
+.wrap > .container {
+	padding: 4px 10px 20px;
+}
+
+.fa.android {
+	color: #a4c639;
+}
+.fa.ios {
+	color: #a6b1b7;
+}
+.footer {
+	height: 62px;
+	background-color: #000000;
+	padding-right: 6px;
+	color:#7d7d7d;
+	font-size: 0.6em;
+	text-align: right;
+	padding-top: 14px;
+}
+
+#qrImage {
+	margin: 20px auto;
+	text-align: center;
+}
+.lbl{
+	margin:4px;
+}
+.bltxt{
+	font-weight: bold;
+}
+div#changelog {
+	margin-bottom: 20px;
+}
+.changelogTxt{
+	margin: 4px;
+	font-size: 0.8em;
+}
